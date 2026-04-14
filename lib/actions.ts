@@ -10,6 +10,7 @@ import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { encrypt, decrypt } from "./session";
 import { snap } from "./midtrans";
+import { sendPasswordResetCode } from "./mail";
 
 export async function getProducts(status?: "Aktif" | "Nonaktif"): Promise<any[]> {
   try {
@@ -736,5 +737,66 @@ export async function getSavedCart() {
   } catch (error) {
     console.error("Failed to fetch saved cart:", error);
     return [];
+  }
+}
+
+export async function requestPasswordReset(email: string) {
+  try {
+    // 1. Check if user exists with this email
+    const users = await query("SELECT id, name FROM users WHERE email = ?", [email]) as any[];
+    if (users.length === 0) {
+      return { success: false, error: "Email tidak terdaftar!" };
+    }
+
+    // 2. Generate 6-digit code
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // 3. Set expiry (10 minutes from now)
+    const expiry = new Date();
+    expiry.setMinutes(expiry.getMinutes() + 10);
+    
+    // 4. Update user in DB
+    await query(
+      "UPDATE users SET reset_code = ?, reset_expiry = ? WHERE email = ?",
+      [resetCode, expiry, email]
+    );
+
+    // 5. Send Email
+    await sendPasswordResetCode(email, resetCode);
+
+    return { success: true };
+  } catch (error) {
+    console.error("Request reset error:", error);
+    return { success: false, error: "Gagal memproses permintaan reset password" };
+  }
+}
+
+export async function resetPassword(data: { email: string; code: string; newPassword: string }) {
+  try {
+    // 1. Find user & verify code + expiry
+    const users = await query(
+      "SELECT id FROM users WHERE email = ? AND reset_code = ? AND reset_expiry > NOW()",
+      [data.email, data.code]
+    );
+
+    if ((users as any[]).length === 0) {
+      return { success: false, error: "Kode verifikasi salah atau sudah kadaluwarsa!" };
+    }
+
+    const userId = (users as any[])[0].id;
+
+    // 2. Hash new password
+    const hashedPassword = await bcrypt.hash(data.newPassword, 10);
+
+    // 3. Update password and CLEAR reset fields
+    await query(
+      "UPDATE users SET password = ?, reset_code = NULL, reset_expiry = NULL WHERE id = ?",
+      [hashedPassword, userId]
+    );
+
+    return { success: true };
+  } catch (error) {
+    console.error("Reset password error:", error);
+    return { success: false, error: "Gagal memperbarui password" };
   }
 }

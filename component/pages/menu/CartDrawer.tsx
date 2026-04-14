@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { X, Plus, Minus, ShoppingBag, Trash2, Loader2, ArrowRight, CreditCard, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import { createTransaction, getMe, confirmMidtransTransaction } from "@/lib/actions";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function CartDrawer() {
@@ -15,9 +15,15 @@ export default function CartDrawer() {
   const [snapTransactionId, setSnapTransactionId] = useState<number | null>(null);
   const [simulatingSnap, setSimulatingSnap] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   // Use a separate state to handle the 'entering' animation after render
   const [shouldRender, setShouldRender] = useState(false);
+
+  // Close drawer on route change to prevent UI locks
+  useEffect(() => {
+    setIsCartOpen(false);
+  }, [pathname, setIsCartOpen]);
 
   React.useEffect(() => {
     // Load Midtrans Snap script
@@ -114,7 +120,7 @@ export default function CartDrawer() {
 
   return (
     <AnimatePresence>
-      <div className={`fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-8 transition-all duration-300 ${isCartOpen || snapTransactionId ? "visible" : "invisible"}`}>
+      <div className={`fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-8 transition-all duration-300 ${isCartOpen || snapTransactionId ? "visible pointer-events-auto" : "invisible pointer-events-none"}`}>
         {/* Backdrop */}
         <div 
         className={`absolute inset-0 bg-zinc-900/60 backdrop-blur-md transition-opacity duration-500 ${isCartOpen ? "opacity-100" : "opacity-0"}`} 

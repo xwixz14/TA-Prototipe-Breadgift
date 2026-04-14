@@ -11,7 +11,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
-  const { refreshCart } = useCart();
+  const { refreshCart, setIsCartOpen } = useCart();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -31,6 +31,7 @@ function LoginForm() {
     
     if (result.success) {
       await refreshCart(); // Muat keranjang tersimpan dari database
+      setIsCartOpen(false); // Reset UI keranjang agar tidak macet
       if (result.role === "admin") {
         router.push("/admin/dashboard");
       } else {
@@ -88,6 +89,14 @@ function LoginForm() {
             placeholder="Masukkan Password"
             className="w-full px-8 py-5 text-lg font-bold text-zinc-900 border border-zinc-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#7B4A2D]/10 focus:border-[#7B4A2D] transition-all placeholder:text-zinc-300"
           />
+          <div className="flex justify-end pr-1">
+            <Link 
+              href="/forgot-password" 
+              className="text-xs font-bold text-zinc-400 hover:text-[#7B4A2D] transition-colors"
+            >
+              Lupa Password?
+            </Link>
+          </div>
         </div>
       </div>
 

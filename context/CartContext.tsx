@@ -130,6 +130,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => {
     setCartItems([]);
+    setIsCartOpen(false);
     localStorage.removeItem("breadgift_cart");
   };
 

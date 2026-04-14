@@ -17,6 +17,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     await logoutUser();
     clearCart(); // Bersihkan keranjang saat logout agar tidak terbawa ke sesi berikutnya
+    setIsCartOpen(false); // Pastikan drawer tertutup
     await refreshCart(); // Reset user state di context
     setIsMenuOpen(false);
     router.push("/");

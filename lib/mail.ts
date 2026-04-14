@@ -157,6 +157,72 @@ export async function sendOrderConfirmation({ orderId, customerName, customerEma
   }
 }
 
+export async function sendPasswordResetCode(email: string, code: string) {
+  try {
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: 'Inter', 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 0; background-color: #f4f4f4; }
+          .container { max-width: 600px; margin: 20px auto; padding: 0 20px; }
+          .card { background: #ffffff; border-radius: 32px; padding: 48px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #eee; text-align: center; }
+          .header { margin-bottom: 40px; }
+          .logo { color: #6B4423; font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; margin-bottom: 8px; }
+          .badge { display: inline-block; padding: 6px 16px; background: #FFF4EB; color: #6B4423; border-radius: 100px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+          .content { margin-top: 32px; }
+          .code-box { background: #FBFBFB; border: 2px dashed #6B4423; border-radius: 24px; padding: 24px; margin: 32px 0; }
+          .reset-code { font-size: 40px; font-weight: 900; color: #6B4423; letter-spacing: 12px; margin: 0; }
+          .footer { text-align: center; margin-top: 48px; font-size: 12px; color: #bbb; padding-bottom: 40px; }
+          .warning { font-size: 12px; color: #999; margin-top: 24px; font-style: italic; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="card">
+            <div class="header">
+              <div class="logo">BreadGift</div>
+              <div class="badge">Atur Ulang Kata Sandi</div>
+            </div>
+            
+            <div class="content">
+              <p style="font-size: 16px; font-weight: 600;">Halo bebs!</p>
+              <p style="color: #666;">Kami menerima permintaan untuk mengatur ulang kata sandi akun BreadGift kamu. Gunakan kode verifikasi di bawah ini untuk melanjutkan:</p>
+              
+              <div class="code-box">
+                <h2 class="reset-code">${code}</h2>
+              </div>
+              
+              <p style="color: #666; font-size: 14px;">Kode ini hanya berlaku selama <strong>10 menit</strong>. Jangan berikan kode ini kepada siapapun demi keamanan akunmu.</p>
+              
+              <p class="warning">Jika kamu tidak merasa meminta pengaturan ulang kata sandi, abaikan saja email ini.</p>
+            </div>
+          </div>
+          <div class="footer">
+            &copy; 2026 BreadGift Bakery & Cafe. All rights reserved.<br>
+            Jl. Wangi Roti No. 69, Sukarame, Bandar Lampung.
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    await transporter.sendMail({
+      from: `"BreadGift Security" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: `[BreadGift] Kode Verifikasi Lupa Password - ${code}`,
+      html: htmlContent,
+    });
+
+    console.log(`✅ [MAIL] Kode reset berhasil dikirim ke: ${email}`);
+    return { success: true };
+  } catch (error: any) {
+    console.error("❌ [MAIL-ERROR] Gagal kirim kode reset:", error.message);
+    return { success: false, error: error.message };
+  }
+}
+
 
 
 
