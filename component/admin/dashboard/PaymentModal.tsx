@@ -1,0 +1,155 @@
+
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { X, Banknote, QrCode } from "lucide-react";
+
+interface PaymentModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  totalAmount: number;
+  paymentMethod: "Tunai" | "QRIS";
+  onConfirm: (amountPaid: number) => void;
+}
+
+export default function PaymentModal({
+  isOpen,
+  onClose,
+  totalAmount,
+  paymentMethod,
+  onConfirm
+}: PaymentModalProps) {
+  const [amountPaid, setAmountPaid] = useState<number>(0);
+  const quickAmounts = [50000, 100000, 150000, 200000];
+
+  useEffect(() => {
+    if (paymentMethod === "QRIS") {
+      setAmountPaid(totalAmount);
+    } else {
+      setAmountPaid(0);
+    }
+  }, [paymentMethod, totalAmount, isOpen]);
+
+  if (!isOpen) return null;
+
+  const change = Math.max(0, amountPaid - totalAmount);
+  const isValid = amountPaid >= totalAmount;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div 
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm" 
+        onClick={onClose}
+      />
+      
+      <div className="relative w-full max-w-2xl bg-white rounded-[40px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+        {/* Header */}
+        <div className="flex justify-between items-center p-8 border-b border-zinc-100">
+          <h2 className="text-2xl font-black text-zinc-900">Pembayaran</h2>
+          <button 
+            onClick={onClose}
+            className="p-2 hover:bg-zinc-100 rounded-full transition-colors"
+          >
+            <X className="w-6 h-6 text-zinc-400" />
+          </button>
+        </div>
+
+        <div className="p-8 space-y-8">
+          <p className="text-zinc-500 font-medium">Silakan pilih metode pembayaran dan masukkan jumlah yang dibayarkan</p>
+          
+          {/* Total Display */}
+          <div className="bg-[#FCF1E8] p-6 rounded-3xl border border-[#FCF1E8] flex justify-between items-center">
+            <span className="text-sm font-bold text-[#6B4423]">Total yang harus dibayar:</span>
+            <span className="text-2xl font-black text-[#6B4423]">Rp {totalAmount.toLocaleString("id-ID")}</span>
+          </div>
+
+          <div className="space-y-6">
+             <div className="flex flex-col gap-2">
+                <label className="text-xs font-black text-zinc-400 uppercase tracking-widest ml-1">Metode pembayaran</label>
+                <div className="flex gap-4">
+                  <div className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl border-2 transition-all cursor-default ${paymentMethod === 'Tunai' ? 'border-[#6B4423] bg-[#6B4423]/5 text-[#6B4423]' : 'border-zinc-100 text-zinc-400 opacity-50'}`}>
+                    <Banknote className="w-5 h-5" />
+                    <span className="font-bold">Tunai</span>
+                  </div>
+                  <div className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl border-2 transition-all cursor-default ${paymentMethod === 'QRIS' ? 'border-[#6B4423] bg-[#6B4423]/5 text-[#6B4423]' : 'border-zinc-100 text-zinc-400 opacity-50'}`}>
+                    <QrCode className="w-5 h-5" />
+                    <span className="font-bold">QRIS</span>
+                  </div>
+                </div>
+             </div>
+
+             {paymentMethod === "Tunai" ? (
+               <div className="space-y-6 animate-in slide-in-from-top-4 duration-300">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-xs font-black text-zinc-400 uppercase tracking-widest ml-1">Jumlah bayar</label>
+                    <div className="relative">
+                       <span className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-zinc-400">Rp</span>
+                       <input 
+                        type="text"
+                        autoFocus
+                        value={amountPaid === 0 ? "" : amountPaid.toLocaleString("id-ID")}
+                        onChange={(e) => {
+                          // Hapus semua karakter non-digit untuk mendapatkan nilai asli
+                          const rawValue = e.target.value.replace(/\D/g, "");
+                          const numericValue = rawValue === "" ? 0 : parseInt(rawValue);
+                          setAmountPaid(numericValue);
+                        }}
+                        className="w-full bg-zinc-50 border border-zinc-200 py-5 pl-14 pr-6 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#6B4423]/10 focus:border-[#6B4423] text-xl font-bold transition-all"
+                        placeholder="Masukkan nominal..."
+                       />
+                    </div>
+                  </div>
+
+                  {/* Quick Amounts */}
+                  <div className="grid grid-cols-4 gap-3">
+                    {quickAmounts.map((amt) => (
+                      <button 
+                        key={amt}
+                        onClick={() => setAmountPaid(amt)}
+                        className="py-3 bg-zinc-50 border border-zinc-100 rounded-xl text-xs font-bold text-zinc-600 hover:border-[#6B4423]/30 hover:bg-white transition-all shadow-sm"
+                      >
+                        Rp {amt.toLocaleString("id-ID")}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Change Calculation */}
+                  <div className="flex justify-between items-center p-6 bg-zinc-50 rounded-2xl border border-zinc-100">
+                    <span className="text-sm font-bold text-zinc-500">Kembalian:</span>
+                    <span className={`text-xl font-black ${change > 0 ? 'text-green-600' : 'text-zinc-300'}`}>
+                      Rp {change.toLocaleString("id-ID")}
+                    </span>
+                  </div>
+               </div>
+             ) : (
+                <div className="flex flex-col items-center gap-6 py-4 animate-in fade-in zoom-in duration-500">
+                  <div className="p-4 bg-white border-2 border-zinc-100 rounded-[32px] shadow-lg overflow-hidden flex items-center justify-center">
+                    <img 
+                      src="/assets/qris_placeholder.png" 
+                      alt="QRIS Barcode" 
+                      className="w-56 h-56 object-contain"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-black text-zinc-900">Scan untuk Membayar</p>
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">Tunjukkan barcode ini kepada pelanggan</p>
+                  </div>
+                </div>
+             )}
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="p-8 bg-zinc-50/50 border-t border-zinc-100">
+           <button 
+            disabled={!isValid}
+            onClick={() => onConfirm(amountPaid)}
+            className="w-full py-5 bg-[#6B4423] text-white rounded-3xl text-lg font-black shadow-xl shadow-[#6B4423]/20 hover:bg-[#5D3822] hover:scale-[1.01] transition-all disabled:bg-zinc-200 disabled:shadow-none active:scale-[0.98]"
+           >
+            {paymentMethod === "QRIS" ? "Konfirmasi Pembayaran QRIS" : "Bayar Sekarang"}
+           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
