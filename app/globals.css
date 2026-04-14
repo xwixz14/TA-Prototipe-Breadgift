@@ -1,8 +1,15 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
 :root {
-  --background: #ffffff;
-  --foreground: #18181b; /* zinc-900 */
+  --background: #fffcf8; /* Creamy White */
+  --foreground: #4a3728; /* Bread Crust Brown */
+  
+  /* BreadGift Brand Colors */
+  --color-brand-brown: #7b4a2d;
+  --color-brand-cream: #fdf5e6;
+  --color-brand-butter: #f5e6d3;
+  --color-brand-gold: #c6a664;
 }
 
 @theme inline {
@@ -10,6 +17,12 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-poppins);
   --font-mono: var(--font-geist-mono);
+  --font-brand: var(--font-rammetto-one);
+  
+  /* Brand color aliases */
+  --color-primary: var(--color-brand-brown);
+  --color-secondary: var(--color-brand-butter);
+  --color-gold: var(--color-brand-gold);
 }
 
 body {
@@ -18,4 +31,44 @@ body {
   font-family: var(--font-poppins), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Animated Mesh Background */
+.animated-mesh {
+  background-color: var(--background);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(245, 230, 211, 0.5) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(230, 185, 128, 0.3) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(245, 230, 211, 0.5) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(123, 74, 45, 0.05) 0px, transparent 50%);
+  background-size: 200% 200%;
+  animation: mesh-flow 20s ease infinite;
+}
+
+@keyframes mesh-flow {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* Premium Glassmorphism */
+.glass-premium {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 8px 32px 0 rgba(74, 55, 40, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+/* Watermark Text */
+.watermark-text {
+  position: absolute;
+  font-size: 15rem;
+  font-family: var(--font-rammetto-one);
+  color: rgba(123, 74, 45, 0.03);
+  pointer-events: none;
+  z-index: 0;
+  white-space: nowrap;
 }
