@@ -13,11 +13,11 @@ export default async function MenuPage() {
   const user = await getMe();
 
   return (
-    <main className="relative pt-32 pb-24 min-h-screen bg-white">
-      <div className="max-w-[1400px] mx-auto px-10">
-        <div className="flex flex-col mb-16">
-          <span className="text-sm font-black text-[#6B4423] uppercase tracking-widest mb-4 border-l-4 border-[#6B4423] pl-4">Koleksi Kami</span>
-          <h1 className="text-5xl font-black text-zinc-900 tracking-tight">Menu Roti Hari Ini</h1>
+    <main className="relative pt-24 md:pt-32 pb-24 min-h-screen bg-white">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10">
+        <div className="flex flex-col mb-10 md:mb-16">
+          <span className="text-xs md:text-sm font-black text-[#6B4423] uppercase tracking-widest mb-4 border-l-4 border-[#6B4423] pl-4">Koleksi Kami</span>
+          <h1 className="text-3xl md:text-5xl font-black text-zinc-900 tracking-tight">Menu Roti Hari Ini</h1>
         </div>
         
         <MenuContainer products={products} categories={categories} user={user} />

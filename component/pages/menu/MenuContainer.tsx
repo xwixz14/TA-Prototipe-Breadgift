@@ -42,28 +42,29 @@ export default function MenuContainer({ products, categories, user }: MenuContai
 
   return (
     <div className="flex flex-col gap-10">
-      {/* Search & Filter Bar - Styled like the mockup */}
-      <div className="flex gap-4">
+      {/* Search & Filter Bar - Responsive Layout */}
+      <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1 relative group w-full">
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-zinc-400 group-focus-within:text-[#6B4423] transition-colors" />
+          <Search className="absolute left-5 md:left-6 top-1/2 -translate-y-1/2 w-5 h-5 md:w-6 md:h-6 text-zinc-400 group-focus-within:text-[#6B4423] transition-colors" />
           <input
             type="text"
-            placeholder="Pilih roti yang ingin dicari"
+            placeholder="Cari roti favoritmu..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white border border-zinc-200 py-6 pl-16 pr-8 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-[#6B4423]/10 focus:border-[#6B4423] transition-all text-lg font-black text-zinc-900 placeholder:text-zinc-400 shadow-sm"
+            className="w-full bg-white border border-zinc-200 py-4 md:py-6 pl-14 md:pl-16 pr-8 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-[#6B4423]/10 focus:border-[#6B4423] transition-all text-base md:text-lg font-black text-zinc-900 placeholder:text-zinc-400 shadow-sm"
           />
         </div>
         
         {/* Clickable Filter Toggle */}
-        <div className="relative">
+        <div className="relative w-full md:w-auto">
           <button 
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className={`h-full px-6 border rounded-[20px] transition-all flex items-center justify-center shadow-sm ${
+            className={`w-full md:w-auto h-full px-6 py-4 md:py-0 border rounded-[20px] transition-all flex items-center justify-center gap-3 shadow-sm ${
               isFilterOpen || (selectedCategory !== "Semua" && selectedCategory !== "Paling Banyak Dibeli") ? 'border-[#6B4423]/40 bg-[#FCF1E8]/50' : 'bg-white border-zinc-200 hover:border-[#6B4423]/40 hover:bg-[#FCF1E8]/20'
             }`}
           >
-            <Filter className={`w-6 h-6 ${isFilterOpen || (selectedCategory !== "Semua" && selectedCategory !== "Paling Banyak Dibeli") ? 'text-[#6B4423]' : 'text-zinc-600'}`} />
+            <Filter className={`w-5 h-5 md:w-6 md:h-6 ${isFilterOpen || (selectedCategory !== "Semua" && selectedCategory !== "Paling Banyak Dibeli") ? 'text-[#6B4423]' : 'text-zinc-600'}`} />
+            <span className="md:hidden font-black text-sm text-zinc-600">Filter Kategori</span>
           </button>
           
           {/* Clickable Category Selector */}

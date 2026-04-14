@@ -120,36 +120,36 @@ export default function Catalog({ products, categories }: { products: Product[],
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
+    <div className="max-w-7xl mx-auto px-6 py-8 md:py-12">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16 border-b border-zinc-100 pb-12">
+      <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-12 md:mb-16 border-b border-zinc-100 pb-12">
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex-1"
+          className="flex-1 w-full"
         >
           <div className="flex items-center gap-2 text-[#6B4423] font-bold text-sm uppercase tracking-[0.2em] mb-4">
             <Sparkles className="w-4 h-4" />
             <span>Digital Lookbook</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-black text-black tracking-tight mb-6">
-            Katalog <span className="text-[#949499]">Roti</span> <br />
+          <h1 className="text-3xl sm:text-4xl md:text-7xl font-black text-black tracking-tighter leading-[1.1] mb-6">
+            Katalog <span className="text-[#949499]">Roti</span> <br className="hidden md:block" />
             Pilihan <span className="text-[#6B4423]">Terbaik</span>.
           </h1>
-          <p className="text-[#71717a] text-lg max-w-xl font-medium leading-relaxed">
+          <p className="text-[#71717a] text-base md:text-lg max-w-xl font-medium leading-relaxed">
             Menghadirkan kehangatan dari oven kami langsung ke meja Anda. 
             Setiap roti dibuat dengan bahan premium dan kasih sayang.
           </p>
         </motion.div>
-
+ 
         <motion.button
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           onClick={handleDownloadPDF}
           disabled={isDownloading}
-          className={`flex items-center gap-3 bg-[#6B4423] text-white px-8 py-5 rounded-2xl font-black text-sm uppercase tracking-wider shadow-2xl shadow-[#6B4423]/30 hover:bg-[#5D3822] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
+          className={`w-full md:w-auto flex items-center justify-center gap-3 bg-[#6B4423] text-white px-6 md:px-8 py-4 md:py-5 rounded-2xl font-black text-xs uppercase tracking-wider shadow-2xl shadow-[#6B4423]/30 hover:bg-[#5D3822] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           {isDownloading ? (
             <div className="flex items-center gap-2">

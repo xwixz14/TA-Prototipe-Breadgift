@@ -97,25 +97,25 @@ export default function SuccessComponent({ transaction }: { transaction: Transac
           {/* Top Decorative Banner */}
           <div className="bg-[#6B4423] h-4 w-full" />
           
-          <div className="p-10 md:p-16 text-center">
+          <div className="p-8 md:p-16 text-center">
             <motion.div 
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-10 border border-green-100"
+              className="w-20 h-20 md:w-24 md:h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8 md:mb-10 border border-green-100"
             >
-              <CheckCircle2 className="w-12 h-12 text-green-500" />
+              <CheckCircle2 className="w-10 h-10 md:w-12 md:h-12 text-green-500" />
             </motion.div>
 
-            <h1 className="text-4xl md:text-5xl font-black text-zinc-900 tracking-tight mb-4">
+            <h1 className="text-3xl md:text-5xl font-black text-zinc-900 tracking-tight mb-4">
               Pesanan Berhasil!
             </h1>
-            <p className="text-zinc-500 text-lg font-medium max-w-md mx-auto leading-relaxed">
+            <p className="text-zinc-500 text-base md:text-lg font-medium max-w-md mx-auto leading-relaxed">
               Halo <span className="text-zinc-900 font-bold">{transaction.customer_name || "Pelanggan"}</span>, pesananmu <span className="text-[#6B4423] font-bold">#ORD-{transaction.id.toString().padStart(5, '0')}</span> telah kami terima.
             </p>
 
             {/* Order Summary Preview */}
-            <div className="mt-12 bg-zinc-50 rounded-3xl p-8 border border-zinc-100 text-left space-y-4">
+            <div className="mt-8 md:mt-12 bg-zinc-50 rounded-[32px] p-6 md:p-8 border border-zinc-100 text-left space-y-4">
               <div className="flex justify-between items-center text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">
                 <span>Ringkasan Pesanan</span>
                 <span>{transaction.items.length} Produk</span>
@@ -136,17 +136,17 @@ export default function SuccessComponent({ transaction }: { transaction: Transac
               <div className="h-px bg-zinc-200 my-4" />
               <div className="flex justify-between items-end">
                 <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Total Bayar</span>
-                <span className="text-3xl font-black text-[#6B4423] tracking-tighter leading-none">
+                <span className="text-2xl md:text-3xl font-black text-[#6B4423] tracking-tighter leading-none">
                   Rp {transaction.total_amount.toLocaleString("id-ID")}
                 </span>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="mt-12 flex flex-col md:flex-row gap-4 justify-center">
+            <div className="mt-8 md:mt-12 flex flex-col md:flex-row gap-4 justify-center">
               <button 
                 onClick={handlePrint}
-                className="flex items-center justify-center gap-3 bg-[#6B4423] text-white px-10 py-5 rounded-2xl font-black shadow-xl shadow-[#6B4423]/20 hover:scale-[1.02] active:scale-[0.98] transition-all group"
+                className="flex items-center justify-center gap-3 bg-[#6B4423] text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-black shadow-xl shadow-[#6B4423]/20 hover:scale-[1.02] active:scale-[0.98] transition-all group text-sm md:text-base"
               >
                 <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
                 Unduh Tanda Terima
@@ -154,7 +154,7 @@ export default function SuccessComponent({ transaction }: { transaction: Transac
               
               <Link 
                 href="/menu" 
-                className="flex items-center justify-center gap-3 bg-white text-zinc-900 border-2 border-zinc-100 px-10 py-5 rounded-2xl font-black hover:bg-zinc-50 transition-all"
+                className="flex items-center justify-center gap-3 bg-white text-zinc-900 border-2 border-zinc-100 px-8 md:px-10 py-4 md:py-5 rounded-2xl font-black hover:bg-zinc-50 transition-all text-sm md:text-base"
               >
                 <ShoppingBag className="w-5 h-5" />
                 Belanja Lagi

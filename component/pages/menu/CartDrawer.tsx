@@ -121,27 +121,27 @@ export default function CartDrawer() {
         onClick={() => setIsCartOpen(false)}
       />
       
-      {/* Modal Panel - Centered */}
-      <div className={`relative w-full max-w-4xl bg-white rounded-[48px] shadow-[0_32px_80px_rgba(0,0,0,0.15)] flex flex-col md:flex-row overflow-hidden transform transition-all duration-500 ${isCartOpen ? "scale-100 opacity-100 translate-y-0" : "scale-90 opacity-0 translate-y-12"}`}>
+      {/* Modal Panel - Centered on Desktop, Full Screen on Mobile */}
+      <div className={`relative w-full h-full md:h-auto md:max-w-4xl bg-white md:rounded-[48px] shadow-[0_32px_80px_rgba(0,0,0,0.15)] flex flex-col md:flex-row overflow-hidden transform transition-all duration-500 ${isCartOpen ? "scale-100 opacity-100 translate-y-0" : "scale-90 opacity-0 translate-y-12"}`}>
         
         {/* Left Side: Items & Header (2/3 width) */}
-        <div className="flex-1 flex flex-col min-w-0 md:border-r border-zinc-100">
+        <div className="flex-1 flex flex-col min-w-0 md:border-r border-zinc-100 h-full overflow-hidden">
           {/* Header */}
-          <div className="px-10 py-10 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
-            <div className="flex items-center gap-5">
-              <div className="w-14 h-14 bg-[#6B4423] rounded-2xl flex items-center justify-center shadow-xl shadow-[#6B4423]/20">
-                <ShoppingBag className="w-7 h-7 text-white" />
+          <div className="px-6 md:px-10 py-6 md:py-10 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
+            <div className="flex items-center gap-4 md:gap-5">
+              <div className="w-10 h-10 md:w-14 md:h-14 bg-[#6B4423] rounded-xl md:rounded-2xl flex items-center justify-center shadow-xl shadow-[#6B4423]/20">
+                <ShoppingBag className="w-5 h-5 md:w-7 md:h-7 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-black text-zinc-900 tracking-tight">Pesanan Anda</h2>
-                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest leading-none mt-1">{cartItems.length} Produk Terpilih</p>
+                <h2 className="text-lg md:text-2xl font-black text-zinc-900 tracking-tight">Pesanan Anda</h2>
+                <p className="text-[9px] md:text-[10px] font-black text-zinc-400 uppercase tracking-widest leading-none mt-1">{cartItems.length} Produk Terpilih</p>
               </div>
             </div>
             <button 
               onClick={() => setIsCartOpen(false)}
-              className="p-3 hover:bg-zinc-100 rounded-2xl transition-all md:hidden"
+              className="p-3 hover:bg-zinc-100 rounded-2xl transition-all"
             >
-              <X className="w-6 h-6 text-zinc-300" />
+              <X className="w-6 h-6 text-zinc-300 hover:text-zinc-900" />
             </button>
           </div>
 
@@ -205,8 +205,8 @@ export default function CartDrawer() {
         {/* Right Side: Payment & Checkout (1/3 width) */}
         <div className="w-full md:w-[400px] bg-zinc-50 flex flex-col">
           {/* Header Right */}
-          <div className="px-10 py-10 border-b border-zinc-200/50 flex items-center justify-between">
-            <h2 className="text-xl font-black text-zinc-900 tracking-tight">Checkout Langsung</h2>
+          <div className="px-6 md:px-10 py-6 md:py-10 border-b border-zinc-200/50 flex items-center justify-between">
+            <h2 className="text-lg md:text-xl font-black text-zinc-900 tracking-tight">Checkout</h2>
             <button 
               onClick={() => setIsCartOpen(false)}
               className="p-3 hover:bg-zinc-200 rounded-2xl transition-all hidden md:block"
@@ -215,21 +215,21 @@ export default function CartDrawer() {
             </button>
           </div>
 
-          <div className="flex-1 p-10 flex flex-col gap-8">
+          <div className="flex-1 p-6 md:p-10 flex flex-col gap-6 md:gap-8">
             <div className="flex-1 flex flex-col justify-center">
-              <div className="bg-zinc-100/50 p-8 rounded-[32px] border border-zinc-200/50 text-center space-y-4">
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto shadow-sm">
-                  <CreditCard className="w-8 h-8 text-[#6B4423]" />
+              <div className="bg-zinc-100/50 p-6 md:p-8 rounded-[32px] border border-zinc-200/50 text-center space-y-4">
+                <div className="w-12 h-12 md:w-16 md:h-16 bg-white rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+                  <CreditCard className="w-6 h-6 md:w-8 md:h-8 text-[#6B4423]" />
                 </div>
                 <div>
-                  <h3 className="font-black text-zinc-900 text-lg tracking-tight">Pembayaran Instan</h3>
-                  <p className="text-xs text-zinc-500 font-medium mt-1">Klik tombol di bawah untuk melunasi pesanan Anda via Midtrans.</p>
+                  <h3 className="font-black text-zinc-900 text-base md:text-lg tracking-tight">Pembayaran Instan</h3>
+                  <p className="text-[10px] md:text-xs text-zinc-500 font-medium mt-1">Klik tombol di bawah untuk melunasi pesanan Anda via Midtrans.</p>
                 </div>
               </div>
             </div>
 
             {/* Price Summary */}
-            <div className="bg-white p-6 rounded-3xl border border-zinc-200 space-y-3">
+            <div className="bg-white p-4 md:p-6 rounded-3xl border border-zinc-200 space-y-3">
               <div className="flex justify-between text-[10px] font-black text-zinc-400 uppercase tracking-widest">
                 <span>Subtotal</span>
                 <span>Rp. {totalPrice.toLocaleString("id-ID")}</span>
@@ -241,7 +241,7 @@ export default function CartDrawer() {
               <div className="h-px bg-zinc-100 my-2" />
               <div className="flex justify-between items-end">
                 <span className="text-[10px] font-black text-[#6B4423] uppercase tracking-widest">Total Bayar</span>
-                <span className="text-2xl font-black text-[#6B4423] tracking-tighter leading-none">Rp. {totalPrice.toLocaleString("id-ID")}</span>
+                <span className="text-xl md:text-2xl font-black text-[#6B4423] tracking-tighter leading-none">Rp. {totalPrice.toLocaleString("id-ID")}</span>
               </div>
             </div>
 
@@ -250,7 +250,7 @@ export default function CartDrawer() {
               <button 
                 onClick={handleCheckout}
                 disabled={isSubmitting || cartItems.length === 0}
-                className="w-full bg-[#6B4423] text-white py-6 rounded-[28px] text-lg font-black shadow-2xl shadow-[#6B4423]/30 hover:bg-[#5D3822] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:bg-zinc-300 disabled:shadow-none group"
+                className="w-full bg-[#6B4423] text-white py-4 md:py-6 rounded-[24px] md:rounded-[28px] text-base md:text-lg font-black shadow-2xl shadow-[#6B4423]/30 hover:bg-[#5D3822] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:bg-zinc-300 disabled:shadow-none group"
               >
                 {isSubmitting ? (
                   <>

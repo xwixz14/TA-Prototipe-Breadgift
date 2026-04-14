@@ -73,34 +73,34 @@ export default function ContactComponent() {
   };
 
   return (
-    <div className="flex-1 flex flex-col pt-32 pb-24 overflow-x-hidden">
-      <div className="max-w-[1400px] mx-auto px-10 w-full">
+    <div className="flex-1 flex flex-col pt-24 md:pt-32 pb-24 overflow-x-hidden">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 w-full">
         
         {/* Header Section */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col mb-20"
+          className="flex flex-col mb-12 md:mb-20"
         >
-          <span className="text-sm font-black text-[#6B4423] uppercase tracking-widest mb-4 border-l-4 border-[#6B4423] pl-4">Contact Us</span>
-          <h1 className="text-6xl md:text-7xl font-black text-zinc-900 tracking-tighter leading-none mb-8">
-            Katakan Halo pada <br />
+          <span className="text-xs md:text-sm font-black text-[#6B4423] uppercase tracking-widest mb-4 border-l-4 border-[#6B4423] pl-4">Contact Us</span>
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-zinc-900 tracking-tighter leading-[1.1] mb-8">
+            Katakan Halo pada <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6B4423] to-[#A67C52]">Roti Segar Kami.</span>
           </h1>
-          <p className="max-w-2xl text-xl text-zinc-500 font-medium leading-relaxed">
+          <p className="max-w-2xl text-base md:text-xl text-zinc-500 font-medium leading-relaxed">
             Punya pertanyaan atau pesanan khusus? Tim kami siap membantu Anda mendapatkan pengalaman roti terbaik langsung dari oven.
           </p>
         </motion.div>
-
-        <div className="grid lg:grid-cols-12 gap-16">
+ 
+        <div className="grid lg:grid-cols-12 gap-10 md:gap-16">
           
           {/* Left Column: Contact Info & Socials */}
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-5 flex flex-col gap-12"
+            className="lg:col-span-5 flex flex-col gap-10 md:gap-12"
           >
             <div className="grid sm:grid-cols-2 gap-6">
               {contactInfo.map((info, idx) => (
@@ -152,7 +152,7 @@ export default function ContactComponent() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="lg:col-span-7"
           >
-            <div className="bg-white border border-zinc-100 p-12 md:p-16 rounded-[48px] shadow-2xl shadow-zinc-200/50 relative overflow-hidden">
+            <div className="bg-white border border-zinc-100 p-8 md:p-16 rounded-[48px] shadow-2xl shadow-zinc-200/50 relative overflow-hidden">
               
               {isSent ? (
                 <motion.div 

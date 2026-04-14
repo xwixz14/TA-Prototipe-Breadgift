@@ -8,14 +8,25 @@ import { getMe } from "@/lib/actions";
 export default function Hero() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [windowWidth, setWindowWidth] = useState(0);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     const fetchUser = async () => {
       const userData = await getMe();
       setUser(userData);
     };
     fetchUser();
+
+    // Handle initial width and resize
+    setWindowWidth(window.innerWidth);
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const isMobile = windowWidth > 0 && windowWidth < 768;
 
   const handleOrderNow = () => {
     if (user) {
@@ -40,14 +51,14 @@ export default function Hero() {
         <div className="absolute inset-0 bg-[#6B4423]/5"></div>
       </div>
 
-      {/* Main Content Area - Shifted lower and font size reduced */}
-      <div className="relative z-10 w-full px-8 md:px-12 mt-32 text-left">
-        {/* Headline: "Breadgift Bakery" with Rammetto One (Smaller Size) */}
+      {/* Main Content Area - Responsive spacing and font sizes */}
+      <div className="relative z-10 w-full px-6 md:px-12 mt-20 md:mt-32 text-left">
+        {/* Headline: "Breadgift Bakery" with Rammetto One */}
         <h1 
-          className="text-5xl md:text-[85px] leading-tight mb-4"
+          className="text-3xl sm:text-5xl md:text-[85px] leading-[1.1] mb-6"
           style={{
             color: "#7B4A2D",
-            WebkitTextStroke: "6px white",
+            WebkitTextStroke: (isMounted && isMobile) ? "2px white" : "6px white",
             paintOrder: "stroke fill",
             textShadow: "0 4px 10px rgba(0, 0, 0, 0.15)",
             fontFamily: "var(--font-rammetto-one), cursive",
@@ -56,18 +67,18 @@ export default function Hero() {
           Breadgift Bakery
         </h1>
 
-        {/* Subtitle: Smaller Size & White */}
+        {/* Subtitle: Smaller Size on mobile */}
         <p 
-          className="text-lg md:text-[26px] font-bold text-white max-w-xl leading-snug mb-8 drop-shadow-md"
+          className="text-sm sm:text-lg md:text-[26px] font-bold text-white max-w-sm md:max-w-xl leading-snug mb-10 drop-shadow-md"
           style={{ letterSpacing: "-0.01em" }}
         >
           Aroma roti hangat yang baru keluar dari oven selalu menunggu Anda di BreadGift Bakery.
         </p>
 
-        {/* Action Button: Scaled Down proportionately */}
+        {/* Action Button: More compact on mobile */}
         <button 
           onClick={handleOrderNow}
-          className="bg-[#6B4423] text-white px-10 py-4 rounded-xl text-[22px] font-extrabold transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-[0_10px_20px_rgba(0,0,0,0.25)] border-2 border-white/60 hover:bg-[#4A3728] uppercase tracking-wide"
+          className="bg-[#6B4423] text-white px-6 md:px-12 py-3 md:py-5 rounded-2xl text-[16px] md:text-[24px] font-black transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl shadow-black/30 border-2 border-white/60 hover:bg-[#4A3728] uppercase tracking-wider"
         >
           Pesan Sekarang
         </button>

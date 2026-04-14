@@ -11,10 +11,13 @@ import {
   Wallet, 
   LogOut,
   Store,
-  Users
+  Users,
+  X
 } from "lucide-react";
 
 import { logoutUser } from "@/lib/actions";
+import { useCart } from "@/context/CartContext";
+
 const menuItems = [
   { name: "Kasir", icon: ShoppingCart, href: "/admin/dashboard" },
   { name: "Barang & Stok", icon: Package, href: "/admin/products" },
@@ -25,32 +28,58 @@ const menuItems = [
 ];
 
 
-export default function AdminSidebar() {
+interface AdminSidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { refreshCart, clearCart } = useCart();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
     await logoutUser();
+    clearCart();
+    await refreshCart();
     router.push("/");
     router.refresh();
   };
 
   return (
     <>
-    <aside className="w-64 h-screen bg-white border-r border-zinc-100 flex flex-col justify-between py-6 z-10 relative">
+    {/* Mobile Backdrop */}
+    {isOpen && (
+      <div 
+        className="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm z-[110] lg:hidden"
+        onClick={onClose}
+      />
+    )}
+
+    <aside className={`fixed inset-y-0 left-0 w-64 h-full bg-white border-r border-zinc-100 flex flex-col justify-between py-6 z-[120] transition-transform duration-300 lg:relative lg:translate-x-0 ${
+      isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
+    }`}>
       <div className="px-6 flex flex-col gap-10">
         {/* Brand Header */}
-        <div className="flex items-center gap-3 px-2">
-          <div className="bg-[#6B4423] p-2.5 rounded-xl shadow-lg">
-            <Store className="text-white w-6 h-6" />
+        <div className="flex items-center justify-between px-2">
+          <div className="flex items-center gap-3">
+            <div className="bg-[#6B4423] p-2.5 rounded-xl shadow-lg">
+              <Store className="text-white w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-zinc-900 leading-tight">Pos Sistem</h1>
+              <p className="text-xs text-zinc-500">Sistem kasir</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-lg font-bold text-zinc-900 leading-tight">Pos Sistem</h1>
-            <p className="text-xs text-zinc-500">Sistem kasir</p>
-          </div>
+          <button 
+            onClick={onClose}
+            className="p-2 hover:bg-zinc-100 rounded-xl lg:hidden"
+          >
+            <X className="w-5 h-5 text-zinc-400" />
+          </button>
         </div>
 
         {/* Navigation Menu */}
@@ -61,6 +90,7 @@ export default function AdminSidebar() {
               <Link
                 key={item.name}
                 href={item.href}
+                onClick={onClose}
                 className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 font-bold ${
                   isActive 
                     ? "bg-[#FCF1E8] text-[#6B4423]" 
