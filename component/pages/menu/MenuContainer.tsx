@@ -1,9 +1,10 @@
 
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import MenuProductCard from "./MenuProductCard";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, SlidersHorizontal, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Product {
   id: number;
@@ -25,106 +26,151 @@ export default function MenuContainer({ products, categories, user }: MenuContai
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const filteredProducts = useMemo(() => {
     let filtered = products.filter((product) => {
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === "Semua" || selectedCategory === "Paling Banyak Dibeli" || product.category === selectedCategory;
+      const matchesCategory = selectedCategory === "Semua" || selectedCategory === "Terlaris" || product.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
 
-    if (selectedCategory === "Paling Banyak Dibeli") {
+    if (selectedCategory === "Terlaris") {
       filtered.sort((a, b) => (b.total_sold || 0) - (a.total_sold || 0));
     }
 
     return filtered;
   }, [products, searchQuery, selectedCategory]);
 
+  const allCategories = ["Semua", "Terlaris", ...categories.map(c => c.name)];
+
   return (
-    <div className="flex flex-col gap-10">
-      {/* Search & Filter Bar - Responsive Layout */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1 relative group w-full">
-          <Search className="absolute left-5 md:left-6 top-1/2 -translate-y-1/2 w-5 h-5 md:w-6 md:h-6 text-zinc-400 group-focus-within:text-[#6B4423] transition-colors" />
-          <input
-            type="text"
-            placeholder="Cari roti favoritmu..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white border border-zinc-200 py-4 md:py-6 pl-14 md:pl-16 pr-8 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-[#6B4423]/10 focus:border-[#6B4423] transition-all text-base md:text-lg font-black text-zinc-900 placeholder:text-zinc-400 shadow-sm"
-          />
-        </div>
-        
-        {/* Clickable Filter Toggle */}
-        <div className="relative w-full md:w-auto">
+    <div className="flex flex-col gap-12 relative">
+      {/* Floating Glass Filter Bar */}
+      <motion.div 
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="sticky top-24 z-30 w-full"
+      >
+        <div className="glass-premium p-4 md:p-6 rounded-[2.5rem] border-white/20 shadow-2xl flex flex-col md:flex-row gap-4 items-center">
+          {/* Search Input */}
+          <div className="w-full md:flex-1 relative group">
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-primary transition-colors" />
+            <input
+              type="text"
+              placeholder="Cari roti favorite kamu..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-14 pr-6 py-4 bg-white/50 border border-stone-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary focus:bg-white transition-all font-bold text-stone-800 placeholder:text-stone-300 shadow-inner"
+            />
+          </div>
+
+          <div className="h-px md:h-12 w-full md:w-px bg-stone-200/50 mx-2"></div>
+
+          {/* Desktop Category Pills Slider */}
+          <div className="hidden md:flex flex-1 overflow-hidden relative">
+            <div 
+              ref={scrollRef}
+              className="flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-1"
+            >
+              {allCategories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
+                    selectedCategory === cat 
+                      ? "bg-primary text-secondary-content shadow-lg shadow-primary/20 scale-105" 
+                      : "bg-white/40 text-stone-400 hover:bg-white hover:text-stone-600 border border-stone-100"
+                  }`}
+                >
+                  {cat === "Terlaris" && <Sparkles size={12} className="inline mr-2 -mt-1" />}
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile Filter Toggle */}
           <button 
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className={`w-full md:w-auto h-full px-6 py-4 md:py-0 border rounded-[20px] transition-all flex items-center justify-center gap-3 shadow-sm ${
-              isFilterOpen || (selectedCategory !== "Semua" && selectedCategory !== "Paling Banyak Dibeli") ? 'border-[#6B4423]/40 bg-[#FCF1E8]/50' : 'bg-white border-zinc-200 hover:border-[#6B4423]/40 hover:bg-[#FCF1E8]/20'
-            }`}
+            className="md:hidden w-full flex items-center justify-center gap-3 py-4 bg-primary/10 rounded-2xl border border-primary/20 text-primary font-black uppercase tracking-widest text-xs"
           >
-            <Filter className={`w-5 h-5 md:w-6 md:h-6 ${isFilterOpen || (selectedCategory !== "Semua" && selectedCategory !== "Paling Banyak Dibeli") ? 'text-[#6B4423]' : 'text-zinc-600'}`} />
-            <span className="md:hidden font-black text-sm text-zinc-600">Filter Kategori</span>
+            <Filter size={18} />
+            Filter Kategori
           </button>
-          
-          {/* Clickable Category Selector */}
+        </div>
+
+        {/* Mobile Filter Dropdown */}
+        <AnimatePresence>
           {isFilterOpen && (
-            <>
-              {/* Invisible overlay to catch outside clicks */}
-              <div 
-                className="fixed inset-0 z-[30]" 
-                onClick={() => setIsFilterOpen(false)} 
-              />
-              
-              <div className="absolute right-0 top-full mt-4 bg-white border border-zinc-100 shadow-2xl rounded-3xl p-4 min-w-[220px] z-[40] animate-in fade-in slide-in-from-top-2 duration-200">
-                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest p-4 pb-2">Filter & Urutan</p>
-                <button 
-                  onClick={() => { setSelectedCategory("Semua"); setIsFilterOpen(false); }}
-                  className={`w-full text-left px-5 py-3 rounded-2xl text-sm font-bold transition-all ${selectedCategory === "Semua" ? 'bg-[#FCF1E8] text-[#6B4423]' : 'text-zinc-600 hover:bg-zinc-50'}`}
-                >
-                  Semua Produk
-                </button>
-                <button 
-                  onClick={() => { setSelectedCategory("Paling Banyak Dibeli"); setIsFilterOpen(false); }}
-                  className={`w-full text-left px-5 py-3 rounded-2xl text-sm font-bold transition-all ${selectedCategory === "Paling Banyak Dibeli" ? 'bg-[#FCF1E8] text-[#6B4423]' : 'text-zinc-600 hover:bg-zinc-50'}`}
-                >
-                  Paling Banyak Dibeli
-                </button>
-                
-                <div className="h-px bg-zinc-100 my-2 mx-4"></div>
-                
-                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest p-4 pt-2 pb-2">Kategori</p>
-                {categories.map((cat) => (
-                  <button 
-                    key={cat.id}
-                    onClick={() => { setSelectedCategory(cat.name); setIsFilterOpen(false); }}
-                    className={`w-full text-left px-5 py-3 rounded-2xl text-sm font-bold transition-all ${selectedCategory === cat.name ? 'bg-[#FCF1E8] text-[#6B4423]' : 'text-zinc-600 hover:bg-zinc-50'}`}
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="md:hidden bg-white/90 backdrop-blur-xl border border-stone-100 rounded-[2rem] mt-4 overflow-hidden shadow-2xl"
+            >
+              <div className="p-6 grid grid-cols-2 gap-3">
+                {allCategories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => { setSelectedCategory(cat); setIsFilterOpen(false); }}
+                    className={`px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                      selectedCategory === cat 
+                        ? "bg-primary text-secondary-content" 
+                        : "bg-stone-50 text-stone-400 border border-stone-100"
+                    }`}
                   >
-                    {cat.name}
+                    {cat}
                   </button>
                 ))}
               </div>
-            </>
+            </motion.div>
           )}
-        </div>
-      </div>
+        </AnimatePresence>
+      </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
-        {filteredProducts.map((product) => (
-          <MenuProductCard 
-            key={product.id} 
-            product={product} 
-            isLoggedIn={!!user}
-          />
-        ))}
-      </div>
+      {/* Product Grid with Transitions */}
+      <motion.div 
+        layout
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10"
+      >
+        <AnimatePresence mode="popLayout">
+          {filteredProducts.map((product) => (
+            <motion.div
+              layout
+              key={product.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <MenuProductCard 
+                product={product} 
+                isLoggedIn={!!user}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
 
       {/* Empty State */}
-      {filteredProducts.length === 0 && (
-        <div className="py-32 flex flex-col items-center justify-center gap-6 bg-zinc-50 rounded-[48px] border-2 border-dashed border-zinc-200">
-          <p className="text-xl font-black text-zinc-300 tracking-tight">Tidak ada roti yang sesuai dengan pencarian Anda.</p>
-        </div>
-      )}
+      <AnimatePresence>
+        {filteredProducts.length === 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="py-40 flex flex-col items-center justify-center gap-8 glass-premium rounded-[4rem] text-center"
+          >
+             <div className="w-24 h-24 bg-stone-50 rounded-full flex items-center justify-center border-2 border-dashed border-stone-200">
+               <Search className="w-10 h-10 text-stone-200" />
+             </div>
+             <div className="space-y-2">
+                <h3 className="text-2xl font-black text-stone-400 tracking-tight">Roti Tidak Ditemukan</h3>
+                <p className="text-stone-400 font-bold uppercase tracking-widest text-xs">Coba cari dengan kata kunci lain, bebs!</p>
+             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
