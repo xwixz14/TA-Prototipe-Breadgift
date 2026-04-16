@@ -6,15 +6,21 @@ declare global {
 }
 
 const poolOptions = {
-  host: process.env.MYSQL_HOST || "localhost",
+  host: process.env.MYSQL_HOST,
   port: parseInt(process.env.MYSQL_PORT || "3306"),
-  user: process.env.MYSQL_USER || "root",
-  password: process.env.MYSQL_PASSWORD || "",
-  database: process.env.MYSQL_DATABASE || "breadgift_db",
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
   waitForConnections: true,
   connectionLimit: 50,
   queueLimit: 0,
 };
+
+// Validasi wajib
+if (!poolOptions.host || !poolOptions.user || !poolOptions.database) {
+  console.error("❌ CRITICAL ERROR: Missing Database Environment Variables!");
+  throw new Error("Missing mandatory database configuration in .env");
+}
 
 
 // Singleton pattern to handle Next.js Fast Refresh

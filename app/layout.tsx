@@ -26,19 +26,22 @@ export const metadata: Metadata = {
 
 import Navbar from "@/component/layout/Navbar";
 import { CartProvider } from "@/context/CartContext";
+import { getMe } from "@/lib/actions";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getMe();
+
   return (
     <html
       lang="en"
       className={`${poppins.variable} ${geistMono.variable} ${rammettoOne.variable} h-full antialiased`}
     >
       <body className="min-h-full font-sans antialiased">
-        <CartProvider>
+        <CartProvider initialUser={user}>
           {children}
         </CartProvider>
       </body>

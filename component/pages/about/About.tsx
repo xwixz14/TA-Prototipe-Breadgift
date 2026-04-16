@@ -27,7 +27,7 @@ const FloatingIcon = ({ icon: Icon, delay = 0, x = 0, y = 0, size = 24 }: any) =
     animate={{ 
       y: [y, y - 20, y],
       rotate: [0, 10, -10, 0],
-      opacity: [0.2, 0.5, 0.2]
+      opacity: [0.1, 0.3, 0.1]
     }}
     transition={{ 
       duration: 5 + Math.random() * 2, 
@@ -37,7 +37,7 @@ const FloatingIcon = ({ icon: Icon, delay = 0, x = 0, y = 0, size = 24 }: any) =
     }}
     className="absolute pointer-events-none"
   >
-    <Icon size={size} className="text-primary/30" />
+    <Icon size={size} className="text-primary/20" />
   </motion.div>
 );
 
@@ -49,7 +49,7 @@ export default function About() {
   });
 
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const springY = useSpring(y, { stiffness: 100, damping: 30 });
 
@@ -57,19 +57,20 @@ export default function About() {
   const bakeryWords = "Bakery".split("");
 
   return (
-    <div ref={containerRef} className="w-full bg-background font-sans overflow-hidden">
-      {/* 1. Hero Section - Masterpiece 2.0 */}
-      <section className="relative h-[95vh] w-full flex items-center justify-center bg-stone-950 overflow-hidden">
+    <div ref={containerRef} className="w-full bg-[#fffcf8] font-sans overflow-hidden">
+      {/* 1. Hero Section - Bright Artisan Edition */}
+      <section className="relative h-[95vh] w-full flex items-center justify-center bg-white overflow-hidden">
         {/* Parallax Background */}
         <motion.div style={{ y: springY, scale, opacity }} className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=2000&auto=format&fit=crop"
-            alt="Artisan Bakery Background"
+            src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=2000&auto=format&fit=crop"
+            alt="Artisan Bakery Bright"
             fill
-            className="object-cover brightness-[0.25]"
+            className="object-cover brightness-105"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-stone-950/60 via-transparent to-background"></div>
+          {/* Light Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/10 to-[#fffcf8]"></div>
         </motion.div>
 
         {/* Floating Artisan Elements */}
@@ -87,12 +88,12 @@ export default function About() {
           transition={{ duration: 1 }}
           className="relative z-20 text-center px-6"
         >
-          {/* Main Floating Glass Card */}
+          {/* Main Floating Glass Card - Light Version */}
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-premium p-12 md:p-20 rounded-[4rem] border-white/10 shadow-[0_32px_120px_-15px_rgba(0,0,0,0.5)] relative group overflow-hidden"
+            className="bg-white/80 backdrop-blur-xl p-12 md:p-20 rounded-[4rem] border border-white shadow-[0_32px_120px_-15px_rgba(123,74,45,0.1)] relative group overflow-hidden"
           >
             <div className="absolute -inset-20 bg-primary/5 blur-3xl rounded-full scale-0 group-hover:scale-100 transition-transform duration-1000"></div>
             
@@ -101,18 +102,18 @@ export default function About() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.5em]"
+                className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-white border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.5em] shadow-sm"
               >
                 <Sparkles size={14} className="animate-pulse" />
                 Est. Twenty Twenty One
               </motion.div>
 
               <div className="space-y-4">
-                <h1 className="flex justify-center text-7xl md:text-[11rem] font-black text-white tracking-tighter leading-none" style={{ fontFamily: 'var(--font-rametto)' }}>
+                <h1 className="flex flex-wrap justify-center text-6xl md:text-[10rem] font-black text-primary tracking-tighter leading-none" style={{ fontFamily: 'var(--font-brand)' }}>
                   {titleWords.map((char, i) => (
                     <motion.span
                       key={i}
-                      initial={{ y: 100, opacity: 0 }}
+                      initial={{ y: 60, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.8 + (i * 0.05), duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                       className="inline-block"
@@ -121,11 +122,11 @@ export default function About() {
                     </motion.span>
                   ))}
                 </h1>
-                <h1 className="flex justify-center text-7xl md:text-[11rem] font-black text-primary italic tracking-tighter leading-none" style={{ fontFamily: 'var(--font-rametto)' }}>
+                <h1 className="flex flex-wrap justify-center text-6xl md:text-[10rem] font-black text-[#c6a664] italic tracking-tighter leading-none" style={{ fontFamily: 'var(--font-brand)' }}>
                    {bakeryWords.map((char, i) => (
                     <motion.span
                       key={i}
-                      initial={{ y: 100, opacity: 0 }}
+                      initial={{ y: 60, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 1.2 + (i * 0.05), duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                       className="inline-block"
@@ -140,7 +141,7 @@ export default function About() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.8, duration: 1 }}
-                className="text-stone-300 text-lg md:text-2xl font-bold max-w-2xl mx-auto uppercase tracking-[0.3em] leading-relaxed opacity-90"
+                className="text-primary text-lg md:text-xl font-bold max-w-2xl mx-auto uppercase tracking-[0.3em] leading-relaxed opacity-60"
               >
                 Menghadirkan Kehangatan dalam <br />
                 Setiap Gigitan
@@ -152,14 +153,14 @@ export default function About() {
             initial={{ opacity: 0 }}
             animate={{ y: [0, 15, 0], opacity: 0.4 }}
             transition={{ repeat: Infinity, duration: 3, delay: 2 }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white"
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 text-primary"
           >
             <ChevronDown size={48} strokeWidth={1} />
           </motion.div>
         </motion.div>
       </section>
 
-      {/* 2. Our Journey - Redesigned Timeline */}
+      {/* 2. Our Journey - Bright Timeline */}
       <section className="py-32 px-6 md:px-24 bg-white relative">
         <div className="max-w-6xl mx-auto space-y-24">
           <div className="text-center space-y-6">
@@ -170,62 +171,62 @@ export default function About() {
              >
                Evolution
              </motion.span>
-            <h2 className="text-5xl md:text-7xl font-black text-stone-900 tracking-tight">Our Journey</h2>
-            <div className="h-2 w-32 bg-primary mx-auto rounded-full"></div>
+            <h2 className="text-5xl md:text-7xl font-brand text-primary tracking-tight">Our Journey</h2>
+            <div className="h-2 w-32 bg-[#f5e6d3] mx-auto rounded-full"></div>
           </div>
 
           <ul className="timeline timeline-vertical lg:timeline-horizontal">
             <li>
-              <div className="timeline-start font-black text-stone-900 text-2xl">2021</div>
+              <div className="timeline-start font-black text-primary text-2xl">2021</div>
               <div className="timeline-middle">
-                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-[#f5e6d3] rounded-full flex items-center justify-center">
                   <Calendar className="w-5 h-5 text-primary" />
                 </div>
               </div>
               <motion.div 
                 whileHover={{ y: -10 }}
-                className="timeline-end timeline-box glass-premium border-none shadow-2xl p-8 rounded-[2.5rem] max-w-xs"
+                className="timeline-end timeline-box bg-white border border-stone-100 shadow-xl p-8 rounded-[2.5rem] max-w-xs"
               >
-                <h3 className="font-black text-xl text-primary uppercase tracking-wider">The Beginning</h3>
-                <p className="text-sm text-stone-500 font-bold leading-relaxed mt-4">
+                <h3 className="font-brand text-xl text-primary tracking-wider">The Beginning</h3>
+                <p className="text-sm text-stone-400 font-bold leading-relaxed mt-4">
                   BreadGift Bakery hadir dengan komitmen menghadirkan roti berkualitas dari bahan pilihan.
                 </p>
               </motion.div>
-              <hr className="bg-primary/20" />
+              <hr className="bg-[#f5e6d3]" />
             </li>
             <li>
-              <hr className="bg-primary/20" />
+              <hr className="bg-[#f5e6d3]" />
               <motion.div 
                 whileHover={{ y: -10 }}
-                className="timeline-start timeline-box glass-premium border-none shadow-2xl p-8 rounded-[2.5rem] max-w-xs"
+                className="timeline-start timeline-box bg-white border border-stone-100 shadow-xl p-8 rounded-[2.5rem] max-w-xs"
               >
-                <h3 className="font-black text-xl text-primary uppercase tracking-wider">Identity Growth</h3>
-                <p className="text-sm text-stone-500 font-bold leading-relaxed mt-4">
+                <h3 className="font-brand text-xl text-primary tracking-wider">Identity Growth</h3>
+                <p className="text-sm text-stone-400 font-bold leading-relaxed mt-4">
                   Menjadi pilihan utama pelanggan di Bandar Lampung yang mengutamakan kualitas rasa.
                 </p>
               </motion.div>
               <div className="timeline-middle">
-                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-[#f5e6d3] rounded-full flex items-center justify-center">
                   <Heart className="w-5 h-5 text-primary" />
                 </div>
               </div>
-              <div className="timeline-end font-black text-stone-900 text-2xl">2023</div>
-              <hr className="bg-primary/20" />
+              <div className="timeline-end font-black text-primary text-2xl">2023</div>
+              <hr className="bg-[#f5e6d3]" />
             </li>
             <li>
-              <hr className="bg-primary/20" />
-              <div className="timeline-start font-black text-stone-900 text-2xl">TODAY</div>
+              <hr className="bg-[#f5e6d3]" />
+              <div className="timeline-start font-black text-primary text-2xl">TODAY</div>
               <div className="timeline-middle">
-                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary animate-pulse">
+                <div className="w-10 h-10 bg-[#f5e6d3] rounded-full flex items-center justify-center border-2 border-primary animate-pulse">
                    <Sparkles className="w-5 h-5 text-primary" />
                 </div>
               </div>
               <motion.div 
                 whileHover={{ y: -10 }}
-                className="timeline-end timeline-box glass-premium border-none shadow-2xl p-8 rounded-[2.5rem] max-w-xs"
+                className="timeline-end timeline-box bg-white border border-stone-100 shadow-xl p-8 rounded-[2.5rem] max-w-xs"
               >
-                <h3 className="font-black text-xl text-primary uppercase tracking-wider">The Masterpiece</h3>
-                <p className="text-sm text-stone-500 font-bold leading-relaxed mt-4">
+                <h3 className="font-brand text-xl text-primary tracking-wider">The Masterpiece</h3>
+                <p className="text-sm text-stone-400 font-bold leading-relaxed mt-4">
                   Terus berinovasi dalam menyajikan roti artisan yang lembut dan penuh kebahagiaan setiap harinya.
                 </p>
               </motion.div>
@@ -235,8 +236,8 @@ export default function About() {
       </section>
 
       {/* 3. Philosophy Section - Masterpiece Styling */}
-      <section className="relative py-40 animated-mesh overflow-hidden">
-        <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px]"></div>
+      <section className="relative py-40 animated-mesh overflow-hidden bg-white">
+        <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px]"></div>
         <motion.div 
           variants={containerVariants}
           initial="hidden"
@@ -247,13 +248,13 @@ export default function About() {
           <motion.div variants={itemVariants} className="flex-1 space-y-10">
             <div className="relative">
               <Quote className="text-primary/10 w-40 h-40 absolute -top-10 -left-10" />
-              <h2 className="text-6xl md:text-8xl font-black text-stone-900 tracking-tighter leading-[0.9] relative z-10" style={{ fontFamily: 'var(--font-rametto)' }}>
+              <h2 className="text-6xl md:text-8xl font-brand text-primary tracking-tighter leading-[0.9] relative z-10">
                 Roti Bukan <br />
-                <span className="text-primary italic">Sekadar</span> <br />
+                <span className="text-[#c6a664] italic">Sekadar</span> <br />
                 Makanan.
               </h2>
             </div>
-            <div className="space-y-8 text-xl text-stone-600 font-bold leading-relaxed text-justify opacity-80">
+            <div className="space-y-8 text-xl text-stone-500 font-bold leading-relaxed text-justify opacity-80">
               <p>
                 Didirikan pada tahun 2021, BreadGift Bakery hadir dengan komitmen menghadirkan roti berkualitas 
                 yang dibuat dari bahan pilihan dan diproses dengan penuh ketelitian. Setiap produk dirancang 
@@ -268,7 +269,7 @@ export default function About() {
           
           <motion.div variants={itemVariants} className="flex-1 relative">
             <div className="relative aspect-square w-full max-w-xl mx-auto group">
-              <div className="absolute -inset-10 bg-primary/20 rounded-full blur-[100px] opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
+              <div className="absolute -inset-10 bg-[#f5e6d3]/40 rounded-full blur-[100px] opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
               <motion.div
                 whileHover={{ scale: 1.05, rotate: 2 }}
                 transition={{ duration: 0.5 }}
@@ -278,11 +279,11 @@ export default function About() {
                   src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=1000&auto=format&fit=crop"
                   alt="Bread Selection"
                   fill
-                  className="object-cover rounded-[5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)]"
+                  className="object-cover rounded-[5rem] shadow-[0_50px_100px_-20px_rgba(123,74,45,0.1)]"
                 />
               </motion.div>
               {/* Floating Decorative Elements */}
-              <div className="absolute -top-10 -right-10 w-32 h-32 glass-premium rounded-full flex items-center justify-center shadow-2xl z-20 animate-bounce-slow">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-2xl z-20 animate-bounce-slow">
                  <Sparkles className="text-primary w-12 h-12" />
               </div>
             </div>
@@ -290,10 +291,10 @@ export default function About() {
         </motion.div>
       </section>
 
-      {/* 4. Footer Accent */}
-      <section className="py-20 bg-stone-950 text-center relative overflow-hidden">
+      {/* 4. Footer Accent - Light Version */}
+      <section className="py-20 bg-[#fffcf8] text-center relative overflow-hidden border-t border-stone-100">
         <div className="absolute inset-0 bg-primary/5 opacity-50"></div>
-        <p className="text-stone-500 font-extrabold uppercase tracking-[0.8em] text-[10px] relative z-10">
+        <p className="text-primary/40 font-extrabold uppercase tracking-[0.8em] text-[10px] relative z-10">
           BREADGIFT • THE MASTERPIECE • SINCE 2021
         </p>
       </section>

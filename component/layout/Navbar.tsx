@@ -62,7 +62,7 @@ export default function Navbar() {
               key={link.name}
               href={link.href}
               className={`text-[17px] font-extrabold tracking-tight transition-all duration-300 relative group py-2 ${
-                pathname === link.href ? "text-[#6B4423]" : "text-zinc-500 hover:text-zinc-900"
+                pathname === link.href ? "text-primary" : "text-stone-500 hover:text-primary"
               }`}
             >
               {link.name}
@@ -94,14 +94,14 @@ export default function Navbar() {
           <div className="hidden md:flex items-center">
             {user ? (
               <div className="flex items-center gap-8 bg-zinc-50 pl-6 pr-1.5 py-1.5 rounded-2xl border border-zinc-100">
-                <div className="flex flex-col items-end text-right">
-                   <span className="text-[10px] font-black text-[#6B4423] uppercase tracking-widest leading-none">Status: {user.role === 'admin' ? 'Admin' : 'Pelanggan'}</span>
-                   <span className="text-[13px] font-black text-zinc-900 mt-1 line-clamp-1 max-w-[120px]">{user.name}</span>
-                </div>
-                <button 
-                  onClick={handleLogout}
-                  className="px-5 py-2.5 bg-white text-[11px] font-black text-red-500 hover:bg-red-50 rounded-xl shadow-sm border border-zinc-200 transition-all active:scale-95"
-                >
+                 <div className="flex flex-col items-end text-right">
+                    <span className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">Status: {user.role === 'admin' ? 'Admin' : 'Pelanggan'}</span>
+                    <span className="text-[13px] font-black text-primary mt-1 line-clamp-1 max-w-[120px]">{user.name}</span>
+                 </div>
+                 <button 
+                   onClick={handleLogout}
+                   className="px-5 py-2.5 bg-white text-[11px] font-black text-red-500 hover:bg-red-50 rounded-xl shadow-sm border border-stone-200 transition-all active:scale-95"
+                 >
                   Logout
                 </button>
               </div>
@@ -113,10 +113,10 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Toggle */}
+           {/* Mobile Menu Toggle */}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2.5 bg-zinc-900 text-white rounded-2xl md:hidden shadow-lg shadow-black/10 transition-all active:scale-90"
+            className="p-2.5 bg-primary text-white rounded-2xl md:hidden shadow-lg shadow-primary/20 transition-all active:scale-90"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -126,14 +126,14 @@ export default function Navbar() {
       {/* Mobile Menu Overlay */}
       <div className={`fixed inset-0 z-[90] bg-white transition-all duration-500 ease-in-out md:hidden ${isMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}>
         <div className="flex flex-col h-full pt-32 px-10 pb-12">
-          <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] mb-6">Navigasi Menu</p>
+           <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em] mb-6">Navigasi Menu</p>
           <div className="flex flex-col gap-6 flex-1">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
                 className={`text-2xl font-black tracking-tight transition-all ${
-                  pathname === link.href ? "text-[#6B4423] translate-x-3" : "text-zinc-300 hover:text-zinc-900"
+                  pathname === link.href ? "text-primary translate-x-3" : "text-stone-300 hover:text-primary"
                 }`}
               >
                 {link.name}

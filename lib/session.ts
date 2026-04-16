@@ -1,7 +1,9 @@
 import { SignJWT, jwtVerify } from 'jose'
 
-// Saran: Atur SESSION_SECRET di file .env untuk keamanan di server produksi
-const secretKey = process.env.SESSION_SECRET || "super_secret_breadgift_key_2026_xYz!"
+const secretKey = process.env.SESSION_SECRET;
+if (!secretKey) {
+  throw new Error("Missing SESSION_SECRET environment variable. Security hardening is active.");
+}
 const encodedKey = new TextEncoder().encode(secretKey)
 
 export async function encrypt(payload: any) {

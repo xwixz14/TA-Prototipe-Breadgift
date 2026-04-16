@@ -1,24 +1,17 @@
-"use client";
-
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getMe } from "@/lib/actions";
+import { motion } from "framer-motion";
+import { useCart } from "@/context/CartContext";
 
 export default function Hero() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const { user } = useCart();
   const [windowWidth, setWindowWidth] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    const fetchUser = async () => {
-      const userData = await getMe();
-      setUser(userData);
-    };
-    fetchUser();
-
     // Handle initial width and resize
     setWindowWidth(window.innerWidth);
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -37,16 +30,23 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative w-full h-screen overflow-hidden flex items-center">
+    <section className="relative w-full h-screen overflow-hidden flex items-center bg-[#fffcf8]">
       {/* Artwork Background */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src="/assets/hero_bg.png"
-          alt="Bakery Hero Background"
-          fill
-          className="object-cover object-[center_35%]"
-          priority
-        />
+        <motion.div
+          initial={{ scale: 1.1 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 10, ease: "easeOut" }}
+          className="w-full h-full"
+        >
+          <Image
+            src="/assets/hero_bg.png"
+            alt="Bakery Hero Background"
+            fill
+            className="object-cover object-[center_35%]"
+            priority
+          />
+        </motion.div>
         {/* Subtle Warm Overlay for Atmospheric Effect */}
         <div className="absolute inset-0 bg-[#6B4423]/5"></div>
       </div>
@@ -54,34 +54,51 @@ export default function Hero() {
       {/* Main Content Area - Responsive spacing and font sizes */}
       <div className="relative z-10 w-full px-6 md:px-12 mt-20 md:mt-32 text-left">
         {/* Headline: "Breadgift Bakery" with Rammetto One */}
-        <h1 
-          className="text-3xl sm:text-5xl md:text-[85px] leading-[1.1] mb-6"
-          style={{
-            color: "#7B4A2D",
-            WebkitTextStroke: (isMounted && isMobile) ? "2px white" : "6px white",
-            paintOrder: "stroke fill",
-            textShadow: "0 4px 10px rgba(0, 0, 0, 0.15)",
-            fontFamily: "var(--font-rammetto-one), cursive",
-          }}
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
         >
-          Breadgift Bakery
-        </h1>
+          <h1 
+            className="text-3xl sm:text-5xl md:text-[85px] leading-[1.1] mb-6"
+            style={{
+              color: "#7B4A2D",
+              WebkitTextStroke: (isMounted && isMobile) ? "2px white" : "6px white",
+              paintOrder: "stroke fill",
+              textShadow: "0 4px 10px rgba(0, 0, 0, 0.15)",
+              fontFamily: "var(--font-rammetto-one), cursive",
+            }}
+          >
+            Breadgift Bakery
+          </h1>
+        </motion.div>
 
         {/* Subtitle: Smaller Size on mobile */}
-        <p 
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
           className="text-sm sm:text-lg md:text-[26px] font-bold text-white max-w-sm md:max-w-xl leading-snug mb-10 drop-shadow-md"
           style={{ letterSpacing: "-0.01em" }}
         >
           Aroma roti hangat yang baru keluar dari oven selalu menunggu Anda di BreadGift Bakery.
-        </p>
+        </motion.p>
 
         {/* Action Button: More compact on mobile */}
-        <button 
-          onClick={handleOrderNow}
-          className="bg-[#6B4423] text-white px-6 md:px-12 py-3 md:py-5 rounded-2xl text-[16px] md:text-[24px] font-black transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl shadow-black/30 border-2 border-white/60 hover:bg-[#4A3728] uppercase tracking-wider"
+        <motion.div
+           initial={{ opacity: 0, y: 20 }}
+           animate={{ opacity: 1, y: 0 }}
+           transition={{ duration: 0.5, delay: 0.8 }}
         >
-          Pesan Sekarang
-        </button>
+          <button 
+            onClick={handleOrderNow}
+            className="group relative bg-[#6B4423] text-white px-6 md:px-12 py-3 md:py-5 rounded-2xl text-[16px] md:text-[24px] font-black transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl shadow-black/30 border-2 border-white/60 hover:bg-[#4A3728] uppercase tracking-wider overflow-hidden"
+          >
+            <span className="relative z-10">Belanja Sekarang</span>
+            {/* Shimmer Effect */}
+            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] transition-transform"></div>
+          </button>
+        </motion.div>
       </div>
     </section>
   );

@@ -28,11 +28,17 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({ 
+  children, 
+  initialUser = null 
+}: { 
+  children: ReactNode, 
+  initialUser?: any 
+}) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(initialUser);
 
   // Load cart from localStorage and DB on mount
   const initCart = async () => {
@@ -47,11 +53,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    // 2. Check user and load from DB
-    const userData = await getMe();
-    setUser(userData);
+    // 2. Sync user from server
+    const currentUser = await getMe();
+    setUser(currentUser);
 
-    if (userData) {
+    if (currentUser) {
       const dbItems = await getSavedCart();
       // Merge: DB items take priority, but keep unique local items
       const merged = [...dbItems];

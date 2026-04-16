@@ -77,30 +77,41 @@ export default function RevenueCharts({ chartData, summary }: RevenueChartsProps
         { width: 20 }, // Total
       ];
 
-      // Add logo to worksheet (A1:A3 range roughly)
+      // Add Header Row 1 - Logo and Title Parallel (Centered together)
+      worksheet.mergeCells('A1:G2');
+      worksheet.getRow(1).height = 65; // Height for ~71px logo
+      worksheet.getRow(2).height = 65;
+
+      // Positioning Logo & Title for perfect alignment (1.89 cm = ~71 px)
       worksheet.addImage(logoId, {
-        tl: { col: 0, row: 0 },
-        ext: { width: 60, height: 60 }
+        tl: { col: 2.8, row: 0.35 }, // Moved further right to be closer to text
+        ext: { width: 71, height: 71 } 
       });
 
-      // Add Header Text (starting from row 1, col B for Title)
-      worksheet.mergeCells('B1:G1');
-      const titleCell = worksheet.getCell('B1');
-      titleCell.value = header.title;
-      titleCell.font = { size: 20, bold: true };
-      titleCell.alignment = { vertical: 'middle', horizontal: 'left' };
+      const titleCell = worksheet.getCell('A1');
+      titleCell.value = `  ${header.title}`; // Reduced spaces from 4 to 2
+      titleCell.font = { size: 34, bold: true, color: { argb: 'FF6B4423' } };
+      titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
-      worksheet.mergeCells('B2:G2');
-      const addressCell = worksheet.getCell('B2');
+      // Add a thin separator line below the logo/title
+      const lineRow = worksheet.getRow(3);
+      lineRow.height = 15;
+      worksheet.mergeCells('A3:G3');
+      const addressCell = worksheet.getCell('A3');
       addressCell.value = header.address;
-      addressCell.font = { size: 10 };
-      addressCell.alignment = { vertical: 'middle', horizontal: 'left' };
+      addressCell.font = { size: 9, color: { argb: 'FF888888' } };
+      addressCell.alignment = { vertical: 'middle', horizontal: 'center' };
+      addressCell.border = { top: { style: 'thin', color: { argb: 'FFDDDDDD' } } };
 
       worksheet.mergeCells('A4:G4');
       const periodCell = worksheet.getCell('A4');
       periodCell.value = header.period;
-      periodCell.font = { bold: true };
-      periodCell.alignment = { horizontal: 'center' };
+      periodCell.font = { bold: true, size: 11 };
+      periodCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getRow(4).height = 25;
+
+      // Add some spacing
+      worksheet.addRow([]);
 
       // Table Header (Row 6)
       const headerRow = worksheet.getRow(6);
@@ -174,32 +185,41 @@ export default function RevenueCharts({ chartData, summary }: RevenueChartsProps
     const header = getReportHeader();
     const doc = new jsPDF();
     const dateStr = new Date().toLocaleDateString('id-ID');
+    const pageWidth = doc.internal.pageSize.getWidth();
 
     try {
-      // Add Logo
-      const logoBase64 = await getBase64Image("/assets/Logo.png");
-      doc.addImage(logoBase64, 'PNG', 15, 12, 20, 20);
-
-      // Header Text
-      doc.setFontSize(22);
+      // Setup Fonts for width calculation
+      doc.setFontSize(32); 
       doc.setFont("helvetica", "bold");
-      doc.text(header.title, 40, 22);
       
+      const logoWidth = 18.9; 
+      const logoHeight = 18.9;
+      const spacing = 0.5; // Minimal spacing to keep them close
+      const titleWidth = doc.getTextWidth(header.title);
+      const totalHeaderWidth = logoWidth + spacing + titleWidth;
+      const startX = (pageWidth - totalHeaderWidth) / 2;
+
+      // Add Logo and Title Side-by-Side (Parallel)
+      const logoBase64 = await getBase64Image("/assets/Logo.png");
+      doc.addImage(logoBase64, 'PNG', startX, 12, logoWidth, logoHeight); 
+
+      doc.setTextColor(107, 68, 35); // Brand Brown
+      doc.text(header.title, startX + logoWidth + spacing, 24.5); 
+      
+      // Address - Centered below with line
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
-      doc.text(header.address, 40, 28);
+      doc.setTextColor(150, 150, 150);
+      doc.text(header.address, pageWidth / 2, 38, { align: "center" });
       
-      doc.setLineWidth(0.5);
-      doc.line(15, 35, 195, 35);
+      doc.setLineWidth(0.2);
+      doc.setDrawColor(220, 220, 220);
+      doc.line(30, 34, pageWidth - 30, 34); // Adjusted line Y
 
-      doc.setFontSize(12);
+      doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
-      doc.text("LAPORAN PENDAPATAN HARIAN", 105, 45, { align: "center" });
-      
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      doc.text(header.period, 20, 52);
-      doc.text(`Dicetak pada: ${dateStr}`, 190, 52, { align: "right" });
+      doc.setTextColor(0, 0, 0);
+      doc.text(header.period, pageWidth / 2, 38, { align: "center" });
 
       // Table
       const tableData = chartData.map(d => [
@@ -224,7 +244,7 @@ export default function RevenueCharts({ chartData, summary }: RevenueChartsProps
       ]);
 
       autoTable(doc, {
-        startY: 60,
+        startY: 52,
         head: [['Tanggal', 'Roti Isi', 'Roti Tawar', 'Donat', 'Kasir (POS)', 'Online', 'Total']],
         body: tableData,
         theme: 'grid',
