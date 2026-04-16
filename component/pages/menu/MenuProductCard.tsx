@@ -113,14 +113,12 @@ export default function MenuProductCard({ product, isLoggedIn }: MenuProductCard
           </div>
           
           <motion.button 
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
             onClick={handleOrderClick}
             disabled={isOutOfStock}
             className={`w-14 h-14 rounded-[1.5rem] flex items-center justify-center transition-all shadow-xl active:shadow-inner ${
               isOutOfStock 
                 ? "bg-stone-100 text-stone-300 pointer-events-none shadow-none" 
-                : "bg-primary text-secondary-content hover:shadow-primary/30 rotate-0 hover:-rotate-12"
+                : "bg-primary text-secondary-content"
             }`}
           >
             <ShoppingCart size={24} strokeWidth={2.5} />

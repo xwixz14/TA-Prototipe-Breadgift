@@ -3,7 +3,7 @@
 import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, BookOpen, Sparkles, ChevronRight, ShoppingBag } from "lucide-react";
+import { Download, BookOpen, Sparkles, ChevronRight, ShoppingBag, Wheat, Heart, Star } from "lucide-react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
@@ -22,11 +22,28 @@ interface Category {
   name: string;
 }
 
+const FloatingElement = ({ children, delay = 0, className = "" }: any) => (
+  <motion.div
+    animate={{ 
+      y: [0, -15, 0],
+      rotate: [0, 5, -5, 0]
+    }}
+    transition={{ 
+      duration: 6, 
+      repeat: Infinity, 
+      delay,
+      ease: "easeInOut" 
+    }}
+    className={className}
+  >
+    {children}
+  </motion.div>
+);
+
 export default function Catalog({ products, categories }: { products: Product[], categories: Category[] }) {
   const catalogRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
-  // Group products by category
   const groupedProducts = categories.map(cat => ({
     ...cat,
     products: products.filter(p => p.category === cat.name)
@@ -46,62 +63,42 @@ export default function Catalog({ products, categories }: { products: Product[],
     setIsDownloading(true);
     try {
       const element = catalogRef.current;
-      
-      // Temporary style adjustments for better PDF output
       const originalStyle = element.style.backgroundColor;
       element.style.backgroundColor = "white";
 
       const canvas = await html2canvas(element, {
         scale: 2, 
         useCORS: true,
-        logging: true, // Enable logging to debug if it still fails
         backgroundColor: "#ffffff",
         onclone: (clonedDoc) => {
-          // 1. Show pdf-only elements in the cloned document
           const pdfOnly = clonedDoc.querySelectorAll('.pdf-only') as NodeListOf<HTMLElement>;
           pdfOnly.forEach(el => {
             el.style.display = 'flex';
             el.style.visibility = 'visible';
           });
-
-          // 2. Fix unsupported color functions (lab, oklch) for html2canvas
-          // This is a common issue with Tailwind v4
-          const allElements = clonedDoc.getElementsByTagName('*');
-          for (let i = 0; i < allElements.length; i++) {
-            const el = allElements[i] as HTMLElement;
-            const style = window.getComputedStyle(el);
-            
-            // html2canvas struggles with modern color functions
-            // We force standard RGB colors where possible by reading computed styles
-            // which the browser already resolved to rgb/rgba
-            if (style.color.includes('lab') || style.color.includes('oklch')) {
-              el.style.color = 'inherit'; 
-            }
-            if (style.backgroundColor.includes('lab') || style.backgroundColor.includes('oklch')) {
-              el.style.backgroundColor = 'transparent';
-            }
-            if (style.borderColor.includes('lab') || style.borderColor.includes('oklch')) {
-              el.style.borderColor = 'transparent';
-            }
-          }
+          
+          // Force certain styles for PDF consistency
+          const cards = clonedDoc.querySelectorAll('.catalog-card') as NodeListOf<HTMLElement>;
+          cards.forEach(card => {
+            card.style.boxShadow = 'none';
+            card.style.border = '1px solid #f0f0f0';
+            card.style.backgroundColor = '#fafafa';
+          });
         }
       });
 
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
-      
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
+      const imgWidth = 210;
+      const pageHeight = 297;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
       let heightLeft = imgHeight;
       let position = 0;
 
-      // Add first page
       pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
-      // Add more pages if content exceeds A4 height
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
@@ -109,128 +106,143 @@ export default function Catalog({ products, categories }: { products: Product[],
         heightLeft -= pageHeight;
       }
 
-      pdf.save(`Katalog-BreadGift-${new Date().toLocaleDateString('id-ID')}.pdf`);
+      pdf.save(`Katalog-BreadGift-Artisan-${new Date().toLocaleDateString('id-ID')}.pdf`);
       element.style.backgroundColor = originalStyle;
     } catch (error) {
       console.error("PDF generation failed:", error);
-      alert("Gagal mengunduh PDF. Silakan coba lagi.");
     } finally {
       setIsDownloading(false);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8 md:py-12">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-12 md:mb-16 border-b border-zinc-100 pb-12">
+    <div className="max-w-[1400px] mx-auto px-6 py-12 md:py-24 relative">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-40 right-10 opacity-20 hidden lg:block">
+        <FloatingElement delay={0}>
+          <Wheat size={120} className="text-primary" />
+        </FloatingElement>
+      </div>
+
+      {/* 1. Header Lookbook Content */}
+      <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-24 md:mb-32 relative z-10">
         <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex-1 w-full"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="flex-1 space-y-8"
         >
-          <div className="flex items-center gap-2 text-[#6B4423] font-bold text-sm uppercase tracking-[0.2em] mb-4">
-            <Sparkles className="w-4 h-4" />
-            <span>Digital Lookbook</span>
+          <div className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.4em]">
+            <Sparkles size={14} className="animate-pulse" />
+            Digital Artisan Lookbook
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-7xl font-black text-black tracking-tighter leading-[1.1] mb-6">
-            Katalog <span className="text-[#949499]">Roti</span> <br className="hidden md:block" />
-            Pilihan <span className="text-[#6B4423]">Terbaik</span>.
+          <h1 className="text-6xl md:text-[8rem] font-black text-stone-900 tracking-tighter leading-[0.85]" style={{ fontFamily: 'var(--font-rametto)' }}>
+            Selected <br />
+            <span className="text-primary italic">Artisan</span> <br />
+            Masterpiece.
           </h1>
-          <p className="text-[#71717a] text-base md:text-lg max-w-xl font-medium leading-relaxed">
-            Menghadirkan kehangatan dari oven kami langsung ke meja Anda. 
-            Setiap roti dibuat dengan bahan premium dan kasih sayang.
+          <p className="text-stone-500 text-lg md:text-2xl font-bold max-w-2xl uppercase tracking-[0.2em] leading-relaxed opacity-80">
+            Koleksi terbaik dari dapur kami, <br />
+            dikurasi khusus untuk kebahagiaan Anda.
           </p>
         </motion.div>
  
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          onClick={handleDownloadPDF}
-          disabled={isDownloading}
-          className={`w-full md:w-auto flex items-center justify-center gap-3 bg-[#6B4423] text-white px-6 md:px-8 py-4 md:py-5 rounded-2xl font-black text-xs uppercase tracking-wider shadow-2xl shadow-[#6B4423]/30 hover:bg-[#5D3822] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="w-full md:w-auto"
         >
-          {isDownloading ? (
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              <span>Memproses...</span>
+          <button
+            onClick={handleDownloadPDF}
+            disabled={isDownloading}
+            className="w-full md:w-auto group flex flex-col items-center gap-4 bg-stone-950 text-white p-10 rounded-[3rem] transition-all hover:bg-primary active:scale-95 disabled:opacity-50 relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            {isDownloading ? (
+              <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <Download className="w-12 h-12 group-hover:bounce-slow" />
+            )}
+            <div className="text-center">
+              <span className="block font-black text-sm uppercase tracking-[0.3em]">Save Magazine</span>
+              <span className="text-[10px] font-bold text-stone-400 group-hover:text-white/80 uppercase tracking-widest mt-2 block">High Quality PDF</span>
             </div>
-          ) : (
-            <>
-              <Download className="w-5 h-5" />
-              <span>Unduh Katalog (PDF)</span>
-            </>
-          )}
-        </motion.button>
+          </button>
+        </motion.div>
       </div>
 
-      {/* Catalog Content Area for PDF Export */}
-      <div ref={catalogRef} className="bg-white p-2">
-         {/* Internal Catalog Header (visible in PDF) */}
-         <div className="hidden pdf-only flex justify-between items-center mb-12 border-b-2 border-[#6B4423] pb-8">
-            <div className="flex items-center gap-4">
-               <div className="w-16 h-16 bg-[#6B4423] rounded-2xl flex items-center justify-center">
-                  <BookOpen className="w-8 h-8 text-white" />
-               </div>
-               <div>
-                  <h2 className="text-2xl font-black text-black uppercase tracking-tight">BreadGift Bakery</h2>
-                  <p className="text-[#a1a1aa] font-bold text-xs uppercase tracking-widest">Premium Artisan Bread</p>
-               </div>
-            </div>
-            <div className="text-right">
-               <p className="text-[#a1a1aa] font-bold text-xs uppercase tracking-widest">Katalog Produk</p>
-            </div>
+      {/* 2. Catalog Display Content (PDF Source) */}
+      <div ref={catalogRef} className="relative z-10 space-y-32">
+         {/* PDF Only Header */}
+         <div className="hidden pdf-only flex flex-col items-center text-center pb-20 border-b-2 border-primary">
+            <h2 className="text-[6rem] font-black text-stone-900" style={{ fontFamily: 'var(--font-rametto)' }}>BreadGift</h2>
+            <p className="text-sm font-black uppercase tracking-[1em] text-primary">Artisan Lookbook • {new Date().getFullYear()}</p>
          </div>
 
          {groupedProducts.map((category, idx) => (
            <motion.section 
              key={category.id} 
-             initial={{ opacity: 0, y: 30 }}
+             initial={{ opacity: 0, y: 50 }}
              whileInView={{ opacity: 1, y: 0 }}
-             viewport={{ once: true }}
-             transition={{ duration: 0.8, delay: idx * 0.1 }}
-             className="mb-24"
+             viewport={{ once: true, margin: "-100px" }}
+             transition={{ duration: 1, delay: 0.2 }}
+             className="relative"
            >
-             <div className="flex items-center gap-4 mb-10">
-               <h2 className="text-3xl font-black text-black tracking-tight">{category.name}</h2>
-               <div className="h-px flex-1 bg-[#f4f4f5]" />
-               <span className="text-[#a1a1aa] font-bold text-sm uppercase tracking-widest">{category.products.length} Items</span>
+             <div className="flex items-center gap-8 mb-16">
+               <div className="space-y-1">
+                 <h2 className="text-5xl md:text-7xl font-black text-stone-900 tracking-tighter" style={{ fontFamily: 'var(--font-rametto)' }}>
+                  {category.name}
+                 </h2>
+                 <p className="text-primary font-black uppercase tracking-[0.4em] text-xs">Category Showcase</p>
+               </div>
+               <div className="h-[2px] flex-1 bg-stone-200/50" />
+               <div className="flex items-center gap-4 glass-premium px-6 py-3 rounded-2xl">
+                  <span className="text-stone-900 font-black text-xl">{category.products.length}</span>
+                  <span className="text-stone-400 font-bold text-[10px] uppercase tracking-widest">Masterpieces</span>
+               </div>
              </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-               {category.products.map((product) => (
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-16">
+               {category.products.map((product, pIdx) => (
                  <motion.div 
                    key={product.id}
-                   whileHover={{ y: -10 }}
-                   className="group relative bg-[#fafafa] rounded-[32px] p-6 border border-[#f4f4f5] transition-all hover:bg-white hover:shadow-2xl hover:shadow-[#e4e4e7]"
+                   whileHover={{ y: -20 }}
+                   className="catalog-card group relative flex flex-col bg-white/40 backdrop-blur-xl rounded-[4rem] p-4 border border-white/50 transition-all duration-700 hover:shadow-[0_60px_100px_-20px_rgba(0,0,0,0.1)]"
                  >
-                   <div className="relative aspect-square w-full rounded-2xl overflow-hidden mb-6 bg-white border border-[#f4f4f5] shadow-inner">
+                   <div className="relative aspect-[4/5] w-full rounded-[3.5rem] overflow-hidden mb-8 shadow-2xl">
                      <Image
                        src={product.image_url || "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1000&auto=format&fit=crop"}
                        alt={product.name}
                        fill
-                       className="object-cover transition-transform duration-700 group-hover:scale-110"
-                       onError={(e) => {
-                         (e.target as any).src = "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1000&auto=format&fit=crop";
-                       }}
+                       className="object-cover transition-transform duration-1000 group-hover:scale-110 group-hover:rotate-2"
                      />
-                     <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-sm">
-                        <span className="text-[#6B4423] font-black text-xs uppercase tracking-widest">{product.unit}</span>
+                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                     
+                     {/* Floating Badge in Card */}
+                     <div className="absolute bottom-10 left-10 right-10 flex justify-between items-end translate-y-20 group-hover:translate-y-0 transition-transform duration-700 delay-100">
+                        <div className="space-y-1">
+                          <p className="text-[8px] font-black text-white/60 uppercase tracking-[0.3em]">Price Point</p>
+                          <p className="text-2xl font-black text-white italic" style={{ fontFamily: 'var(--font-rametto)' }}>
+                            {formatPrice(product.price)}
+                          </p>
+                        </div>
+                        <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-secondary-content shadow-xl shadow-primary/40">
+                          <ShoppingBag size={20} strokeWidth={2.5} />
+                        </div>
+                     </div>
+
+                     <div className="absolute top-8 right-8 bg-white/95 backdrop-blur px-5 py-2.5 rounded-full shadow-lg border border-white/20">
+                        <span className="text-stone-900 font-black text-[10px] uppercase tracking-[0.3em]">{product.unit || "Pcs"}</span>
                      </div>
                    </div>
 
-                   <div className="flex flex-col gap-2">
-                     <h3 className="text-xl font-black text-black tracking-tight group-hover:text-[#6B4423] transition-colors">
-                       {product.name}
-                     </h3>
-                      <div className="flex justify-between items-center mt-4 pt-4 border-t border-[#f4f4f5]">
-                        <span className="text-2xl font-black text-black">
-                           {formatPrice(product.price)}
-                        </span>
-                        <div className="w-10 h-10 bg-white border border-[#f4f4f5] rounded-xl flex items-center justify-center shadow-sm group-hover:bg-[#6B4423] group-hover:text-white transition-all">
-                           <ChevronRight className="w-5 h-5" />
-                        </div>
+                   <div className="px-6 pb-6 space-y-3 text-center">
+                     <div className="space-y-1">
+                       <h3 className="text-3xl font-black text-stone-900 tracking-tighter group-hover:text-primary transition-colors duration-500" style={{ fontFamily: 'var(--font-rametto)' }}>
+                         {product.name}
+                       </h3>
+                       <p className="text-stone-400 font-bold uppercase tracking-[0.4em] text-[10px]">Artisan Selection</p>
                      </div>
                    </div>
                  </motion.div>
@@ -239,29 +251,36 @@ export default function Catalog({ products, categories }: { products: Product[],
            </motion.section>
          ))}
 
-          {/* Catalog Footer (visible in PDF) */}
-          <div className="hidden pdf-only mt-24 pt-12 border-t-2 border-[#6B4423] text-center">
-             <p className="text-[#71717a] font-medium mb-4">Terima kasih telah memilih BreadGift Bakery sebagai teman makan Anda.</p>
-             <div className="flex justify-center gap-8 text-[#6B4423] font-black text-xs uppercase tracking-[0.2em]">
-               <span>Sukarame, Lampung</span>
-               <span>•</span>
-               <span>Instagram: @breadgift.bakery</span>
-            </div>
-         </div>
+          {/* PDF Only Footer */}
+          <div className="hidden pdf-only mt-32 pt-20 border-t-2 border-stone-200 text-center space-y-8">
+             <div className="flex justify-center gap-12">
+                <Heart className="text-primary w-12 h-12" />
+                <Star className="text-primary w-12 h-12" />
+                <Sparkles className="text-primary w-12 h-12" />
+             </div>
+             <p className="text-stone-500 font-bold text-xl uppercase tracking-[0.2em] max-w-2xl mx-auto">
+                Dibuat dengan semangat artisan, <br />
+                dinikmati dengan penuh kebahagiaan.
+             </p>
+             <div className="pt-12 grid grid-cols-3 gap-8 uppercase tracking-[0.5em] text-[8px] font-black text-stone-400">
+                <span>BreadGift Bakery</span>
+                <span>Lampung, Indonesia</span>
+                <span>Est. 2021</span>
+             </div>
+          </div>
       </div>
 
+      {/* Custom Styles */}
       <style jsx global>{`
         .pdf-only {
           display: none !important;
         }
-        @media print {
-          .pdf-only {
-            display: flex !important;
-          }
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
         }
-        /* Custom class handled during download for non-print context */
-        div[ref] .pdf-only {
-            display: none;
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}</style>
     </div>
