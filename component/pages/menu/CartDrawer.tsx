@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
-import { X, Plus, Minus, ShoppingBag, Trash2, Loader2, ArrowRight, CreditCard, ShieldCheck } from "lucide-react";
+import { X, Plus, Minus, ShoppingBag, Trash2, Loader2, ArrowRight, CreditCard, ShieldCheck, MapPin, Truck } from "lucide-react";
 import Image from "next/image";
-import { createTransaction, getMe, confirmMidtransTransaction } from "@/lib/actions";
+import { createTransaction, getMe } from "@/lib/actions";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,10 +12,11 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function CartDrawer() {
   const { isCartOpen, setIsCartOpen, cartItems, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [snapTransactionId, setSnapTransactionId] = useState<number | null>(null);
-  const [simulatingSnap, setSimulatingSnap] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const [deliveryMethod, setDeliveryMethod] = useState<'Ambil di Toko' | 'Maxim Delivery'>('Ambil di Toko');
+  const [recipientName, setRecipientName] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
 
   // Use a separate state to handle the 'entering' animation after render
   const [shouldRender, setShouldRender] = useState(false);
@@ -24,24 +25,6 @@ export default function CartDrawer() {
   useEffect(() => {
     setIsCartOpen(false);
   }, [pathname, setIsCartOpen]);
-
-  React.useEffect(() => {
-    // Load Midtrans Snap script
-    const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === "true";
-    const snapScript = isProduction 
-      ? "https://app.midtrans.com/snap/snap.js" 
-      : "https://app.sandbox.midtrans.com/snap/snap.js";
-    const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "";
-    
-    // Check if script already exists to avoid duplicates
-    if (!document.querySelector(`script[src="${snapScript}"]`)) {
-      const script = document.createElement("script");
-      script.src = snapScript;
-      script.setAttribute("data-client-key", clientKey);
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  }, []);
 
   React.useEffect(() => {
     if (isCartOpen) {
@@ -63,13 +46,21 @@ export default function CartDrawer() {
       return;
     }
 
+    if (deliveryMethod === 'Maxim Delivery' && (!recipientName || !deliveryAddress)) {
+      alert("Harap isi Nama Penerima dan Alamat Lengkap untuk pengiriman Maxim bebs!");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       const transactionData: any = {
         total_amount: totalPrice,
-        payment_method: 'Midtrans',
+        payment_method: 'QRIS',
         source: 'Online',
+        delivery_method: deliveryMethod,
+        recipient_name: deliveryMethod === 'Maxim Delivery' ? recipientName : user.name,
+        delivery_address: deliveryMethod === 'Maxim Delivery' ? deliveryAddress : null,
         items: cartItems.map(item => ({
           product_id: item.id,
           quantity: item.quantity,
@@ -79,32 +70,10 @@ export default function CartDrawer() {
 
       const result = await createTransaction(transactionData);
       
-      if (result.success && result.snapToken) {
-        // @ts-ignore
-        window.snap.pay(result.snapToken, {
-          onSuccess: async function(snapResult: any) {
-            const confirmRes = await confirmMidtransTransaction(result.transactionId);
-            if (confirmRes.success) {
-               clearCart();
-               setIsCartOpen(false);
-               router.push(`/cart/success?id=${result.transactionId}`);
-            } else {
-               alert("Midtrans Gagal: " + confirmRes.error);
-               setIsSubmitting(false);
-            }
-          },
-          onPending: function(snapResult: any) {
-            alert("Menunggu pembayaran Anda.");
-            setIsSubmitting(false);
-          },
-          onError: function(snapResult: any) {
-            alert("Pembayaran Gagal!");
-            setIsSubmitting(false);
-          },
-          onClose: function() {
-            setIsSubmitting(false);
-          }
-        });
+      if (result.success) {
+        clearCart();
+        setIsCartOpen(false);
+        router.push(`/cart/success?id=${result.transactionId}`);
       } else {
         alert("Gagal memproses pesanan: " + result.error);
         setIsSubmitting(false);
@@ -116,11 +85,11 @@ export default function CartDrawer() {
     }
   };
 
-  if (!isCartOpen && !shouldRender && !snapTransactionId) return null;
+  if (!isCartOpen && !shouldRender) return null;
 
   return (
     <AnimatePresence>
-      <div className={`fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-8 transition-all duration-300 ${isCartOpen || snapTransactionId ? "visible pointer-events-auto" : "invisible pointer-events-none"}`}>
+      <div className={`fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-8 transition-all duration-300 ${isCartOpen ? "visible pointer-events-auto" : "invisible pointer-events-none"}`}>
         {/* Backdrop */}
         <div 
         className={`absolute inset-0 bg-zinc-900/60 backdrop-blur-md transition-opacity duration-500 ${isCartOpen ? "opacity-100" : "opacity-0"}`} 
@@ -147,7 +116,7 @@ export default function CartDrawer() {
               onClick={() => setIsCartOpen(false)}
               className="p-3 hover:bg-zinc-100 rounded-2xl transition-all"
             >
-              <X className="w-6 h-6 text-zinc-300 hover:text-zinc-900" />
+              <X className="w-6 h-6 text-red-500 hover:text-red-700 transition-colors" />
             </button>
           </div>
 
@@ -186,14 +155,20 @@ export default function CartDrawer() {
                     <div className="flex justify-between items-center mt-2">
                     <div className="flex items-center gap-4 bg-zinc-100/50 p-1 rounded-2xl border border-zinc-200 shadow-inner">
                       <button 
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)} 
+                        onClick={() => {
+                          const success = updateQuantity(item.id, item.quantity - 1);
+                          if (!success) alert("Waduh bebs, stok roti ini sudah habis!");
+                        }} 
                         className="w-10 h-10 flex items-center justify-center bg-white text-zinc-900 rounded-xl shadow-sm hover:bg-[#6B4423] hover:text-white transition-all active:scale-95"
                       >
                         <Minus className="w-5 h-5" />
                       </button>
                       <span className="text-base font-black text-zinc-900 w-8 text-center">{item.quantity}</span>
                       <button 
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)} 
+                        onClick={() => {
+                          const success = updateQuantity(item.id, item.quantity + 1);
+                          if (!success) alert("Waduh bebs, stok roti ini sudah habis!");
+                        }} 
                         className="w-10 h-10 flex items-center justify-center bg-white text-zinc-900 rounded-xl shadow-sm hover:bg-[#6B4423] hover:text-white transition-all active:scale-95"
                       >
                         <Plus className="w-5 h-5" />
@@ -217,21 +192,104 @@ export default function CartDrawer() {
               onClick={() => setIsCartOpen(false)}
               className="p-3 hover:bg-zinc-200 rounded-2xl transition-all hidden md:block"
             >
-              <X className="w-6 h-6 text-zinc-400 hover:text-zinc-900" />
+              <X className="w-6 h-6 text-red-500 hover:text-red-700 transition-colors" />
             </button>
           </div>
 
           <div className="flex-1 p-6 md:p-10 flex flex-col gap-6 md:gap-8">
             <div className="flex-1 flex flex-col justify-center">
-              <div className="bg-zinc-100/50 p-6 md:p-8 rounded-[32px] border border-zinc-200/50 text-center space-y-4">
-                <div className="w-12 h-12 md:w-16 md:h-16 bg-white rounded-2xl flex items-center justify-center mx-auto shadow-sm">
-                  <CreditCard className="w-6 h-6 md:w-8 md:h-8 text-[#6B4423]" />
-                </div>
-                <div>
-                  <h3 className="font-black text-zinc-900 text-base md:text-lg tracking-tight">Pembayaran Instan</h3>
-                  <p className="text-[10px] md:text-xs text-zinc-500 font-medium mt-1">Klik tombol di bawah untuk melunasi pesanan Anda via Midtrans.</p>
-                </div>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 mb-2">
+                 <Truck className="w-4 h-4 text-[#6B4423]" />
+                 <h3 className="font-black text-zinc-900 text-xs uppercase tracking-widest">Metode Pengiriman</h3>
               </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <button 
+                  onClick={() => setDeliveryMethod('Ambil di Toko')}
+                  className={`flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all ${deliveryMethod === 'Ambil di Toko' ? 'border-[#6B4423] bg-white shadow-md' : 'border-zinc-200 bg-zinc-100/50 hover:border-zinc-300'}`}
+                >
+                  <MapPin className={`w-5 h-5 ${deliveryMethod === 'Ambil di Toko' ? 'text-[#6B4423]' : 'text-zinc-400'}`} />
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${deliveryMethod === 'Ambil di Toko' ? 'text-zinc-900' : 'text-zinc-500'}`}>Ambil Sendiri</span>
+                </button>
+                
+                <button 
+                  onClick={() => setDeliveryMethod('Maxim Delivery')}
+                  className={`flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all ${deliveryMethod === 'Maxim Delivery' ? 'border-[#6B4423] bg-white shadow-md' : 'border-zinc-200 bg-zinc-100/50 hover:border-zinc-300'}`}
+                >
+                  <Truck className={`w-5 h-5 ${deliveryMethod === 'Maxim Delivery' ? 'text-[#6B4423]' : 'text-zinc-400'}`} />
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${deliveryMethod === 'Maxim Delivery' ? 'text-zinc-900' : 'text-zinc-500'}`}>Maxim Delivery</span>
+                </button>
+              </div>
+              
+              <AnimatePresence mode="wait">
+                {deliveryMethod === 'Ambil di Toko' ? (
+                  <motion.div 
+                    key="pickup"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    className="p-4 bg-zinc-100/80 rounded-2xl border border-zinc-200"
+                  >
+                    <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed">
+                      Lokasi: Sukarame, Bandar Lampung. <br/>
+                      <span className="text-zinc-400">Silakan ambil pesanan Anda setelah status berubah menjadi "Selesai".</span>
+                    </p>
+                    <a 
+                      href="https://maps.app.goo.gl/8NX1PX5WorBVdztb7" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="mt-2 flex items-center gap-1.5 text-[9px] font-black text-[#6B4423] hover:underline"
+                    >
+                      <MapPin className="w-3 h-3" />
+                      BUKA GOOGLE MAPS
+                    </a>
+                  </motion.div>
+                ) : (
+                  <motion.div 
+                    key="maxim"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    className="p-4 bg-amber-50 rounded-2xl border border-amber-100 space-y-3"
+                  >
+                    <p className="text-[9px] text-amber-700 font-black uppercase tracking-widest leading-relaxed">
+                      Lengkapi Data Pengiriman:
+                    </p>
+                    
+                    <div className="space-y-2">
+                      <input 
+                        type="text" 
+                        placeholder="Nama Penerima..."
+                        value={recipientName}
+                        onChange={(e) => setRecipientName(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-white border border-amber-200 rounded-xl text-[11px] font-bold outline-none focus:ring-2 focus:ring-amber-200 transition-all"
+                      />
+                      <textarea 
+                        placeholder="Alamat Lengkap (Patokan/No. Rumah)..."
+                        value={deliveryAddress}
+                        onChange={(e) => setDeliveryAddress(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-white border border-amber-200 rounded-xl text-[11px] font-bold outline-none focus:ring-2 focus:ring-amber-200 transition-all resize-none h-20"
+                      />
+                    </div>
+
+                    <p className="text-[8px] text-amber-600/80 font-bold leading-relaxed italic">
+                      *Biaya Maxim dibayarkan langsung ke Driver saat roti sampai.
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <div className="bg-zinc-100/50 p-6 md:p-8 rounded-[32px] border border-zinc-200/50 text-center space-y-4">
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-white rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+                <CreditCard className="w-6 h-6 md:w-8 md:h-8 text-[#6B4423]" />
+              </div>
+              <div>
+                <h3 className="font-black text-zinc-900 text-base md:text-lg tracking-tight">Pembayaran QRIS</h3>
+                <p className="text-[10px] md:text-xs text-zinc-500 font-medium mt-1">Selesaikan pesanan Anda dengan scan barcode QRIS setelah tombol checkout.</p>
+              </div>
+            </div>
             </div>
 
             {/* Price Summary */}
@@ -276,21 +334,6 @@ export default function CartDrawer() {
                 <span className="text-[8px] font-black uppercase tracking-widest">Pembayaran Aman</span>
               </div>
             </div>
-            
-            {/* Simulation Overlay Inside Right Panel */}
-            {simulatingSnap && (
-              <div className="absolute inset-0 z-50 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center">
-                <motion.div 
-                   initial={{ scale: 0.8, opacity: 0 }}
-                   animate={{ scale: 1, opacity: 1 }}
-                   className="flex flex-col items-center bg-white p-8 rounded-3xl shadow-xl border border-zinc-100"
-                >
-                  <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
-                  <p className="text-base font-black text-zinc-900 animate-pulse">Memuat Midtrans Gateway...</p>
-                  <p className="text-xs text-zinc-500 mt-2 text-center">Mohon tunggu.</p>
-                </motion.div>
-              </div>
-            )}
             
           </div>
         </div>

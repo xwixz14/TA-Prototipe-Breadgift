@@ -6,12 +6,21 @@ export const metadata = {
   title: "Pendapatan - Admin BreadGift",
 };
 
-export default async function RevenuePage() {
-  const { chartData, summary } = await getRevenueStats();
+export default async function RevenuePage({ searchParams }: { searchParams: Promise<{ month?: string, year?: string }> }) {
+  const params = await searchParams;
+  const month = params.month ? parseInt(params.month) : undefined;
+  const year = params.year ? parseInt(params.year) : undefined;
+  
+  const { chartData, summary, targetPeriod } = await getRevenueStats(month, year);
 
   return (
     <div className="flex-1 h-full overflow-hidden">
-      <RevenueCharts chartData={chartData} summary={summary} />
+      <RevenueCharts 
+        chartData={chartData} 
+        summary={summary} 
+        currentMonth={targetPeriod.month}
+        currentYear={targetPeriod.year}
+      />
     </div>
   );
 }

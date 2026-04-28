@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from "react";
 import ProductTable from "@/component/admin/products/ProductTable";
 import ProductModal from "@/component/admin/products/ProductModal";
-import StockAlert from "@/component/admin/products/StockAlert";
+import RecipeModal from "@/component/admin/products/RecipeModal";
 import Toast, { ToastType } from "@/component/ui/Toast";
-import { Search, Plus, Filter } from "lucide-react";
+import { Search, Plus, Filter, Package, CircleDollarSign } from "lucide-react";
 import { getProducts, addProduct, updateProduct, deleteProduct, toggleProductStatus } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import confetti from "canvas-confetti";
@@ -16,7 +16,9 @@ export default function ProductsPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Semua");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [selectedProductForRecipe, setSelectedProductForRecipe] = useState<any>(null);
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
   const router = useRouter();
 
@@ -104,7 +106,14 @@ export default function ProductsPage() {
     }
   };
 
-  const lowStockCount = products.filter(p => p.stock <= p.min_stock).length;
+  const totalStock = products.reduce((acc, p) => acc + (Number(p.stock) || 0), 0);
+  const totalValue = products.reduce((acc, p) => acc + ((Number(p.stock) || 0) * (Number(p.price) || 0)), 0);
+
+  const stockByCategory = {
+    rotiIsi: products.filter(p => p.category === "Roti Isi").reduce((acc, p) => acc + (Number(p.stock) || 0), 0),
+    rotiTawar: products.filter(p => p.category === "Roti Tawar").reduce((acc, p) => acc + (Number(p.stock) || 0), 0),
+    donat: products.filter(p => p.category === "Donat").reduce((acc, p) => acc + (Number(p.stock) || 0), 0),
+  };
 
   return (
     <div className="flex-1 flex flex-col gap-8 w-full h-full overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
@@ -120,8 +129,8 @@ export default function ProductsPage() {
       {/* Header Info */}
       <div className="flex justify-between items-start shrink-0">
         <div>
-          <h1 className="text-3xl font-black text-zinc-900 tracking-tight">Daftar Barang</h1>
-          <p className="text-sm font-bold text-zinc-400 mt-1">Kelola data barang dan inventori toko Anda</p>
+          <h1 className="text-3xl font-black text-zinc-900 tracking-tight">Daftar Roti</h1>
+          <p className="text-sm font-bold text-zinc-400 mt-1">Kelola data roti dan inventori toko Anda</p>
         </div>
         <button 
           onClick={() => {
@@ -131,14 +140,64 @@ export default function ProductsPage() {
           className="bg-[#6B4423] text-white px-8 py-4 rounded-[20px] font-black flex items-center gap-3 shadow-lg shadow-[#6B4423]/20 hover:bg-[#5D3822] hover:shadow-[#6B4423]/40 transition-all active:scale-95"
         >
           <Plus className="w-5 h-5" />
-          Tambah Barang
+          Tambah Roti
         </button>
       </div>
 
-      {/* Stock Alert Section - Keep it visible or allow it to be part of the flow */}
-      <div className="shrink-0">
-        <StockAlert lowStockCount={lowStockCount} />
+      {/* Quick Stats Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0">
+        <div className="bg-white p-6 rounded-[32px] border border-zinc-100 shadow-sm flex items-center gap-6 group hover:border-[#6B4423]/20 transition-all">
+          <div className="w-14 h-14 bg-zinc-50 rounded-2xl flex items-center justify-center border border-zinc-100 group-hover:bg-[#FCF1E8] transition-all">
+            <Package className="w-7 h-7 text-[#6B4423] opacity-60" />
+          </div>
+          <div>
+            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Total Stok Roti</p>
+            <p className="text-3xl font-black text-zinc-900 tracking-tighter">
+              {totalStock.toLocaleString("id-ID")} <span className="text-sm text-zinc-400 font-bold ml-1 uppercase">Pcs</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-[32px] border border-zinc-100 shadow-sm flex items-center gap-6 group hover:border-[#6B4423]/20 transition-all">
+          <div className="w-14 h-14 bg-[#FCF1E8]/50 rounded-2xl flex items-center justify-center border border-[#6B4423]/10 group-hover:bg-[#FCF1E8] transition-all">
+            <CircleDollarSign className="w-7 h-7 text-[#6B4423]" />
+          </div>
+          <div>
+            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Harga Sisa Roti (Nilai Aset)</p>
+            <p className="text-3xl font-black text-[#6B4423] tracking-tighter">
+              Rp. {totalValue.toLocaleString("id-ID")}
+            </p>
+          </div>
+        </div>
       </div>
+
+      {/* Category Stats Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 shrink-0">
+        <div className="bg-zinc-50 p-5 rounded-[28px] border border-zinc-100 flex flex-col gap-1 hover:bg-zinc-100 transition-all group">
+          <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Stok Roti Isi</p>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-black text-zinc-900 tracking-tighter">{stockByCategory.rotiIsi.toLocaleString("id-ID")}</span>
+            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Pcs</span>
+          </div>
+        </div>
+
+        <div className="bg-zinc-50 p-5 rounded-[28px] border border-zinc-100 flex flex-col gap-1 hover:bg-zinc-100 transition-all group">
+          <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Stok Roti Tawar</p>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-black text-zinc-900 tracking-tighter">{stockByCategory.rotiTawar.toLocaleString("id-ID")}</span>
+            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Pcs</span>
+          </div>
+        </div>
+
+        <div className="bg-zinc-50 p-5 rounded-[28px] border border-zinc-100 flex flex-col gap-1 hover:bg-zinc-100 transition-all group">
+          <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Stok Donat</p>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-black text-zinc-900 tracking-tighter">{stockByCategory.donat.toLocaleString("id-ID")}</span>
+            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Pcs</span>
+          </div>
+        </div>
+      </div>
+
 
       {/* Filter Bar - Keep it visible */}
       <div className="flex gap-6 items-center shrink-0">
@@ -162,7 +221,7 @@ export default function ProductsPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari nama atau kode barang..."
+            placeholder="Cari nama atau kode roti..."
             className="w-full bg-white border border-zinc-200 py-3.5 pl-12 pr-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#6B4423]/20 focus:border-[#6B4423] transition-all text-sm font-bold text-zinc-800 placeholder:text-zinc-400"
           />
         </div>
@@ -178,8 +237,19 @@ export default function ProductsPage() {
           }}
           onDelete={handleDeleteProduct}
           onToggleStatus={handleToggleStatus}
+          onManageRecipe={(p) => {
+            setSelectedProductForRecipe(p);
+            setIsRecipeModalOpen(true);
+          }}
         />
       </div>
+
+      {/* Recipe Modal */}
+      <RecipeModal
+        isOpen={isRecipeModalOpen}
+        onClose={() => setIsRecipeModalOpen(false)}
+        product={selectedProductForRecipe}
+      />
 
       {/* Add/Edit Modal */}
       <ProductModal

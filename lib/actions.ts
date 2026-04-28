@@ -9,8 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { encrypt, decrypt } from "./session";
-import { snap } from "./midtrans";
-import { sendPasswordResetCode } from "./mail";
+import { sendPasswordResetCode, sendOrderConfirmation } from "./mail";
 
 export async function getProducts(status?: "Aktif" | "Nonaktif"): Promise<any[]> {
   try {
@@ -42,7 +41,6 @@ export async function getProducts(status?: "Aktif" | "Nonaktif"): Promise<any[]>
       ...p,
       price: Number(p.price) || 0,
       stock: Number(p.stock) || 0,
-      min_stock: Number(p.min_stock) || 0,
       status: p.status || "Aktif",
       total_sold: Number(p.total_sold) || 0
     }));
@@ -67,7 +65,6 @@ export async function addProduct(data: {
   category_id: number;
   price: number;
   stock: number;
-  min_stock: number;
   unit: string;
   status: string;
   image_url: string;
@@ -77,8 +74,8 @@ export async function addProduct(data: {
     if (!user || user.role !== "admin") return { success: false, error: "Unauthorized" };
 
     await query(
-      "INSERT INTO products (name, category_id, price, stock, min_stock, unit, status, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-      [data.name, data.category_id, data.price, data.stock, data.min_stock, data.unit, data.status, data.image_url]
+      "INSERT INTO products (name, category_id, price, stock, unit, status, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [data.name, data.category_id, data.price, data.stock, data.unit, data.status, data.image_url]
     );
     return { success: true };
   } catch (error) {
@@ -92,7 +89,6 @@ export async function updateProduct(id: number, data: {
   category_id: number;
   price: number;
   stock: number;
-  min_stock: number;
   unit: string;
   status: string;
   image_url: string;
@@ -102,8 +98,8 @@ export async function updateProduct(id: number, data: {
     if (!user || user.role !== "admin") return { success: false, error: "Unauthorized" };
 
     await query(
-      "UPDATE products SET name = ?, category_id = ?, price = ?, stock = ?, min_stock = ?, unit = ?, status = ?, image_url = ? WHERE id = ?",
-      [data.name, data.category_id, data.price, data.stock, data.min_stock, data.unit, data.status, data.image_url, id]
+      "UPDATE products SET name = ?, category_id = ?, price = ?, stock = ?, unit = ?, status = ?, image_url = ? WHERE id = ?",
+      [data.name, data.category_id, data.price, data.stock, data.unit, data.status, data.image_url, id]
     );
     revalidatePath("/admin/products");
     return { success: true };
@@ -129,27 +125,47 @@ export async function toggleProductStatus(id: number, currentStatus: string) {
 }
 
 export async function deleteProduct(id: number) {
+  const connection = await db.getConnection();
   try {
     const user = await getMe();
     if (!user || user.role !== "admin") return { success: false, error: "Unauthorized" };
 
-    // Check if the product has any transaction history
-    const checkSql = "SELECT COUNT(*) as count FROM transaction_items WHERE product_id = ?";
-    const result = await query(checkSql, [id]) as any[];
-    const hasTransactions = result[0].count > 0;
+    await connection.beginTransaction();
 
-    if (hasTransactions) {
-      // Soft delete if there's history
-      await query("UPDATE products SET status = 'Nonaktif' WHERE id = ?", [id]);
-      return { success: true, message: "Produk dinonaktifkan karena memiliki riwayat transaksi." };
-    } else {
-      // Hard delete if it's a new product
-      await query("DELETE FROM products WHERE id = ?", [id]);
-      return { success: true, message: "Produk berhasil dihapus." };
-    }
-  } catch (error) {
-    console.error("Failed to delete product:", error);
-    return { success: false, error: "Gagal memproses penghapusan produk" };
+    // 1. Delete all associated data manually to ensure no FK constraints block us
+    // Delete Recipes
+    await connection.query("DELETE FROM product_ingredients WHERE product_id = ?", [id]);
+    
+    // Delete Cart Items
+    await connection.query("DELETE FROM cart_items WHERE product_id = ?", [id]);
+    
+    // Delete Production Materials (linked through production logs)
+    await connection.query(`
+      DELETE FROM production_materials 
+      WHERE production_log_id IN (SELECT id FROM production_logs WHERE product_id = ?)
+    `, [id]);
+    
+    // Delete Production Logs
+    await connection.query("DELETE FROM production_logs WHERE product_id = ?", [id]);
+    
+    // Delete Transaction Items (Historical sales data will be lost!)
+    await connection.query("DELETE FROM transaction_items WHERE product_id = ?", [id]);
+
+    // 2. Finally delete the product itself
+    await connection.query("DELETE FROM products WHERE id = ?", [id]);
+
+    await connection.commit();
+    revalidatePath("/admin/products");
+    revalidatePath("/admin/production");
+    revalidatePath("/admin/history");
+    
+    return { success: true, message: "Produk dan semua riwayat terkait telah dihapus permanen." };
+  } catch (error: any) {
+    await connection.rollback();
+    console.error("Failed to hard delete product:", error);
+    return { success: false, error: "Gagal menghapus produk secara permanen: " + (error.message || "Database error") };
+  } finally {
+    connection.release();
   }
 }
 
@@ -157,6 +173,9 @@ export async function createTransaction(data: {
   total_amount: number;
   payment_method: string;
   source?: 'POS' | 'Online';
+  delivery_method?: 'Ambil di Toko' | 'Maxim Delivery';
+  recipient_name?: string;
+  delivery_address?: string;
   items: { product_id: number; quantity: number; price: number }[];
 }) {
   const connection = await db.getConnection();
@@ -169,8 +188,17 @@ export async function createTransaction(data: {
     const status = data.source === 'POS' ? 'Confirm' : 'Pending';
 
     const [result] = await connection.query(
-      "INSERT INTO transactions (total_amount, payment_method, user_id, status, source) VALUES (?, ?, ?, ?, ?)",
-      [data.total_amount, data.payment_method, userId, status, data.source || 'Online']
+      "INSERT INTO transactions (total_amount, payment_method, user_id, status, source, delivery_method, recipient_name, delivery_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      [
+        data.total_amount, 
+        data.payment_method, 
+        userId, 
+        status, 
+        data.source || 'Online', 
+        data.delivery_method || 'Ambil di Toko',
+        data.recipient_name || null,
+        data.delivery_address || null
+      ]
     ) as any[];
     
     const transactionId = result.insertId;
@@ -192,47 +220,65 @@ export async function createTransaction(data: {
       );
     }
 
-    let snapToken = null;
-    if (data.source === 'Online') {
-      const parameter = {
-        transaction_details: {
-          order_id: `TRX-${transactionId}-${Date.now()}`,
-          gross_amount: Math.round(data.total_amount)
-        },
-        customer_details: {
-          first_name: user ? (user as any).name : 'Customer',
-          email: user ? (user as any).email : 'customer@example.com'
-        }
-      };
-
-      try {
-        const transaction = await snap.createTransaction(parameter);
-        snapToken = transaction.token;
-      } catch (err: any) {
-        // Rollback DB if Midtrans fails to prevent inconsistent state
-        await connection.rollback();
-        connection.release();
-        console.error("Midtrans Snap Error:", err);
-        return { 
-          success: false, 
-          error: `Midtrans Error: ${err.message || 'Gagal membuat token pembayaran'}. Pastikan API Key benar dan nominal sesuai.` 
-        };
-      }
-    }
-
     // Clear cart from database after checkout
     if (userId) {
       await connection.query("DELETE FROM cart_items WHERE user_id = ?", [userId]);
     }
 
-    await connection.commit();
-    connection.release();
-
     revalidatePath("/");
     revalidatePath("/admin/dashboard");
     revalidatePath("/menu");
 
-    return { success: true, transactionId, snapToken };
+    await connection.commit();
+
+    // --- OTOMATISASI EMAIL (Background) ---
+    try {
+      console.log("📨 [DEBUG] Memulai proses email otomatis...");
+      if (user) {
+        console.log(`📨 [DEBUG] User terdeteksi: ${user.name} (${user.email})`);
+        
+        // Ambil detail nama produk untuk struk email
+        const productIds = data.items.map(i => i.product_id);
+        const [products] = await connection.query(
+          "SELECT id, name FROM products WHERE id IN (?)",
+          [productIds]
+        ) as any[];
+
+        const productsMap = new Map((products as any[]).map(p => [p.id, p.name]));
+        
+        const emailItems = data.items.map(item => ({
+          name: productsMap.get(item.product_id) || "Produk Roti",
+          quantity: item.quantity,
+          price: item.price
+        }));
+
+        console.log(`📨 [DEBUG] Menyiapkan pengiriman email konfirmasi ke ${user.email}...`);
+        
+        // Lepas koneksi sebelum pengiriman email (agar tidak lock pool)
+        connection.release(); 
+
+        // Kirim email tanpa await agar tidak menghambat respon ke UI
+        sendOrderConfirmation({
+          orderId: transactionId.toString(),
+          customerName: (user as any).name || "Pelanggan",
+          customerEmail: (user as any).email || "",
+          totalAmount: data.total_amount,
+          items: emailItems
+        }).then(() => {
+          console.log(`📨 [DEBUG] sendOrderConfirmation selesai dieksekusi.`);
+        }).catch(err => {
+          console.error("❌ [DEBUG] Email Automation Error:", err.message);
+        });
+      } else {
+        console.log("📨 [DEBUG] Selesai: Skip email karena tidak ada User logged in.");
+        connection.release();
+      }
+    } catch (emailError: any) {
+      console.error("❌ [DEBUG] Background Email Setup Error:", emailError.message);
+      if (connection) connection.release();
+    }
+
+    return { success: true, transactionId };
   } catch (error: any) {
     // Basic check to see if connection is still active and needs rollback
     try {
@@ -245,16 +291,76 @@ export async function createTransaction(data: {
   }
 }
 
-export async function confirmMidtransTransaction(transactionId: number) {
+export async function uploadProofOfPayment(formData: FormData, transactionId: number) {
   try {
-    await query("UPDATE transactions SET status = 'Confirm', is_read = FALSE WHERE id = ?", [transactionId]);
-    revalidatePath("/");
-    revalidatePath("/admin/dashboard");
-    revalidatePath("/menu");
-    return { success: true };
+    const file = formData.get("file") as File;
+    if (!file) {
+      return { success: false, error: "No file uploaded" };
+    }
+
+    // MIME type validation
+    const validMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!validMimeTypes.includes(file.type)) {
+      return { success: false, error: "Format file tidak didukung. Harap unggah format JPG, PNG, atau WEBP." };
+    }
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const fileName = `PROOF_${transactionId}_${uuidv4().slice(0, 8)}_${file.name}`;
+    const uploadDir = path.join(process.cwd(), "public", "assets", "proofs");
+
+    // Create directory if it doesn't exist
+    try {
+      await fs.access(uploadDir);
+    } catch {
+      await fs.mkdir(uploadDir, { recursive: true });
+    }
+
+    const filePath = path.join(uploadDir, fileName);
+    await fs.writeFile(filePath, buffer);
+
+    const proofUrl = `/assets/proofs/${fileName}`;
+
+    // Update transaction in DB
+    await query("UPDATE transactions SET proof_of_payment = ? WHERE id = ?", [proofUrl, transactionId]);
+
+    // --- OTOMATISASI EMAIL SETELAH UPLOAD BUKTI ---
+    try {
+      console.log(`📸 [DEBUG] Bukti pembayaran diunggah. Menyiapkan email konfirmasi...`);
+      
+      // Ambil data transaksi lengkap dari database
+      const order = await getTransactionById(transactionId);
+      if (order) {
+        // Kirim email (Admin & Pelanggan)
+        sendOrderConfirmation({
+          orderId: transactionId.toString(),
+          customerName: order.customer_name || "Pelanggan",
+          customerEmail: order.customer_email || "", 
+          totalAmount: order.total_amount,
+          items: order.items.map((i: any) => ({
+            name: i.product_name,
+            quantity: i.quantity,
+            price: i.price_at_transaction
+          }))
+        }).then(() => {
+          console.log(`📸 [DEBUG] Email konfirmasi pembayaran berhasil dikirim.`);
+        }).catch(err => {
+          console.error(`📸 [DEBUG] Gagal kirim email pembayaran:`, err.message);
+        });
+      }
+    } catch (err: any) {
+      console.error(`📸 [DEBUG] Setup email pembayaran gagal:`, err.message);
+    }
+
+    revalidatePath("/admin/history");
+    return { 
+      success: true, 
+      proofUrl 
+    };
   } catch (error) {
-    console.error("Midtrans confirmation error:", error);
-    return { success: false, error: "Gagal konfirmasi status" };
+    console.error("Proof of payment upload error:", error);
+    return { success: false, error: "Gagal mengunggah bukti pembayaran" };
   }
 }
 
@@ -309,10 +415,20 @@ export async function registerUser(data: { name: string; username: string; email
     return { success: true };
   } catch (error: any) {
     console.error("Register error:", error);
+    
+    // Check for Duplicate Entry
     if (error.code === 'ER_DUP_ENTRY') {
-      return { success: false, error: "Username sudah digunakan" };
+      const msg = error.message || "";
+      if (msg.toLowerCase().includes('email')) {
+        return { success: false, error: "Email ini sudah terdaftar. Silakan gunakan email lain atau masuk." };
+      }
+      if (msg.toLowerCase().includes('username')) {
+        return { success: false, error: "Username ini sudah digunakan. Silakan pilih username lain." };
+      }
+      return { success: false, error: "Data ini sudah terdaftar." };
     }
-    return { success: false, error: "Gagal mendaftarkan akun" };
+    
+    return { success: false, error: `Gagal mendaftarkan akun: ${error.message || "Kesalahan sistem"}` };
   }
 }
 
@@ -374,6 +490,7 @@ export async function logoutUser() {
   const cookieStore = await cookies();
   cookieStore.delete("user_session");
   revalidatePath("/");
+  return { success: true };
 }
 
 export async function getMe() {
@@ -395,7 +512,8 @@ export async function getTransactionById(id: number) {
       SELECT 
         t.*, 
         u.name as customer_name,
-        u.username as customer_username
+        u.username as customer_username,
+        u.email as customer_email
       FROM transactions t
       LEFT JOIN users u ON t.user_id = u.id
       WHERE t.id = ?
@@ -495,46 +613,54 @@ export async function updateTransactionStatus(id: number, status: 'Pending' | 'C
   }
 }
 
-export async function getRevenueStats() {
+export async function getRevenueStats(selectedMonth?: number, selectedYear?: number) {
   try {
-    // Run these queries in parallel to save time
+    const now = new Date();
+    const targetMonth = selectedMonth !== undefined ? selectedMonth : now.getMonth() + 1; // 1-12
+    const targetYear = selectedYear || now.getFullYear();
+
+    const isYearly = selectedMonth === 0;
+    const dateFilter = isYearly ? "YEAR(transaction_date) = ?" : "YEAR(transaction_date) = ? AND MONTH(transaction_date) = ?";
+    const queryParams = isYearly ? [targetYear] : [targetYear, targetMonth];
+
     const [stats, categoryStats, summary, categorySummary] = await Promise.all([
-      // 1. stats (last 7 days by source)
+      // 1. stats (daily by source if monthly, monthly by source if yearly)
       query(`
         SELECT 
-          DATE(transaction_date) as date,
+          ${isYearly ? 'MONTH(transaction_date)' : 'DATE(transaction_date)'} as date,
           source,
           SUM(total_amount) as total
         FROM transactions
-        WHERE transaction_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        WHERE ${dateFilter}
         AND status != 'Cancel'
-        GROUP BY DATE(transaction_date), source
+        GROUP BY ${isYearly ? 'MONTH(transaction_date)' : 'DATE(transaction_date)'}, source
         ORDER BY date ASC
-      `),
-      // 2. categoryStats (last 7 days by category)
+      `, queryParams),
+      // 2. categoryStats
       query(`
         SELECT 
-          DATE(t.transaction_date) as date,
+          ${isYearly ? 'MONTH(t.transaction_date)' : 'DATE(t.transaction_date)'} as date,
           c.name as category_name,
           SUM(ti.quantity * ti.price_at_transaction) as total
         FROM transactions t
         JOIN transaction_items ti ON t.id = ti.transaction_id
         JOIN products p ON ti.product_id = p.id
         JOIN categories c ON p.category_id = c.id
-        WHERE t.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        WHERE ${isYearly ? 'YEAR(t.transaction_date) = ?' : 'YEAR(t.transaction_date) = ? AND MONTH(t.transaction_date) = ?'}
         AND t.status != 'Cancel'
-        GROUP BY DATE(t.transaction_date), c.name
-      `),
-      // 3. summary (grand total by source)
+        GROUP BY ${isYearly ? 'MONTH(t.transaction_date)' : 'DATE(t.transaction_date)'}, c.name
+      `, queryParams),
+      // 3. summary
       query(`
         SELECT 
           source,
           SUM(total_amount) as total
         FROM transactions
-        WHERE status != 'Cancel'
+        WHERE ${dateFilter}
+        AND status != 'Cancel'
         GROUP BY source
-      `),
-      // 4. categorySummary (grand total by category)
+      `, queryParams),
+      // 4. categorySummary
       query(`
         SELECT 
           c.name as category_name,
@@ -543,43 +669,65 @@ export async function getRevenueStats() {
         JOIN transaction_items ti ON t.id = ti.transaction_id
         JOIN products p ON ti.product_id = p.id
         JOIN categories c ON p.category_id = c.id
-        WHERE t.status != 'Cancel'
+        WHERE ${isYearly ? 'YEAR(t.transaction_date) = ?' : 'YEAR(t.transaction_date) = ? AND MONTH(t.transaction_date) = ?'}
+        AND t.status != 'Cancel'
         GROUP BY c.name
-      `)
+      `, queryParams)
     ]) as any[][];
 
     // Format data for Recharts & Export
     const chartDataMap: { [key: string]: any } = {};
-    
-    // Initialize last 7 days
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dateStr = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-      chartDataMap[dateStr] = { 
-        name: dateStr, 
-        fullDate: d.toLocaleDateString('id-ID'), // Store full date for export
-        POS: 0, 
-        Online: 0,
-        "Roti Isi": 0,
-        "Roti Tawar": 0,
-        "Donat": 0
-      };
+    // Initialize days of month or months of year
+    if (isYearly) {
+      for (let m = 1; m <= 12; m++) {
+        const dateStr = new Date(targetYear, m - 1, 1).toLocaleDateString('id-ID', { month: 'short' });
+        chartDataMap[dateStr] = { 
+          name: dateStr, 
+          fullDate: new Date(targetYear, m - 1, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }),
+          POS: 0, 
+          Online: 0,
+          "Roti Isi": 0,
+          "Roti Tawar": 0,
+          "Donat": 0
+        };
+      }
+    } else {
+      const lastDayInMonth = new Date(targetYear, targetMonth, 0).getDate();
+      for (let day = 1; day <= lastDayInMonth; day++) {
+        const d = new Date(targetYear, targetMonth - 1, day);
+        const dateStr = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+        chartDataMap[dateStr] = { 
+          name: dateStr, 
+          fullDate: d.toLocaleDateString('id-ID'),
+          POS: 0, 
+          Online: 0,
+          "Roti Isi": 0,
+          "Roti Tawar": 0,
+          "Donat": 0
+        };
+      }
     }
 
     stats.forEach(s => {
-      const dateStr = new Date(s.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+      let dateStr;
+      if (isYearly) {
+        dateStr = new Date(targetYear, s.date - 1, 1).toLocaleDateString('id-ID', { month: 'short' });
+      } else {
+        dateStr = new Date(s.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+      }
       if (chartDataMap[dateStr]) {
         chartDataMap[dateStr][s.source] = Number(s.total) || 0;
       }
     });
 
     categoryStats.forEach(cs => {
-      const dateStr = new Date(cs.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-      if (chartDataMap[dateStr] && chartDataMap[dateStr].hasOwnProperty(cs.category_name)) {
-        chartDataMap[dateStr][cs.category_name] = Number(cs.total) || 0;
-      } else if (chartDataMap[dateStr]) {
-        // Fallback for categories not pre-initialized (like Roti Bakar etc)
+      let dateStr;
+      if (isYearly) {
+        dateStr = new Date(targetYear, cs.date - 1, 1).toLocaleDateString('id-ID', { month: 'short' });
+      } else {
+        dateStr = new Date(cs.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+      }
+      if (chartDataMap[dateStr]) {
         chartDataMap[dateStr][cs.category_name] = Number(cs.total) || 0;
       }
     });
@@ -600,18 +748,36 @@ export async function getRevenueStats() {
         posTotal,
         onlineTotal,
         categoryTotals
-      }
+      },
+      targetPeriod: { month: targetMonth, year: targetYear }
     };
   } catch (error) {
     console.error("Failed to fetch revenue stats:", error);
-    return { chartData: [], summary: { posTotal: 0, onlineTotal: 0, categoryTotals: {} } };
+    return { 
+      chartData: [], 
+      summary: { posTotal: 0, onlineTotal: 0, categoryTotals: {} },
+      targetPeriod: { 
+        month: selectedMonth || new Date().getMonth() + 1, 
+        year: selectedYear || new Date().getFullYear() 
+      }
+    };
   }
 }
 
 
-export async function getExpenses() {
+export async function getExpenses(selectedMonth?: number, selectedYear?: number) {
   try {
-    const expenses = await query("SELECT * FROM expenses ORDER BY expense_date DESC") as any[];
+    const targetMonth = selectedMonth === undefined ? new Date().getMonth() + 1 : selectedMonth;
+    const targetYear = selectedYear || new Date().getFullYear();
+    const isYearly = selectedMonth === 0;
+    const dateFilter = isYearly ? "YEAR(expense_date) = ?" : "YEAR(expense_date) = ? AND MONTH(expense_date) = ?";
+    const queryParams = isYearly ? [targetYear] : [targetYear, targetMonth];
+
+    const expenses = await query(`
+      SELECT * FROM expenses 
+      WHERE ${dateFilter}
+      ORDER BY expense_date DESC
+    `, queryParams) as any[];
     return JSON.parse(JSON.stringify(expenses.map(e => ({
       ...e,
       amount: Number(e.amount)
@@ -652,9 +818,21 @@ export async function deleteExpense(id: number) {
   }
 }
 
-export async function getSalaries() {
+export async function getSalaries(selectedMonth?: number, selectedYear?: number) {
   try {
-    const salaries = await query("SELECT * FROM salaries ORDER BY payment_date DESC") as any[];
+    const now = new Date();
+    const targetMonth = selectedMonth === undefined ? now.getMonth() + 1 : selectedMonth;
+    const targetYear = selectedYear || now.getFullYear();
+    const isYearly = selectedMonth === 0;
+    
+    const dateFilter = isYearly ? "YEAR(payment_date) = ?" : "YEAR(payment_date) = ? AND MONTH(payment_date) = ?";
+    const queryParams = isYearly ? [targetYear] : [targetYear, targetMonth];
+
+    const salaries = await query(`
+      SELECT * FROM salaries 
+      WHERE ${dateFilter}
+      ORDER BY payment_date DESC
+    `, queryParams) as any[];
     return JSON.parse(JSON.stringify(salaries.map(s => ({
       ...s,
       amount: Number(s.amount)
@@ -800,3 +978,458 @@ export async function resetPassword(data: { email: string; code: string; newPass
     return { success: false, error: "Gagal memperbarui password" };
   }
 }
+
+export async function getProfitLossStats(selectedMonth?: number, selectedYear?: number) {
+  try {
+    const now = new Date();
+    const targetMonth = selectedMonth !== undefined ? selectedMonth : now.getMonth() + 1;
+    const targetYear = selectedYear || now.getFullYear();
+    const isYearly = selectedMonth === 0;
+    
+    // 1. Fetch Total Revenue (from transactions)
+    const revenueSummary = await query(`
+      SELECT SUM(total_amount) as total
+      FROM transactions
+      WHERE ${isYearly ? 'YEAR(transaction_date) = ?' : 'YEAR(transaction_date) = ? AND MONTH(transaction_date) = ?'}
+      AND status != 'Cancel'
+    `, isYearly ? [targetYear] : [targetYear, targetMonth]) as any[];
+    const totalRevenue = Number(revenueSummary[0]?.total) || 0;
+
+    // 2. Fetch Total Expenses and Breakdown by Category
+    const dbExpenses = await query(`
+      SELECT category, SUM(amount) as total
+      FROM expenses
+      WHERE ${isYearly ? 'YEAR(expense_date) = ?' : 'YEAR(expense_date) = ? AND MONTH(expense_date) = ?'}
+      GROUP BY category
+    `, isYearly ? [targetYear] : [targetYear, targetMonth]) as any[];
+
+    const totalExpenses = dbExpenses.reduce((sum, row) => sum + Number(row.total), 0);
+    const expensesByCategory: Record<string, number> = {};
+    dbExpenses.forEach(row => {
+      expensesByCategory[row.category] = Number(row.total);
+    });
+
+    // 3. Fetch Total Salaries (from salaries)
+    const salariesSummary = await query(`
+      SELECT SUM(amount) as total
+      FROM salaries
+      WHERE ${isYearly ? 'YEAR(payment_date) = ?' : 'YEAR(payment_date) = ? AND MONTH(payment_date) = ?'}
+    `, isYearly ? [targetYear] : [targetYear, targetMonth]) as any[];
+    const totalSalaries = Number(salariesSummary[0]?.total) || 0;
+
+
+    return {
+      revenue: totalRevenue,
+      expenses: totalExpenses,
+      expensesByCategory: expensesByCategory,
+      salaries: totalSalaries,
+      netProfit: totalRevenue - (totalExpenses + totalSalaries),
+      targetPeriod: { month: targetMonth, year: targetYear }
+    };
+  } catch (error) {
+    console.error("Failed to fetch profit loss stats:", error);
+    return { 
+      revenue: 0, 
+      expenses: 0, 
+      expensesByCategory: {},
+      salaries: 0, 
+      netProfit: 0,
+      targetPeriod: { month: selectedMonth || 1, year: selectedYear || 2026 } 
+    };
+  }
+}
+
+// --- INGREDIENTS ACTIONS ---
+
+export async function getIngredients(): Promise<any[]> {
+  try {
+    const ingredients = await query(`
+      SELECT * FROM ingredients 
+      ORDER BY name ASC
+    `) as any[];
+    return JSON.parse(JSON.stringify(ingredients));
+  } catch (error) {
+    console.error("Failed to fetch ingredients:", error);
+    return [];
+  }
+}
+
+export async function addIngredient(data: {
+  name: string;
+  stock: number;
+  unit: string;
+  min_stock: number;
+}) {
+  try {
+    // 1. Cek apakah bahan dengan nama yang sama sudah ada (Case Insensitive check)
+    const existing = await query("SELECT id, stock FROM ingredients WHERE LOWER(name) = LOWER(?)", [data.name]) as any[];
+    
+    if (existing.length > 0) {
+      // 2. Jika ada, akumulasikan stok
+      const ingredientId = existing[0].id;
+      const currentStock = Number(existing[0].stock);
+      const addedStock = Number(data.stock);
+      const totalStock = currentStock + addedStock;
+      
+      await query(
+        "UPDATE ingredients SET stock = ?, unit = ?, min_stock = ? WHERE id = ?",
+        [totalStock, data.unit, data.min_stock, ingredientId]
+      );
+      
+      revalidatePath("/admin/ingredients");
+      return { success: true, message: `Stok ${data.name} berhasil ditambahkan! Total sekarang: ${totalStock} ${data.unit}` };
+    } else {
+      // 3. Jika tidak ada, buat baru
+      await query(
+        "INSERT INTO ingredients (name, stock, unit, min_stock) VALUES (?, ?, ?, ?)",
+        [data.name, data.stock, data.unit, data.min_stock]
+      );
+      
+      revalidatePath("/admin/ingredients");
+      return { success: true, message: `Bahan baku ${data.name} berhasil ditambahkan!` };
+    }
+  } catch (error: any) {
+    console.error("Failed to add/update ingredient:", error);
+    return { success: false, error: "Gagal memproses bahan baku: " + (error.message || "") };
+  }
+}
+
+export async function updateIngredient(id: number, data: {
+  name: string;
+  stock: number;
+  unit: string;
+  min_stock: number;
+}) {
+  try {
+    await query(
+      "UPDATE ingredients SET name = ?, stock = ?, unit = ?, min_stock = ? WHERE id = ?",
+      [data.name, data.stock, data.unit, data.min_stock, id]
+    );
+    revalidatePath("/admin/ingredients");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update ingredient:", error);
+    return { success: false, error: "Gagal memperbarui bahan baku" };
+  }
+}
+
+export async function deleteIngredient(id: number) {
+  try {
+    await query("DELETE FROM ingredients WHERE id = ?", [id]);
+    revalidatePath("/admin/ingredients");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete ingredient:", error);
+    return { success: false, error: "Gagal menghapus bahan baku" };
+  }
+}
+
+// --- BREAD INFO (CMS) ACTIONS ---
+
+export async function getBreadInfoArticles(): Promise<any[]> {
+  try {
+    const articles = await query("SELECT * FROM bread_info ORDER BY created_at DESC") as any[];
+    return JSON.parse(JSON.stringify(articles));
+  } catch (error) {
+    console.error("Failed to fetch bread info articles:", error);
+    return [];
+  }
+}
+
+export async function addBreadInfo(data: {
+  title: string;
+  content: string;
+  image_url: string;
+  category: string;
+}) {
+  try {
+    const user = await getMe();
+    if (!user || user.role !== "admin") return { success: false, error: "Unauthorized" };
+
+    await query(
+      "INSERT INTO bread_info (title, content, image_url, category) VALUES (?, ?, ?, ?)",
+      [data.title, data.content, data.image_url, data.category]
+    );
+    revalidatePath("/info");
+    revalidatePath("/admin/info");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to add bread info:", error);
+    return { success: false, error: "Gagal menambah informasi" };
+  }
+}
+
+export async function updateBreadInfo(id: number, data: {
+  title: string;
+  content: string;
+  image_url: string;
+  category: string;
+}) {
+  try {
+    const user = await getMe();
+    if (!user || user.role !== "admin") return { success: false, error: "Unauthorized" };
+
+    await query(
+      "UPDATE bread_info SET title = ?, content = ?, image_url = ?, category = ? WHERE id = ?",
+      [data.title, data.content, data.image_url, data.category, id]
+    );
+    revalidatePath("/info");
+    revalidatePath("/admin/info");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update bread info:", error);
+    return { success: false, error: "Gagal memperbarui informasi" };
+  }
+}
+
+export async function deleteBreadInfo(id: number) {
+  try {
+    const user = await getMe();
+    if (!user || user.role !== "admin") return { success: false, error: "Unauthorized" };
+
+    await query("DELETE FROM bread_info WHERE id = ?", [id]);
+    revalidatePath("/info");
+    revalidatePath("/admin/info");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete bread info:", error);
+    return { success: false, error: "Gagal menghapus informasi" };
+  }
+}
+export async function getBreadInfoById(id: number): Promise<any | null> {
+  try {
+    const articles = await query("SELECT * FROM bread_info WHERE id = ?", [id]) as any[];
+    if (articles.length === 0) return null;
+    return JSON.parse(JSON.stringify(articles[0]));
+  } catch (error) {
+    console.error("Failed to fetch bread info article by id:", error);
+    return null;
+  }
+}
+
+export async function incrementBreadInfoView(id: number) {
+  try {
+    await query("UPDATE bread_info SET views = views + 1 WHERE id = ?", [id]);
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to increment bread info view:", error);
+    return { success: false };
+  }
+}
+
+export async function updateProfile(data: { name: string; email: string }) {
+  try {
+    const user = await getMe();
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    // Update DB
+    await query(
+      "UPDATE users SET name = ?, email = ? WHERE id = ?",
+      [data.name, data.email, user.id]
+    );
+
+    // Update Session Cookie
+    const cookieStore = await cookies();
+    
+    // Explicit payload to avoid non-serializable junk from JWT (iat, exp etc)
+    const sessionPayload = {
+      id: user.id,
+      name: data.name,
+      username: user.username,
+      email: data.email,
+      role: user.role
+    };
+    
+    const token = await encrypt(sessionPayload);
+    
+    cookieStore.set("user_session", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24, // 1 day
+      path: "/",
+    });
+
+    revalidatePath("/");
+    return { success: true };
+  } catch (error: any) {
+    console.error("❌ Update profile error:", error.message || error);
+    return { success: false, error: "Gagal memperbarui profil: " + (error.message || "") };
+  }
+}
+
+export async function updatePassword(data: { oldPassword?: string; newPassword: string }) {
+  try {
+    const user = await getMe();
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    // Verify old password if provided
+    if (data.oldPassword) {
+      const results = await query("SELECT password FROM users WHERE id = ?", [user.id]) as any[];
+      if (results.length === 0) return { success: false, error: "User tidak ditemukan" };
+      
+      const isMatch = await bcrypt.compare(data.oldPassword, results[0].password);
+      if (!isMatch) return { success: false, error: "Password lama salah" };
+    }
+
+    const hashedPassword = await bcrypt.hash(data.newPassword, 10);
+    await query("UPDATE users SET password = ? WHERE id = ?", [hashedPassword, user.id]);
+
+    revalidatePath("/");
+    return { success: true };
+  } catch (error: any) {
+    console.error("❌ Update password error:", error.message || error);
+    return { success: false, error: "Gagal memperbarui password: " + (error.message || "") };
+  }
+}
+
+export async function getProductionLogs() {
+  try {
+    const logs = await query(`
+      SELECT 
+        pl.*, 
+        p.name as product_name,
+        p.unit
+      FROM production_logs pl
+      JOIN products p ON pl.product_id = p.id
+      ORDER BY pl.production_date DESC
+    `) as any[];
+    return JSON.parse(JSON.stringify(logs));
+  } catch (error) {
+    console.error("Failed to fetch production logs:", error);
+    return [];
+  }
+}
+
+export async function createProductionLog(data: {
+  product_id: number;
+  quantity: number;
+  notes?: string;
+  materials: { ingredient_id: number; quantity: number }[];
+}) {
+  const connection = await db.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    // 1. Insert production log
+    const [logRes] = await connection.query(
+      "INSERT INTO production_logs (product_id, quantity, notes) VALUES (?, ?, ?)",
+      [data.product_id, data.quantity, data.notes || ""]
+    ) as any;
+    const logId = logRes.insertId;
+
+    // 2. Process each material manually selected
+    for (const mat of data.materials) {
+      // Deduct stock from ingredients
+      await connection.query(
+        "UPDATE ingredients SET stock = stock - ? WHERE id = ?",
+        [mat.quantity, mat.ingredient_id]
+      );
+
+      // Save material usage log
+      await connection.query(
+        "INSERT INTO production_materials (production_log_id, ingredient_id, quantity_used) VALUES (?, ?, ?)",
+        [logId, mat.ingredient_id, mat.quantity]
+      );
+    }
+
+    // 3. Update product stock
+    await connection.query(
+      "UPDATE products SET stock = stock + ? WHERE id = ?",
+      [data.quantity, data.product_id]
+    );
+
+    await connection.commit();
+    revalidatePath("/admin/products");
+    revalidatePath("/admin/production");
+    revalidatePath("/admin/ingredients");
+    return { success: true };
+  } catch (error: any) {
+    await connection.rollback();
+    console.error("Failed to create production log:", error);
+    return { success: false, error: "Gagal mencatat produksi: " + (error.message || "Database error") };
+  } finally {
+    connection.release();
+  }
+}
+
+export async function getIngredientUsageStats(selectedMonth?: number, selectedYear?: number) {
+  try {
+    const now = new Date();
+    const targetMonth = selectedMonth !== undefined ? selectedMonth : now.getMonth() + 1;
+    const targetYear = selectedYear || now.getFullYear();
+    const isYearly = selectedMonth === 0;
+
+    const queryParams = isYearly ? [targetYear] : [targetYear, targetMonth];
+
+    const stats = await query(`
+      SELECT 
+        i.id, 
+        i.name, 
+        i.unit, 
+        i.stock,
+        i.min_stock,
+        COALESCE(SUM(pm.quantity_used), 0) as used_quantity
+      FROM ingredients i
+      LEFT JOIN production_materials pm ON i.id = pm.ingredient_id
+      LEFT JOIN production_logs pl ON pm.production_log_id = pl.id 
+        AND ${isYearly ? 'YEAR(pl.production_date) = ?' : 'YEAR(pl.production_date) = ? AND MONTH(pl.production_date) = ?'}
+      GROUP BY i.id
+      ORDER BY i.name ASC
+    `, queryParams) as any[];
+
+    return JSON.parse(JSON.stringify(stats.map(s => ({
+      ...s,
+      stock: Number(s.stock),
+      min_stock: Number(s.min_stock),
+      used_quantity: Number(s.used_quantity)
+    }))));
+  } catch (error) {
+    console.error("Failed to fetch ingredient usage stats:", error);
+    return [];
+  }
+}
+export async function getProductRecipe(productId: number) {
+  try {
+    const recipe = await query(`
+      SELECT 
+        pi.*, 
+        i.name as ingredient_name,
+        i.unit as ingredient_unit
+      FROM product_ingredients pi
+      JOIN ingredients i ON pi.ingredient_id = i.id
+      WHERE pi.product_id = ?
+    `, [productId]) as any[];
+    return JSON.parse(JSON.stringify(recipe));
+  } catch (error) {
+    console.error("Failed to fetch product recipe:", error);
+    return [];
+  }
+}
+
+export async function updateProductRecipe(productId: number, items: { ingredient_id: number, quantity: number }[]) {
+  const connection = await db.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    // 1. Delete existing recipe
+    await connection.query("DELETE FROM product_ingredients WHERE product_id = ?", [productId]);
+
+    // 2. Insert new items
+    if (items.length > 0) {
+      const values = items.map(item => [productId, item.ingredient_id, item.quantity]);
+      await connection.query("INSERT INTO product_ingredients (product_id, ingredient_id, quantity) VALUES ?", [values]);
+    }
+
+    await connection.commit();
+    revalidatePath("/admin/products");
+    return { success: true };
+  } catch (error: any) {
+    await connection.rollback();
+    console.error("Failed to update product recipe:", error);
+    return { success: false, error: error.message || "Database error" };
+  } finally {
+    connection.release();
+  }
+}
+
+

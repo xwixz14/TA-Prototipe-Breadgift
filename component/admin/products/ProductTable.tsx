@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Edit2, Trash2 } from "lucide-react";
+import { Edit2, Trash2, Scale } from "lucide-react";
 
 interface Product {
   id: number;
@@ -10,7 +10,6 @@ interface Product {
   unit: string;
   price: number;
   stock: number;
-  min_stock: number;
   status: "Aktif" | "Nonaktif";
 }
 
@@ -19,21 +18,21 @@ interface ProductTableProps {
   onEdit: (product: Product) => void;
   onDelete: (id: number) => void;
   onToggleStatus: (id: number, currentStatus: string) => void;
+  onManageRecipe: (product: Product) => void;
 }
 
-export default function ProductTable({ products, onEdit, onDelete, onToggleStatus }: ProductTableProps) {
+export default function ProductTable({ products, onEdit, onDelete, onToggleStatus, onManageRecipe }: ProductTableProps) {
   return (
     <div className="bg-white border border-zinc-200 rounded-[32px] overflow-hidden shadow-sm flex-1 flex flex-col min-h-0">
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         <table className="w-full text-left border-collapse relative">
           <thead>
             <tr className="bg-zinc-50 border-b border-zinc-200 sticky top-0 z-10">
-              <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight">Nama barang</th>
+              <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight">Nama roti</th>
               <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight">Kategori</th>
               <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-center">Satuan</th>
               <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-right">Harga jual</th>
               <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-center">Stok</th>
-              <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-center">Min. stok</th>
               <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-center">Status</th>
               <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-right">Aksi</th>
             </tr>
@@ -47,10 +46,9 @@ export default function ProductTable({ products, onEdit, onDelete, onToggleStatu
                 <td className="px-6 py-5 text-sm font-black text-[#6B4423] text-right">
                   Rp {product.price.toLocaleString("id-ID")}
                 </td>
-                <td className={`px-6 py-5 text-sm font-bold text-center ${product.stock <= product.min_stock ? 'text-red-500' : 'text-zinc-500'}`}>
+                <td className="px-6 py-5 text-sm font-bold text-center text-zinc-500">
                   {product.stock}
                 </td>
-                <td className="px-6 py-5 text-sm font-bold text-zinc-400 text-center">{product.min_stock}</td>
                 <td className="px-6 py-5 text-center">
                   <button
                     onClick={() => onToggleStatus(product.id, product.status)}
@@ -66,6 +64,13 @@ export default function ProductTable({ products, onEdit, onDelete, onToggleStatu
                 </td>
                 <td className="px-6 py-5 text-right">
                   <div className="flex justify-end gap-3 transition-opacity">
+                    <button 
+                      onClick={() => onManageRecipe(product)}
+                      title="Atur Resep Bahan Baku"
+                      className="p-2.5 bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white rounded-xl transition-all active:scale-90 border border-amber-100"
+                    >
+                      <Scale className="w-4 h-4" />
+                    </button>
                     <button 
                       onClick={() => onEdit(product)}
                       title="Ubah Produk"

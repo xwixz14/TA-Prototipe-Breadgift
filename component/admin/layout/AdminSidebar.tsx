@@ -12,19 +12,28 @@ import {
   LogOut,
   Store,
   Users,
-  X
+  TrendingUp,
+  Wheat,
+  X,
+  Newspaper,
+  ChefHat
 } from "lucide-react";
 
 import { logoutUser } from "@/lib/actions";
 import { useCart } from "@/context/CartContext";
 
+const SECURE_QUERY = "gs_lcrp=EgZjaHJvbWUqBwgAEAAYjwIyBwgAEAAYjwIyDAgBEC4YJxiABBiKBTIGCAIQRRg7MgYIAxBFGDsyDQgEEAAYgwEYsQMYgAQyDQgFEAAYgwEYsQMYgAQyBggGEEUYPTIGCAcQBRhA0gEHOTA2ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8";
+
 const menuItems = [
-  { name: "Kasir", icon: ShoppingCart, href: "/admin/dashboard" },
-  { name: "Barang & Stok", icon: Package, href: "/admin/products" },
-  { name: "Riwayat Transaksi", icon: History, href: "/admin/history" },
-  { name: "Pendapatan", icon: BarChart3, href: "/admin/revenue" },
-  { name: "Pengeluaran", icon: Wallet, href: "/admin/expenses" },
-  { name: "Gaji Karyawan", icon: Users, href: "/admin/gaji" },
+  { name: "Kasir", icon: ShoppingCart, href: `/admin/dashboard?${SECURE_QUERY}` },
+  { name: "Riwayat Transaksi", icon: History, href: `/admin/history?${SECURE_QUERY}` },
+  { name: "Stok Roti", icon: Package, href: `/admin/products?${SECURE_QUERY}` },
+  { name: "Produksi Roti", icon: ChefHat, href: `/admin/production?${SECURE_QUERY}` },
+  { name: "Stok Bahan", icon: Wheat, href: `/admin/ingredients?${SECURE_QUERY}` },
+  { name: "Pendapatan", icon: TrendingUp, href: `/admin/revenue?${SECURE_QUERY}` },
+  { name: "Pengeluaran", icon: Wallet, href: `/admin/expenses?${SECURE_QUERY}` },
+  { name: "Laba Rugi", icon: BarChart3, href: `/admin/profit-loss?${SECURE_QUERY}` },
+  { name: "Kelola Info", icon: Newspaper, href: `/admin/info?${SECURE_QUERY}` },
 ];
 
 
@@ -41,12 +50,18 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
-    setIsLoggingOut(true);
-    await logoutUser();
-    clearCart();
-    await refreshCart();
-    router.push("/");
-    router.refresh();
+    try {
+      setIsLoggingOut(true);
+      await logoutUser();
+      clearCart();
+      
+      // Use window.location.href for a clean break from the admin dashboard
+      // this prevents any background re-renders of admin layouts after logout
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Logout error:", error);
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -78,7 +93,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             onClick={onClose}
             className="p-2 hover:bg-zinc-100 rounded-xl lg:hidden"
           >
-            <X className="w-5 h-5 text-zinc-400" />
+            <X className="w-5 h-5 text-red-500" />
           </button>
         </div>
 

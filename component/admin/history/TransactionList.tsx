@@ -13,7 +13,10 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  Eye
+  Eye,
+  ImageIcon,
+  MapPin,
+  Truck
 } from "lucide-react";
 import Image from "next/image";
 
@@ -35,6 +38,8 @@ interface Transaction {
   transaction_date: string;
   status: 'Pending' | 'Confirm' | 'Cancel';
   source: 'POS' | 'Online';
+  delivery_method: 'Ambil di Toko' | 'Maxim Delivery' | null;
+  proof_of_payment: string | null;
   items: TransactionItem[];
 }
 
@@ -131,6 +136,7 @@ export default function TransactionList({ initialTransactions }: TransactionList
                 <th className="px-6 py-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest">Sumber</th>
                 <th className="px-6 py-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest">Pelanggan</th>
                 <th className="px-6 py-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest">Tanggal</th>
+                <th className="px-6 py-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest">Pengiriman</th>
                 <th className="px-6 py-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest">Total</th>
                 <th className="px-6 py-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest">Status</th>
                 <th className="px-6 py-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest">Aksi</th>
@@ -175,6 +181,16 @@ export default function TransactionList({ initialTransactions }: TransactionList
                            day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                         })}
                       </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {t.source === 'Online' ? (
+                        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black border ${t.delivery_method === 'Maxim Delivery' ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
+                          {t.delivery_method === 'Maxim Delivery' ? <Truck className="w-3 h-3" /> : <MapPin className="w-3 h-3" />}
+                          {t.delivery_method?.toUpperCase() || 'AMBIL DI TOKO'}
+                        </div>
+                      ) : (
+                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Take Away</span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-sm font-black text-[#6B4423]">
@@ -249,6 +265,41 @@ export default function TransactionList({ initialTransactions }: TransactionList
                             ))}
                           </div>
                         </div>
+
+                        {/* Proof of Payment View for Online orders */}
+                        {t.source === 'Online' && (
+                          <div className="flex flex-col gap-4">
+                            <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Bukti Pembayaran</h4>
+                            <div className="bg-white p-6 rounded-3xl border border-zinc-100 shadow-sm max-w-sm">
+                              {t.proof_of_payment ? (
+                                <div className="space-y-4 text-center">
+                                  <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden border border-zinc-50 shadow-inner bg-zinc-50">
+                                    <Image 
+                                      src={t.proof_of_payment} 
+                                      alt="Bukti Bayar"
+                                      fill
+                                      className="object-contain"
+                                    />
+                                  </div>
+                                  <a 
+                                    href={t.proof_of_payment} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 text-[10px] font-black text-[#6B4423] hover:underline"
+                                  >
+                                    <Eye className="w-3 h-3" />
+                                    LIHAT GAMBAR PENUH
+                                  </a>
+                                </div>
+                              ) : (
+                                <div className="py-10 flex flex-col items-center justify-center text-center opacity-40">
+                                   <ImageIcon className="w-10 h-10 text-zinc-300 mb-3" />
+                                   <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Belum ada bukti yang diunggah</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   )}

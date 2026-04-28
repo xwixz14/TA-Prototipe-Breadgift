@@ -3,12 +3,14 @@
 
 import React, { useState, useEffect } from "react";
 import { X, Banknote, QrCode } from "lucide-react";
+import { formatNumber, parseRawNumber, limitValue, MAX_LIMIT_CURRENCY } from "@/lib/utils";
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   totalAmount: number;
   paymentMethod: "Tunai" | "QRIS";
+  setPaymentMethod: (method: "Tunai" | "QRIS") => void;
   onConfirm: (amountPaid: number) => void;
 }
 
@@ -17,6 +19,7 @@ export default function PaymentModal({
   onClose,
   totalAmount,
   paymentMethod,
+  setPaymentMethod,
   onConfirm
 }: PaymentModalProps) {
   const [amountPaid, setAmountPaid] = useState<number>(0);
@@ -50,11 +53,12 @@ export default function PaymentModal({
             onClick={onClose}
             className="p-2 hover:bg-zinc-100 rounded-full transition-colors"
           >
-            <X className="w-6 h-6 text-zinc-400" />
+            <X className="w-6 h-6 text-red-500" />
           </button>
         </div>
 
-        <div className="p-8 space-y-8">
+        {/* Scrollable Content Area */}
+        <div className="max-h-[60vh] overflow-y-auto custom-scrollbar p-8 space-y-8">
           <p className="text-zinc-500 font-medium">Silakan pilih metode pembayaran dan masukkan jumlah yang dibayarkan</p>
           
           {/* Total Display */}
@@ -67,14 +71,20 @@ export default function PaymentModal({
              <div className="flex flex-col gap-2">
                 <label className="text-xs font-black text-zinc-400 uppercase tracking-widest ml-1">Metode pembayaran</label>
                 <div className="flex gap-4">
-                  <div className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl border-2 transition-all cursor-default ${paymentMethod === 'Tunai' ? 'border-[#6B4423] bg-[#6B4423]/5 text-[#6B4423]' : 'border-zinc-100 text-zinc-400 opacity-50'}`}>
+                  <button 
+                    onClick={() => setPaymentMethod("Tunai")}
+                    className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl border-2 transition-all cursor-pointer ${paymentMethod === 'Tunai' ? 'border-[#6B4423] bg-[#6B4423]/5 text-[#6B4423]' : 'border-zinc-100 text-zinc-400 opacity-50 hover:border-zinc-200'}`}
+                  >
                     <Banknote className="w-5 h-5" />
                     <span className="font-bold">Tunai</span>
-                  </div>
-                  <div className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl border-2 transition-all cursor-default ${paymentMethod === 'QRIS' ? 'border-[#6B4423] bg-[#6B4423]/5 text-[#6B4423]' : 'border-zinc-100 text-zinc-400 opacity-50'}`}>
+                  </button>
+                  <button 
+                    onClick={() => setPaymentMethod("QRIS")}
+                    className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl border-2 transition-all cursor-pointer ${paymentMethod === 'QRIS' ? 'border-[#6B4423] bg-[#6B4423]/5 text-[#6B4423]' : 'border-zinc-100 text-zinc-400 opacity-50 hover:border-zinc-200'}`}
+                  >
                     <QrCode className="w-5 h-5" />
                     <span className="font-bold">QRIS</span>
-                  </div>
+                  </button>
                 </div>
              </div>
 
@@ -87,12 +97,11 @@ export default function PaymentModal({
                        <input 
                         type="text"
                         autoFocus
-                        value={amountPaid === 0 ? "" : amountPaid.toLocaleString("id-ID")}
+                        value={formatNumber(amountPaid)}
                         onChange={(e) => {
-                          // Hapus semua karakter non-digit untuk mendapatkan nilai asli
-                          const rawValue = e.target.value.replace(/\D/g, "");
-                          const numericValue = rawValue === "" ? 0 : parseInt(rawValue);
-                          setAmountPaid(numericValue);
+                          const raw = parseRawNumber(e.target.value);
+                          const limited = limitValue(raw, MAX_LIMIT_CURRENCY);
+                          setAmountPaid(limited);
                         }}
                         className="w-full bg-zinc-50 border border-zinc-200 py-5 pl-14 pr-6 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#6B4423]/10 focus:border-[#6B4423] text-xl font-bold transition-all"
                         placeholder="Masukkan nominal..."
@@ -122,17 +131,23 @@ export default function PaymentModal({
                   </div>
                </div>
              ) : (
-                <div className="flex flex-col items-center gap-6 py-4 animate-in fade-in zoom-in duration-500">
-                  <div className="p-4 bg-white border-2 border-zinc-100 rounded-[32px] shadow-lg overflow-hidden flex items-center justify-center">
-                    <img 
-                      src="/assets/qris_placeholder.png" 
-                      alt="QRIS Barcode" 
-                      className="w-56 h-56 object-contain"
-                    />
+                <div className="flex flex-col items-center gap-8 py-6 animate-in fade-in zoom-in duration-700">
+                  <div className="relative group">
+                    {/* Glossy Card Effect */}
+                    <div className="absolute -inset-4 bg-zinc-100/50 rounded-[48px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div className="relative p-6 bg-white border-2 border-zinc-100 rounded-[32px] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] flex items-center justify-center transition-transform duration-500 hover:scale-[1.05]">
+                      <img 
+                        src="/assets/qris_offline.png" 
+                        alt="QRIS Barcode" 
+                        className="w-full max-w-[400px] h-auto object-contain"
+                      />
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <p className="text-lg font-black text-zinc-900">Scan untuk Membayar</p>
-                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">Tunjukkan barcode ini kepada pelanggan</p>
+
+                  <div className="text-center space-y-2">
+                    <h3 className="text-2xl md:text-3xl font-black text-zinc-900 tracking-tight">Scan untuk Membayar</h3>
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em]">Tunjukkan barcode ini kepada pelanggan</p>
                   </div>
                 </div>
              )}

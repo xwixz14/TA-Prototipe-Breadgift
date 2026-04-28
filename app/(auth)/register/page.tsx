@@ -7,7 +7,7 @@ import { useState } from "react";
 import { registerUser } from "@/lib/actions";
 import { useCart } from "@/context/CartContext";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { User, Mail, Lock, UserPlus, ArrowLeft, Heart } from "lucide-react";
+import { User, Mail, Lock, UserPlus, ArrowLeft, Heart, Eye, EyeOff } from "lucide-react";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -34,6 +34,7 @@ export default function RegisterPage() {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -162,12 +163,19 @@ export default function RegisterPage() {
                             <Lock size={18} />
                         </div>
                         <input
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             value={formData.password}
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                             placeholder="••••••••"
-                            className="input w-full pl-11 bg-white/40 border-stone-200/60 focus:border-primary/50 focus:bg-white rounded-2xl h-14 font-bold transition-all placeholder:text-stone-300"
+                            className="input w-full pl-11 pr-12 bg-white/40 border-stone-200/60 focus:border-primary/50 focus:bg-white rounded-2xl h-14 font-bold transition-all placeholder:text-stone-300"
                         />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-stone-300 hover:text-primary transition-colors"
+                        >
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
                         </div>
                     </div>
                 </div>
@@ -183,14 +191,6 @@ export default function RegisterPage() {
                         ) : (
                         "Gabung Sekarang"
                         )}
-                    </button>
-                    
-                    <button
-                        type="button"
-                        className="btn btn-outline w-full h-14 rounded-2xl border-stone-200 hover:bg-stone-50 hover:border-stone-300 text-stone-600 font-bold transition-all"
-                    >
-                        <Mail size={20} className="mr-2 text-primary" />
-                        Daftar dengan Google
                     </button>
                 </div>
 

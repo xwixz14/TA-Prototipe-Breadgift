@@ -31,12 +31,15 @@ export default function Navbar() {
   // Hide Navbar on Login, Register or Admin pages
   if (pathname === "/login" || pathname === "/register" || pathname?.startsWith("/admin")) return null;
 
+  const SECURE_QUERY = "gs_lcrp=EgZjaHJvbWUqBwgAEAAYjwIyBwgAEAAYjwIyDAgBEC4YJxiABBiKBTIGCAIQRRg7MgYIAxBFGDsyDQgEEAAYgwEYsQMYgAQyDQgFEAAYgwEYsQMYgAQyBggGEEUYPTIGCAcQBRhA0gEHOTA2ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8";
+
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "About", href: "/about" },
-    { name: "Catalog", href: "/catalog" },
-    { name: "Menu", href: "/menu" },
-    { name: "Contact", href: "/contact" }
+    { name: "Home", href: `/?${SECURE_QUERY}` },
+    { name: "About", href: `/about?${SECURE_QUERY}` },
+
+    { name: "Menu", href: `/menu?${SECURE_QUERY}` },
+    { name: "Informasi", href: `/info?${SECURE_QUERY}` },
+    { name: "Contact", href: `/contact?${SECURE_QUERY}` }
   ];
 
   return (
@@ -61,24 +64,23 @@ export default function Navbar() {
             <Link
               key={link.name}
               href={link.href}
-              className={`text-[17px] font-extrabold tracking-tight transition-all duration-300 relative group py-2 ${
-                pathname === link.href ? "text-primary" : "text-stone-500 hover:text-primary"
-              }`}
+              className={`text-[17px] font-extrabold tracking-tight transition-all duration-300 relative group py-2 ${pathname === link.href ? "text-primary" : "text-stone-500 hover:text-primary"
+                }`}
             >
               {link.name}
-              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-[#6B4423] rounded-full transition-all duration-300 transform origin-left ${
-                pathname === link.href ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100 opacity-50"
-              }`} />
+              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-[#6B4423] rounded-full transition-all duration-300 transform origin-left ${pathname === link.href ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100 opacity-50"
+                }`} />
             </Link>
           ))}
         </div>
 
         {/* 3. Auth & Controls Section (Right Column) */}
         <div className="flex-1 flex justify-end items-center gap-3 md:gap-6">
-          {/* Cart Icon - Always visible if enough items or logged in */}
-          {(user || totalItems > 0) && (
-            <button 
+          {/* Cart Icon - Always visible if enough items or logged in (HIDDEN FOR ADMIN) */}
+          {(user || totalItems > 0) && user?.role !== 'admin' && (
+            <button
               onClick={() => setIsCartOpen(true)}
+              aria-label={`Buka keranjang belanja (${totalItems} item)`}
               className="relative p-2.5 md:p-3 bg-zinc-50 rounded-2xl border border-zinc-100 hover:bg-[#FCF1E8]/20 hover:border-[#6B4423]/20 transition-all group"
             >
               <ShoppingCart className="w-5 h-5 text-zinc-400 group-hover:text-[#6B4423] transition-colors" />
@@ -94,14 +96,22 @@ export default function Navbar() {
           <div className="hidden md:flex items-center">
             {user ? (
               <div className="flex items-center gap-8 bg-zinc-50 pl-6 pr-1.5 py-1.5 rounded-2xl border border-zinc-100">
-                 <div className="flex flex-col items-end text-right">
-                    <span className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">Status: {user.role === 'admin' ? 'Admin' : 'Pelanggan'}</span>
-                    <span className="text-[13px] font-black text-primary mt-1 line-clamp-1 max-w-[120px]">{user.name}</span>
-                 </div>
-                 <button 
-                   onClick={handleLogout}
-                   className="px-5 py-2.5 bg-white text-[11px] font-black text-red-500 hover:bg-red-50 rounded-xl shadow-sm border border-stone-200 transition-all active:scale-95"
-                 >
+                <div className="flex flex-col items-end text-right">
+                  <span className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">Status: {user.role === 'admin' ? 'Admin' : 'Pelanggan'}</span>
+                  <span className="text-[13px] font-black text-primary mt-1 line-clamp-1 max-w-[120px]">{user.name}</span>
+                </div>
+                {user.role === 'admin' && (
+                  <Link
+                    href={`/admin/dashboard?${SECURE_QUERY}`}
+                    className="px-4 py-2 bg-[#6B4423] text-white text-[11px] font-bold rounded-xl hover:bg-[#5D3822] transition-all"
+                  >
+                    Ke Dashboard
+                  </Link>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="px-5 py-2.5 bg-white text-[11px] font-black text-red-500 hover:bg-red-50 rounded-xl shadow-sm border border-stone-200 transition-all active:scale-95"
+                >
                   Logout
                 </button>
               </div>
@@ -113,9 +123,10 @@ export default function Navbar() {
             )}
           </div>
 
-           {/* Mobile Menu Toggle */}
-          <button 
+          {/* Mobile Menu Toggle */}
+          <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? "Tutup menu" : "Buka menu navigasi"}
             className="p-2.5 bg-primary text-white rounded-2xl md:hidden shadow-lg shadow-primary/20 transition-all active:scale-90"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -126,15 +137,14 @@ export default function Navbar() {
       {/* Mobile Menu Overlay */}
       <div className={`fixed inset-0 z-[90] bg-white transition-all duration-500 ease-in-out md:hidden ${isMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}>
         <div className="flex flex-col h-full pt-32 px-10 pb-12">
-           <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em] mb-6">Navigasi Menu</p>
+          <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em] mb-6">Navigasi Menu</p>
           <div className="flex flex-col gap-6 flex-1">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`text-2xl font-black tracking-tight transition-all ${
-                  pathname === link.href ? "text-primary translate-x-3" : "text-stone-300 hover:text-primary"
-                }`}
+                className={`text-2xl font-black tracking-tight transition-all ${pathname === link.href ? "text-primary translate-x-3" : "text-stone-300 hover:text-primary"
+                  }`}
               >
                 {link.name}
               </Link>
@@ -148,7 +158,7 @@ export default function Navbar() {
                   <p className="text-[10px] font-black text-[#6B4423] uppercase tracking-widest mb-1">Status: {user.role === 'admin' ? 'Admin' : 'Pelanggan'}</p>
                   <p className="text-2xl font-black text-zinc-900">{user.name}</p>
                 </div>
-                <button 
+                <button
                   onClick={handleLogout}
                   className="w-full py-5 bg-red-50 text-red-600 rounded-[24px] text-lg font-black transition-all active:scale-95"
                 >

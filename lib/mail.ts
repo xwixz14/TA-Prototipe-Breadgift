@@ -1,13 +1,14 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: process.env.SMTP_PORT === "465",
+  service: 'gmail',
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+  tls: {
+    rejectUnauthorized: false
+  }
 });
 
 interface OrderEmailProps {
@@ -92,7 +93,7 @@ export async function sendOrderConfirmation({ orderId, customerName, customerEma
                 </table>
               </div>
               
-              <div style="text-align: center;">
+              <div id="admin-button-section" style="text-align: center;">
                 <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://breadgift.app'}/admin/dashboard" class="btn">
                   Lihat Dashboard Admin
                 </a>
@@ -109,17 +110,9 @@ export async function sendOrderConfirmation({ orderId, customerName, customerEma
     `;
 
 
-    // --- DEBUGGING KONFIGURASI ---
-    console.log("-----------------------------------------");
-    console.log("📧 [MAIL-LOG] Memulai Pengiriman...");
-    console.log("🔘 Sender (Robot):", process.env.SMTP_USER);
     const adminTarget = process.env.ADMIN_EMAIL || "dwi_cahyo_kuncoro@teknokrat.ac.id";
-    console.log("🔘 Admin Target:", adminTarget);
-    console.log("🔘 Customer Target:", customerEmail);
-    console.log("-----------------------------------------");
 
     // 1. KIRIM KE ADMIN (NOTIFIKASI PEMILIK)
-    console.log(`👉 [TASK 1] Mengirim Notifikasi ke ADMIN...`);
     try {
       await transporter.sendMail({
         from: `"BreadGift Notification" <${process.env.SMTP_USER}>`,
@@ -127,29 +120,26 @@ export async function sendOrderConfirmation({ orderId, customerName, customerEma
         subject: `[NOTIF-ADMIN] Ada Pesanan Masuk! - ${orderId}`,
         html: htmlContent.replace("Halo Bos BreadGift,", "Halo Boss BreadGift,"),
       });
-      console.log(`✅ [TASK 1] Notifikasi Admin BERHASIL!`);
     } catch (e: any) {
-      console.error(`❌ [TASK 1] Notifikasi Admin GAGAL:`, e.message);
+      console.error(`❌ [MAIL] Notifikasi Admin GAGAL:`, e.message);
     }
 
     // 2. KIRIM KE PELANGGAN (STRUK BELANJA)
     if (customerEmail && customerEmail !== 'customer@example.com' && customerEmail !== '') {
-      console.log(`👉 [TASK 2] Mengirim Struk ke PELANGGAN...`);
       try {
         await transporter.sendMail({
           from: `"BreadGift Bakery" <${process.env.SMTP_USER}>`,
           to: customerEmail,
           subject: `🍕 Struk Pesanan BreadGift - ${orderId}`,
           html: htmlContent.replace("Halo Bos BreadGift,", `Halo <strong>${customerName}</strong>,`)
-                           .replace("Ada pesanan online baru masuk nih!", "Terima kasih sudah memesan roti di BreadGift! Pesanan Anda sedang kami siapkan."),
+                           .replace("Ada pesanan online baru masuk nih!", "Terima kasih sudah memesan roti di BreadGift! Pesanan Anda sedang kami siapkan.")
+                           .replace(/<div id="admin-button-section"[\s\S]*?<\/div>/, ""), 
         });
-        console.log(`✅ [TASK 2] Struk Pelanggan BERHASIL!`);
       } catch (e: any) {
-        console.error(`❌ [TASK 2] Struk Pelanggan GAGAL:`, e.message);
+        console.error(`❌ [MAIL] Struk Pelanggan GAGAL:`, e.message);
       }
     }
 
-    console.log(`✨ [MAIL-LOG] Selesai untuk Order ID: ${orderId}`);
     return { success: true };
   } catch (error: any) {
     console.error("❌ [MAIL-SYSTEM] ERROR KRITIS:", error.message);

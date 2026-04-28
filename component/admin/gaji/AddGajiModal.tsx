@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { createSalary } from "@/lib/actions";
+import { formatNumber, parseRawNumber, limitValue, MAX_LIMIT_CURRENCY } from "@/lib/utils";
 
 interface AddGajiModalProps {
   isOpen: boolean;
@@ -49,7 +50,7 @@ export default function AddGajiModal({ isOpen, onClose, onSuccess }: AddGajiModa
             onClick={onClose}
             className="p-2 hover:bg-zinc-100 rounded-full transition-colors"
           >
-            <X className="w-6 h-6 text-zinc-400" />
+            <X className="w-6 h-6 text-red-500" />
           </button>
         </div>
 
@@ -75,10 +76,11 @@ export default function AddGajiModal({ isOpen, onClose, onSuccess }: AddGajiModa
             <input
               type="text"
               required
-              value={amount ? Number(amount).toLocaleString("id-ID") : ""}
+              value={formatNumber(amount)}
               onChange={(e) => {
-                const rawValue = e.target.value.replace(/\D/g, "");
-                setAmount(rawValue);
+                const raw = parseRawNumber(e.target.value);
+                const limited = limitValue(raw, MAX_LIMIT_CURRENCY);
+                setAmount(limited.toString());
               }}
               placeholder="0"
               className="w-full px-6 py-4 bg-[#FBFBFB] border-2 border-transparent focus:border-[#6B4423]/20 focus:bg-white rounded-2xl outline-none transition-all font-bold text-zinc-900 placeholder:text-zinc-300 placeholder:font-bold"

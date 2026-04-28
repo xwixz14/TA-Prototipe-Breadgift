@@ -1,17 +1,7 @@
-import React from "react";
-import GajiManager from "@/component/admin/gaji/GajiManager";
-import { getSalaries } from "@/lib/actions";
+import { redirect } from "next/navigation";
 
-export const metadata = {
-  title: "Gaji Karyawan - Admin BreadGift",
-};
+const SECURE_QUERY = "gs_lcrp=EgZjaHJvbWUqBwgAEAAYjwIyBwgAEAAYjwIyDAgBEC4YJxiABBiKBTIGCAIQRRg7MgYIAxBFGDsyDQgEEAAYgwEYsQMYgAQyDQgFEAAYgwEYsQMYgAQyBggGEEUYPTIGCAcQBRhA0gEHOTA2ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8";
 
-export default async function GajiPage() {
-  const initialSalaries = await getSalaries();
-
-  return (
-    <div className="flex-1 h-full overflow-hidden">
-      <GajiManager initialSalaries={initialSalaries} />
-    </div>
-  );
+export default function GajiPage() {
+  redirect(`/admin/expenses?${SECURE_QUERY}`);
 }

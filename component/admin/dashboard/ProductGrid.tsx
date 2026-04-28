@@ -30,7 +30,7 @@ export default function ProductGrid({
   setSearchQuery
 }: ProductGridProps) {
   return (
-    <div className="flex-1 flex flex-col h-full min-h-0">
+    <div className="flex-1 flex flex-col h-fit lg:h-full min-h-0">
       {/* Cari Produk - Styled to match mockup */}
       <div className="mb-8 pr-6">
         <div className="relative group">
@@ -45,7 +45,7 @@ export default function ProductGrid({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-6 custom-scrollbar">
+      <div className="lg:flex-1 lg:overflow-y-auto pr-6 custom-scrollbar">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
           {products.map((product) => (
             <ProductCard

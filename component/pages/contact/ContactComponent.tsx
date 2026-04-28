@@ -19,15 +19,15 @@ const contactInfo = [
   {
     icon: <Mail className="w-6 h-6" />,
     label: "Email Kami",
-    value: "halo@breadgift.id",
-    href: "mailto:halo@breadgift.id",
+    value: "breadgift9@gmail.com",
+    href: "mailto:breadgift9@gmail.com",
     color: "bg-blue-50 text-blue-600"
   },
   {
     icon: <Phone className="w-6 h-6" />,
     label: "Telepon / WA",
-    value: "+62 812-3456-7890",
-    href: "tel:+6281234567890",
+    value: "+62 822-7972-8849",
+    href: "https://wa.me/6282279728849",
     color: "bg-green-50 text-green-600"
   },
   {

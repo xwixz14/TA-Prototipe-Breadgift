@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Poppins, Geist_Mono, Rammetto_One } from "next/font/google";
+import { Plus_Jakarta_Sans, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta",
   weight: ["300", "400", "500", "600", "700", "800"],
   subsets: ["latin"],
 });
@@ -13,15 +13,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const rammettoOne = Rammetto_One({
-  variable: "--font-rammetto-one",
-  weight: "400",
+const outfit = Outfit({
+  variable: "--font-outfit",
+  weight: ["400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
   title: "BreadGift Bakery",
   description: "Fresh from the oven, straight to your heart.",
+  icons: {
+    icon: "/assets/Logo.png",
+  },
 };
 
 import Navbar from "@/component/layout/Navbar";
@@ -38,7 +41,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${geistMono.variable} ${rammettoOne.variable} h-full antialiased`}
+      className={`${plusJakartaSans.variable} ${geistMono.variable} ${outfit.variable} h-full antialiased`}
     >
       <body className="min-h-full font-sans antialiased">
         <CartProvider initialUser={user}>

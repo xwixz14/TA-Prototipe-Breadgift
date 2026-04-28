@@ -15,6 +15,7 @@ interface CartSummaryProps {
   paymentMethod: "Tunai" | "QRIS";
   setPaymentMethod: (method: "Tunai" | "QRIS") => void;
   onUpdateQuantity: (id: number, delta: number) => void;
+  onSetQuantity: (id: number, qty: number) => void;
   onRemoveItem: (id: number) => void;
   onClearCart: () => void;
   onCheckout: () => void;
@@ -25,6 +26,7 @@ export default function CartSummary({
   paymentMethod,
   setPaymentMethod,
   onUpdateQuantity,
+  onSetQuantity,
   onRemoveItem,
   onClearCart,
   onCheckout
@@ -33,7 +35,7 @@ export default function CartSummary({
   const total = subtotal; // Can add tax/discount here if needed
 
   return (
-    <div className="w-[450px] bg-white border border-zinc-100 rounded-[32px] p-8 flex flex-col h-full shadow-2xl shadow-zinc-100/50 min-h-0">
+    <div className="w-full lg:w-[450px] bg-white border border-zinc-100 rounded-[32px] p-8 flex flex-col h-fit lg:h-full shadow-2xl shadow-zinc-100/50 min-h-0">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-xl font-black text-zinc-900 flex items-center gap-3">
           Ringkasan Pembayaran
@@ -84,7 +86,15 @@ export default function CartSummary({
                       >
                         <Minus className="w-3.5 h-3.5" />
                       </button>
-                      <span className="text-xs font-black text-zinc-800 w-4 text-center">{item.quantity}</span>
+                      <input 
+                        type="text"
+                        value={item.quantity}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          onSetQuantity(item.id, val === "" ? 0 : parseInt(val));
+                        }}
+                        className="w-10 bg-transparent text-xs font-black text-zinc-800 text-center focus:outline-none focus:ring-1 focus:ring-[#6B4423]/20 rounded"
+                      />
                       <button 
                         onClick={() => onUpdateQuantity(item.id, 1)}
                         className="p-1.5 hover:bg-white hover:text-[#6B4423] rounded-lg transition-all text-zinc-400 active:scale-90"

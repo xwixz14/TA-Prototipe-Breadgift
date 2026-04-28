@@ -50,8 +50,8 @@ export default function AdminLayout({
         <AdminHeader onMenuClick={() => setIsSidebarOpen(true)} />
 
         {/* Absolute Main View - Responsive Padding */}
-        <main className="flex-1 overflow-hidden p-4 md:p-10">
-          <div className="max-w-[1600px] mx-auto h-full flex flex-col lg:flex-row gap-6 lg:gap-10">
+        <main className="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
+          <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-6 lg:gap-10">
             {children}
           </div>
         </main>

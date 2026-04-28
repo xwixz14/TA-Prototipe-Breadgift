@@ -43,7 +43,7 @@ export default function DashboardContainer({
     // 2. Check if adding one more would exceed stock
     const cartItem = cart.find((item) => item.id === product.id);
     if (cartItem && cartItem.quantity >= product.stock) {
-      setToastMessage("Stok tidak mencukupi");
+      setToastMessage("Waduh bebs, stok roti ini sudah habis!");
       setShowToast(true);
       return;
     }
@@ -73,12 +73,36 @@ export default function DashboardContainer({
           
           // Prevent increasing beyond stock
           if (delta > 0 && newQty > product.stock) {
-            setToastMessage("Maksimal stok tercapai");
+            setToastMessage("Waduh bebs, stok roti ini sudah habis!");
             setShowToast(true);
             return item;
           }
 
           if (newQty <= 0) return null; // Logic to handle removal will be in filter
+          return { ...item, quantity: newQty };
+        }
+        return item;
+      }).filter((item): item is CartItem => item !== null);
+    });
+  };
+
+  const handleSetQuantity = (id: number, quantity: number) => {
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    setCart((prev) => {
+      return prev.map((item) => {
+        if (item.id === id) {
+          let newQty = quantity;
+          
+          // Prevent exceeding stock
+          if (newQty > product.stock) {
+            setToastMessage(`Stok cuma ada ${product.stock} bebs!`);
+            setShowToast(true);
+            newQty = product.stock;
+          }
+
+          if (newQty <= 0) return null;
           return { ...item, quantity: newQty };
         }
         return item;
@@ -139,7 +163,7 @@ export default function DashboardContainer({
   const totalAmount = cart.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="flex w-full h-full gap-8 overflow-hidden">
+    <div className="flex flex-col lg:flex-row w-full h-full lg:overflow-hidden gap-6 lg:gap-8">
       {/* Product List Section */}
       <ProductGrid 
         products={filteredProducts} 
@@ -154,6 +178,7 @@ export default function DashboardContainer({
         paymentMethod={paymentMethod}
         setPaymentMethod={setPaymentMethod}
         onUpdateQuantity={handleUpdateQuantity}
+        onSetQuantity={handleSetQuantity}
         onRemoveItem={handleRemoveFromCart}
         onClearCart={handleClearCart}
         onCheckout={handleCheckout}
@@ -165,6 +190,7 @@ export default function DashboardContainer({
         onClose={() => setIsPaymentModalOpen(false)}
         totalAmount={totalAmount}
         paymentMethod={paymentMethod}
+        setPaymentMethod={setPaymentMethod}
         onConfirm={onConfirmPayment}
       />
 

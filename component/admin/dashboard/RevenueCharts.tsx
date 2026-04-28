@@ -20,6 +20,8 @@ import * as XLSX from "xlsx";
 import ExcelJS from "exceljs";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import MonthSelector from "../common/MonthSelector";
+import { useRouter } from "next/navigation";
 
 interface RevenueChartsProps {
   chartData: any[];
@@ -28,16 +30,31 @@ interface RevenueChartsProps {
     onlineTotal: number;
     categoryTotals: { [key: string]: number };
   };
+  currentMonth: number;
+  currentYear: number;
 }
 
-export default function RevenueCharts({ chartData, summary }: RevenueChartsProps) {
+export default function RevenueCharts({ chartData, summary, currentMonth, currentYear }: RevenueChartsProps) {
+  const router = useRouter();
   const totalRevenue = summary.posTotal + summary.onlineTotal;
+  const isYearly = currentMonth === 0;
+
+  const handleDateChange = (month: number, year: number) => {
+    router.push(`/admin/revenue?month=${month}&year=${year}`);
+  };
 
   const getReportHeader = () => {
+    const monthName = !isYearly ? new Date(currentYear, currentMonth - 1, 1).toLocaleDateString('id-ID', { month: 'long' }) : "";
+    const lastDayOfMonth = !isYearly ? new Date(currentYear, currentMonth, 0).getDate() : "";
+    
+    const periodStr = isYearly 
+      ? `Periode: Tahun ${currentYear}`
+      : `Periode: 01 ${monthName} ${currentYear} - ${lastDayOfMonth} ${monthName} ${currentYear}`;
+
     return {
       title: "BREADGIFT",
       address: "Gg. Mushola Tawakal No.69, Sukarame, Kec. Sukarame, Kota Bandar Lampung, Lampung 35122",
-      period: `Periode: 7 Hari Terakhir (${chartData[0]?.fullDate || ""} - ${chartData[6]?.fullDate || ""})`
+      period: periodStr
     };
   };
 
@@ -219,7 +236,7 @@ export default function RevenueCharts({ chartData, summary }: RevenueChartsProps
       doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(0, 0, 0);
-      doc.text(header.period, pageWidth / 2, 38, { align: "center" });
+      doc.text(header.period, pageWidth / 2, 45, { align: "center" });
 
       // Table
       const tableData = chartData.map(d => [
@@ -271,18 +288,20 @@ export default function RevenueCharts({ chartData, summary }: RevenueChartsProps
 
 
   return (
-    <div className="flex-1 flex flex-col gap-8 h-full overflow-y-auto pr-2 custom-scrollbar pb-10">
+    <div className="flex-1 flex flex-col gap-8 h-full overflow-y-auto pr-4 custom-scrollbar pb-20 w-full">
       {/* Header & Overall Stats */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-3xl font-black text-zinc-900 tracking-tight">Laporan Pendapatan</h1>
-          <p className="text-sm text-zinc-500 font-medium">Analisis performa penjualan Kasir vs Online.</p>
+          <p className="text-sm text-zinc-500 font-medium italic">
+            Menampilkan data periode {isYearly ? `Tahun ${currentYear}` : new Date(currentYear, currentMonth - 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+          </p>
         </div>
 
-        <div className="flex items-stretch gap-6">
+        <div className="flex flex-wrap items-stretch gap-6">
           <button 
             onClick={handleExportExcel}
-            className="bg-white p-6 rounded-[32px] border border-zinc-200 shadow-sm flex flex-col justify-between min-w-[200px] hover:border-[#6B4423]/40 hover:bg-[#FCF1E8]/20 transition-all active:scale-95 text-left group"
+            className="bg-white p-6 rounded-[32px] border border-zinc-200 shadow-sm flex flex-col justify-between min-w-[180px] flex-1 md:flex-none hover:border-[#6B4423]/40 hover:bg-[#FCF1E8]/20 transition-all active:scale-95 text-left group"
           >
             <div className="w-10 h-10 bg-zinc-50 rounded-xl flex items-center justify-center group-hover:bg-[#6B4423] transition-all">
               <FileSpreadsheet className="w-5 h-5 text-zinc-400 group-hover:text-white" />
@@ -295,7 +314,7 @@ export default function RevenueCharts({ chartData, summary }: RevenueChartsProps
 
           <button 
             onClick={handleExportPDF}
-            className="bg-zinc-50 p-6 rounded-[32px] border border-zinc-200 shadow-sm flex flex-col justify-between min-w-[200px] hover:border-red-500/40 hover:bg-red-50/20 transition-all active:scale-95 text-left group"
+            className="bg-zinc-50 p-6 rounded-[32px] border border-zinc-200 shadow-sm flex flex-col justify-between min-w-[180px] flex-1 md:flex-none hover:border-red-500/40 hover:bg-red-50/20 transition-all active:scale-95 text-left group"
           >
             <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center group-hover:bg-red-500 transition-all shadow-sm">
               <FileText className="w-5 h-5 text-zinc-400 group-hover:text-white" />
@@ -307,7 +326,7 @@ export default function RevenueCharts({ chartData, summary }: RevenueChartsProps
           </button>
 
 
-          <div className="bg-[#6B4423] p-6 rounded-[32px] shadow-2xl shadow-[#6B4423]/20 text-white min-w-[280px]">
+          <div className="bg-[#6B4423] p-6 rounded-[32px] shadow-2xl shadow-[#6B4423]/20 text-white min-w-[280px] flex-1 md:flex-none">
             <div className="flex justify-between items-start mb-4">
                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
                  <TrendingUp className="w-5 h-5 text-white" />
@@ -322,6 +341,12 @@ export default function RevenueCharts({ chartData, summary }: RevenueChartsProps
           </div>
         </div>
       </div>
+
+      <MonthSelector 
+        selectedMonth={currentMonth}
+        selectedYear={currentYear}
+        onDateChange={handleDateChange}
+      />
 
       {/* Comparison Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -350,8 +375,8 @@ export default function RevenueCharts({ chartData, summary }: RevenueChartsProps
       <div className="bg-white p-8 rounded-[40px] border border-zinc-100 shadow-sm flex flex-col gap-8">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-black text-zinc-900">Tren Penjualan 7 Hari Terakhir</h3>
-            <p className="text-xs text-zinc-400 font-medium">Perbandingan volume transaksi harian.</p>
+            <h3 className="text-lg font-black text-zinc-900">Tren Penjualan</h3>
+            <p className="text-xs text-zinc-400 font-medium">Grafik transaksi harian pada periode terpilih.</p>
           </div>
           <div className="flex gap-4">
              <div className="flex items-center gap-2">

@@ -61,7 +61,7 @@ export default function Toast({ message, type, onClose }: ToastProps) {
           <p className={`text-base font-black tracking-tight ${current.text}`}>{message}</p>
        </div>
        <button onClick={handleClose} className="ml-6 p-2 rounded-xl hover:bg-black/5 transition-colors">
-          <X className="w-5 h-5 text-zinc-400" />
+          <X className="w-5 h-5 text-red-500" />
        </button>
        <div className={`absolute bottom-0 left-0 h-1.5 rounded-full ${current.accent} animate-[progress_4s_linear_forwards]`} style={{ width: '100%' }} />
        <style jsx>{`

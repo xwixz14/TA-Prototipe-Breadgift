@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, Upload, ImageIcon, Loader2 } from "lucide-react";
 import { uploadImage } from "@/lib/actions";
+import { formatNumber, parseRawNumber, limitValue, MAX_LIMIT_CURRENCY, MAX_LIMIT_STOCK } from "@/lib/utils";
 
 interface Category {
   id: number;
@@ -16,7 +17,6 @@ interface Product {
   unit: string;
   price: number;
   stock: number;
-  min_stock: number;
   status: "Aktif" | "Nonaktif";
   image_url: string;
 }
@@ -35,7 +35,6 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData }:
     unit: "Pcs",
     price: 0,
     stock: 0,
-    min_stock: 20,
     status: "Aktif",
     image_url: "",
   });
@@ -54,7 +53,6 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData }:
         unit: "Pcs",
         price: 0,
         stock: 0,
-        min_stock: 20,
         status: "Aktif",
         image_url: "",
       });
@@ -113,7 +111,7 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData }:
         <div className="px-10 py-8 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
           <div>
             <h2 className="text-2xl font-black text-zinc-900 tracking-tight">
-              {initialData ? "Ubah Data Barang" : "Tambah Barang Baru"}
+              {initialData ? "Ubah Data Roti" : "Tambah Roti Baru"}
             </h2>
             <p className="text-xs font-bold text-zinc-400 mt-1 uppercase tracking-widest leading-none">
               Isi informasi detail produk roti Anda
@@ -123,7 +121,7 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData }:
             onClick={onClose} 
             className="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-xl transition-all"
           >
-            <X className="w-6 h-6" />
+            <X className="w-6 h-6 text-red-500" />
           </button>
         </div>
 
@@ -135,7 +133,7 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData }:
           className="p-10 grid grid-cols-2 gap-x-8 gap-y-6"
         >
           <div className="col-span-2 space-y-2">
-            <label className="text-xs font-black text-zinc-400 uppercase tracking-widest ml-1">Nama Barang</label>
+            <label className="text-xs font-black text-zinc-400 uppercase tracking-widest ml-1">Nama Roti</label>
             <input
               type="text"
               required
@@ -155,7 +153,7 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData }:
             >
               <option value={1}>Roti Isi</option>
               <option value={2}>Roti Tawar</option>
-              <option value={4}>Donat</option>
+              <option value={3}>Donat</option>
             </select>
           </div>
 
@@ -176,10 +174,11 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData }:
             <input
               type="text"
               required
-              value={formData.price === 0 ? "" : formData.price.toLocaleString("id-ID")}
+              value={formatNumber(formData.price)}
               onChange={(e) => {
-                const rawValue = e.target.value.replace(/\D/g, "");
-                setFormData({ ...formData, price: rawValue === "" ? 0 : parseInt(rawValue) });
+                const raw = parseRawNumber(e.target.value);
+                const limited = limitValue(raw, MAX_LIMIT_CURRENCY);
+                setFormData({ ...formData, price: limited });
               }}
               className="w-full bg-zinc-50 border border-zinc-200 py-3.5 px-6 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#6B4423]/20 focus:border-[#6B4423] transition-all text-sm font-black text-[#6B4423] placeholder:text-zinc-300"
               placeholder="0"
@@ -190,22 +189,16 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData }:
           <div className="space-y-2">
             <label className="text-xs font-black text-zinc-400 uppercase tracking-widest ml-1">Stok Awal</label>
             <input
-              type="number"
+              type="text"
               required
-              value={isNaN(formData.stock) ? "" : formData.stock}
-              onChange={(e) => setFormData({ ...formData, stock: e.target.value === "" ? 0 : parseInt(e.target.value) })}
+              value={formatNumber(formData.stock)}
+              onChange={(e) => {
+                const raw = parseRawNumber(e.target.value);
+                const limited = limitValue(raw, MAX_LIMIT_STOCK);
+                setFormData({ ...formData, stock: limited });
+              }}
               className="w-full bg-zinc-50 border border-zinc-200 py-3.5 px-6 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#6B4423]/20 focus:border-[#6B4423] transition-all text-sm font-bold text-zinc-800"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-xs font-black text-zinc-400 uppercase tracking-widest ml-1">Min. Stok</label>
-            <input
-              type="number"
-              required
-              value={isNaN(formData.min_stock) ? "" : formData.min_stock}
-              onChange={(e) => setFormData({ ...formData, min_stock: e.target.value === "" ? 0 : parseInt(e.target.value) })}
-              className="w-full bg-zinc-50 border border-zinc-200 py-3.5 px-6 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#6B4423]/20 focus:border-[#6B4423] transition-all text-sm font-bold text-zinc-800"
+              placeholder="0"
             />
           </div>
 

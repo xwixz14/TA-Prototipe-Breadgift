@@ -32,7 +32,10 @@ export default function MenuProductCard({ product, isLoggedIn }: MenuProductCard
     if (!isLoggedIn) {
       router.push(`/login?redirect=/menu`);
     } else {
-      addToCart(product);
+      const success = addToCart(product);
+      if (!success) {
+        alert("Waduh bebs, stok roti ini sudah habis!");
+      }
     }
   };
 

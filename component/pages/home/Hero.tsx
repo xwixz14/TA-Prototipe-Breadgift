@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -59,7 +61,7 @@ export default function Hero() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <h1 
+          <h1
             className="text-3xl sm:text-5xl md:text-[85px] leading-[1.1] mb-6"
             style={{
               color: "#7B4A2D",
@@ -74,7 +76,7 @@ export default function Hero() {
         </motion.div>
 
         {/* Subtitle: Smaller Size on mobile */}
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.5 }}
@@ -86,11 +88,11 @@ export default function Hero() {
 
         {/* Action Button: More compact on mobile */}
         <motion.div
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 0.5, delay: 0.8 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
         >
-          <button 
+          <button
             onClick={handleOrderNow}
             className="group relative bg-[#6B4423] text-white px-6 md:px-12 py-3 md:py-5 rounded-2xl text-[16px] md:text-[24px] font-black transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl shadow-black/30 border-2 border-white/60 hover:bg-[#4A3728] uppercase tracking-wider overflow-hidden"
           >

@@ -13,11 +13,16 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
-      allowedOrigins: [
-        "nontolerable-untenuous-rozella.ngrok-free.dev",
-        "https://nontolerable-untenuous-rozella.ngrok-free.dev"
-      ],
     },
+  },
+  async redirects() {
+    return [
+      {
+        source: '/catalog',
+        destination: '/info/4',
+        permanent: true,
+      },
+    ];
   },
 };
 

@@ -36,7 +36,8 @@ export async function query(sql: string, params?: any[]) {
     return rows;
   } catch (error: any) {
     console.error("❌ DATABASE ERROR DETAIL:", error);
-    throw new Error(`Database Error: ${error.message || "Unknown error"}`);
+    // Throw the original error object so callers can access properties like .code
+    throw error;
   }
 }
 

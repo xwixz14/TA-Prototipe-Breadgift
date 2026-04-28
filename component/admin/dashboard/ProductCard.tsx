@@ -40,12 +40,12 @@ export default function ProductCard({
       </div>
 
       {/* Product Image */}
-      <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-zinc-50 shadow-inner group-hover:shadow-none transition-shadow">
+      <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-white shadow-inner group-hover:shadow-none transition-shadow border border-zinc-50">
         <Image
           src={image || "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=800"}
           alt={name}
           fill
-          className="object-cover group-hover:scale-110 transition-transform duration-500"
+          className="object-contain transition-transform duration-500"
         />
         {isOutOfStock && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">

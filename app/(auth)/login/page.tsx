@@ -7,7 +7,7 @@ import { useState, Suspense } from "react";
 import { loginUser } from "@/lib/actions";
 import { useCart } from "@/context/CartContext";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { Lock, User, ArrowLeft, LogIn, Mail, Quote } from "lucide-react";
+import { Lock, User, ArrowLeft, LogIn, Mail, Quote, Eye, EyeOff } from "lucide-react";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -33,6 +33,7 @@ function LoginForm() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -52,7 +53,8 @@ function LoginForm() {
         await refreshCart(); // Muat keranjang tersimpan dari database
         setIsCartOpen(false); // Reset UI keranjang agar tidak macet
         if (result.role === "admin") {
-          router.push("/admin/dashboard");
+          const SECURE_QUERY = "gs_lcrp=EgZjaHJvbWUqBwgAEAAYjwIyBwgAEAAYjwIyDAgBEC4YJxiABBiKBTIGCAIQRRg7MgYIAxBFGDsyDQgEEAAYgwEYsQMYgAQyDQgFEAAYgwEYsQMYgAQyBggGEEUYPTIGCAcQBRhA0gEHOTA2ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8";
+          router.push(`/admin/dashboard?${SECURE_QUERY}`);
         } else {
           router.push(redirect);
         }
@@ -140,12 +142,19 @@ function LoginForm() {
                 <Lock size={18} />
               </div>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="input w-full pl-11 bg-white/40 border-stone-200/60 focus:border-primary/50 focus:bg-white rounded-2xl h-14 font-bold transition-all placeholder:text-stone-300 focus:shadow-[0_0_20px_rgba(123,74,45,0.05)]"
+                className="input w-full pl-11 pr-12 bg-white/40 border-stone-200/60 focus:border-primary/50 focus:bg-white rounded-2xl h-14 font-bold transition-all placeholder:text-stone-300 focus:shadow-[0_0_20px_rgba(123,74,45,0.05)]"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-stone-300 hover:text-primary transition-colors"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
             <div className="flex justify-end mt-2">
               <Link 
@@ -172,20 +181,6 @@ function LoginForm() {
                 Login
               </>
             )}
-          </button>
-
-          <div className="flex items-center gap-4 py-2">
-            <div className="h-[1px] flex-1 bg-stone-200/60"></div>
-            <span className="text-[10px] font-black text-stone-300 uppercase tracking-widest">Atau masuk dengan</span>
-            <div className="h-[1px] flex-1 bg-stone-200/60"></div>
-          </div>
-
-          <button
-            type="button"
-            className="btn btn-outline w-full h-14 rounded-2xl border-stone-200 focus:outline-none hover:bg-stone-50 hover:border-stone-300 text-stone-600 font-bold transition-all"
-          >
-            <Mail size={20} className="mr-2 text-primary" />
-            Google
           </button>
         </div>
 
