@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Edit2, Trash2, Scale } from "lucide-react";
+import { Edit2, Trash2 } from "lucide-react";
 
 interface Product {
   id: number;
@@ -18,10 +18,9 @@ interface ProductTableProps {
   onEdit: (product: Product) => void;
   onDelete: (id: number) => void;
   onToggleStatus: (id: number, currentStatus: string) => void;
-  onManageRecipe: (product: Product) => void;
 }
 
-export default function ProductTable({ products, onEdit, onDelete, onToggleStatus, onManageRecipe }: ProductTableProps) {
+export default function ProductTable({ products, onEdit, onDelete, onToggleStatus }: ProductTableProps) {
   return (
     <div className="bg-white border border-zinc-200 rounded-[32px] overflow-hidden shadow-sm flex-1 flex flex-col min-h-0">
       <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -64,13 +63,6 @@ export default function ProductTable({ products, onEdit, onDelete, onToggleStatu
                 </td>
                 <td className="px-6 py-5 text-right">
                   <div className="flex justify-end gap-3 transition-opacity">
-                    <button 
-                      onClick={() => onManageRecipe(product)}
-                      title="Atur Resep Bahan Baku"
-                      className="p-2.5 bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white rounded-xl transition-all active:scale-90 border border-amber-100"
-                    >
-                      <Scale className="w-4 h-4" />
-                    </button>
                     <button 
                       onClick={() => onEdit(product)}
                       title="Ubah Produk"

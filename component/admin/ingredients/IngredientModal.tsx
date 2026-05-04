@@ -28,6 +28,7 @@ export default function IngredientModal({
     stock: 0,
     unit: "kg",
     min_stock: 5,
+    entry_date: new Date().toISOString().split('T')[0],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -40,9 +41,16 @@ export default function IngredientModal({
         stock: Number(initialData.stock) || 0,
         unit: initialData.unit || "kg",
         min_stock: Number(initialData.min_stock) || 5,
+        entry_date: initialData.entry_date ? new Date(initialData.entry_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       });
     } else {
-      setFormData({ name: "", stock: 0, unit: "kg", min_stock: 5 });
+      setFormData({ 
+        name: "", 
+        stock: 0, 
+        unit: "kg", 
+        min_stock: 5,
+        entry_date: new Date().toISOString().split('T')[0]
+      });
     }
   }, [initialData, isOpen]);
 
@@ -276,7 +284,19 @@ export default function IngredientModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-2 gap-6">
+            {/* Tanggal Masuk */}
+            <div>
+              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1 mb-2 block">Tanggal Masuk</label>
+              <input
+                type="date"
+                required
+                value={formData.entry_date}
+                onChange={(e) => setFormData({ ...formData, entry_date: e.target.value })}
+                className="w-full bg-zinc-50 border border-zinc-100 px-6 py-4 rounded-2xl text-sm font-bold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#6B4423]/10 focus:border-[#6B4423] transition-all cursor-pointer"
+              />
+            </div>
+
             {/* Form Tambahan (Catatan) */}
             <div>
               <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1 mb-2 block">Catatan Tambahan</label>

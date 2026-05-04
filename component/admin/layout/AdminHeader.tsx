@@ -14,10 +14,10 @@ interface AdminHeaderProps {
 }
 
 export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
-  const { 
-    isSoundEnabled, 
-    setIsSoundEnabled, 
-    isAudioUnlocked, 
+  const {
+    isSoundEnabled,
+    setIsSoundEnabled,
+    isAudioUnlocked,
     playNotification,
     user,
     refreshUser
@@ -67,11 +67,11 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
     const timer = setInterval(() => {
       const now = new Date();
       const timeStr = now.toLocaleTimeString("id-ID", { hour12: false }) + " WIB";
-      const dateStr = now.toLocaleDateString("id-ID", { 
-        weekday: 'long', 
-        day: 'numeric', 
-        month: 'long', 
-        year: 'numeric' 
+      const dateStr = now.toLocaleDateString("id-ID", {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
       });
       setDateTime({ time: timeStr, date: dateStr });
     }, 1000);
@@ -82,17 +82,17 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   useEffect(() => {
     const fetchUnread = async () => {
       const count = await getUnreadTransactionsCount();
-      
+
       setUnreadCount((prev: number) => {
         // Logika Audio Gacor
         if (count > 0 && (count > lastNotifiedCount.current)) {
-           // Gunakan playNotification dari global context
-           playNotification();
-           setShowToast(true);
-           lastNotifiedCount.current = count;
-           setTimeout(() => setShowToast(false), 8000);
+          // Gunakan playNotification dari global context
+          playNotification();
+          setShowToast(true);
+          lastNotifiedCount.current = count;
+          setTimeout(() => setShowToast(false), 8000);
         } else if (count === 0) {
-           lastNotifiedCount.current = 0;
+          lastNotifiedCount.current = 0;
         }
         return count;
       });
@@ -113,7 +113,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const toggleSound = () => {
     const nextState = !isSoundEnabled;
     setIsSoundEnabled(nextState);
-    
+
     if (nextState) {
       playNotification(); // Unlock & test
       if (unreadCount > 0) {
@@ -127,7 +127,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
     <header className="flex justify-between items-center py-4 px-4 md:px-10 bg-white border-b border-zinc-100 sticky top-0 z-[100]">
       {/* Title & Mobile Toggle */}
       <div className="flex items-center gap-4">
-        <button 
+        <button
           onClick={onMenuClick}
           className="p-2.5 bg-zinc-50 rounded-xl lg:hidden text-zinc-600 hover:bg-zinc-100 transition-all active:scale-90"
         >
@@ -145,7 +145,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
       {/* Profile & Notifications */}
       <div className="flex items-center gap-3 md:gap-6">
         {/* Notification Bell */}
-        <div 
+        <div
           onClick={handleNotificationClick}
           className="bg-zinc-100 p-2.5 rounded-2xl hover:bg-zinc-200 transition-colors cursor-pointer relative shadow-sm"
         >
@@ -158,7 +158,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
         </div>
 
         {/* Sound Toggle */}
-        <button 
+        <button
           onClick={toggleSound}
           className={`p-2.5 rounded-2xl transition-all shadow-sm flex items-center justify-center gap-2 ${isSoundEnabled ? 'bg-amber-50 border border-amber-100 text-[#6B4423]' : 'bg-zinc-100 border border-zinc-200 text-zinc-400'}`}
           title={isSoundEnabled ? "Matikan Suara" : "Aktifkan Suara"}
@@ -184,7 +184,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
 
         {/* User Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>
-          <div 
+          <div
             onClick={() => setIsProfileOpen(!isProfileOpen)}
             className={`flex items-center gap-3 pl-3 md:pl-4 border-l border-zinc-200 transition-all cursor-pointer hover:bg-zinc-50 py-1 px-2 rounded-xl ${isProfileOpen ? 'bg-zinc-50' : ''}`}
           >
@@ -193,12 +193,12 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
               <span className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">{user?.role || "Kasir"}</span>
             </div>
             <div className="relative w-10 h-10 md:w-11 md:h-11 rounded-2xl overflow-hidden ring-2 ring-zinc-50 shadow-md">
-               <Image 
-                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150&h=150"
-                  alt="Profile Avatar"
-                  fill
-                  className="object-cover"
-               />
+              <Image
+                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150&h=150"
+                alt="Profile Avatar"
+                fill
+                className="object-cover"
+              />
             </div>
           </div>
 
@@ -223,7 +223,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                 </div>
 
                 <div className="p-2">
-                  <button 
+                  <button
                     onClick={() => { setIsEditModalOpen(true); setIsProfileOpen(false); }}
                     className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 rounded-2xl transition-all group"
                   >
@@ -233,7 +233,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                     Edit Profil
                   </button>
 
-                  <button 
+                  <button
                     onClick={() => { setIsPasswordModalOpen(true); setIsProfileOpen(false); }}
                     className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 rounded-2xl transition-all group"
                   >
@@ -245,7 +245,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
 
                   <div className="h-[1px] bg-zinc-50 my-1 mx-2" />
 
-                  <button 
+                  <button
                     onClick={async () => { await logoutUser(); router.push("/login"); }}
                     className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-2xl transition-all group"
                   >
@@ -265,14 +265,14 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
       <AnimatePresence>
         {isEditModalOpen && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsEditModalOpen(false)}
               className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm"
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -301,10 +301,10 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400">
                         <User size={18} />
                       </div>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={profileForm.name}
-                        onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
+                        onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
                         className="w-full pl-11 pr-4 py-4 bg-zinc-50 border border-zinc-100 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold"
                         placeholder="Nama kamu bebs..."
                       />
@@ -317,17 +317,17 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400">
                         <Mail size={18} />
                       </div>
-                      <input 
-                        type="email" 
+                      <input
+                        type="email"
                         value={profileForm.email}
-                        onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
+                        onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
                         className="w-full pl-11 pr-4 py-4 bg-zinc-50 border border-zinc-100 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold"
                         placeholder="email@contoh.com"
                       />
                     </div>
                   </div>
 
-                  <button 
+                  <button
                     onClick={async () => {
                       setIsUpdatingProfile(true);
                       const res = await updateProfile(profileForm);
@@ -355,14 +355,14 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
       <AnimatePresence>
         {isPasswordModalOpen && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsPasswordModalOpen(false)}
               className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm"
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -398,10 +398,10 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400">
                         <Key size={18} />
                       </div>
-                      <input 
-                        type={showPassword ? "text" : "password"} 
+                      <input
+                        type={showPassword ? "text" : "password"}
                         value={passwordForm.oldPassword}
-                        onChange={(e) => setPasswordForm({...passwordForm, oldPassword: e.target.value})}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, oldPassword: e.target.value })}
                         className="w-full pl-11 pr-12 py-4 bg-zinc-50 border border-zinc-100 rounded-2xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none transition-all font-bold"
                         placeholder="••••••••"
                       />
@@ -421,10 +421,10 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400">
                         <ShieldCheck size={18} />
                       </div>
-                      <input 
-                        type={showPassword ? "text" : "password"} 
+                      <input
+                        type={showPassword ? "text" : "password"}
                         value={passwordForm.newPassword}
-                        onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
                         className="w-full pl-11 pr-12 py-4 bg-zinc-50 border border-zinc-100 rounded-2xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none transition-all font-bold"
                         placeholder="Minimal 6 karakter..."
                       />
@@ -444,10 +444,10 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400">
                         <ShieldCheck size={18} />
                       </div>
-                      <input 
-                        type={showPassword ? "text" : "password"} 
+                      <input
+                        type={showPassword ? "text" : "password"}
                         value={passwordForm.confirmPassword}
-                        onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
                         className="w-full pl-11 pr-12 py-4 bg-zinc-50 border border-zinc-100 rounded-2xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none transition-all font-bold"
                         placeholder="Ulangi password baru..."
                       />
@@ -461,7 +461,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                     </div>
                   </div>
 
-                  <button 
+                  <button
                     onClick={async () => {
                       if (passwordForm.newPassword !== passwordForm.confirmPassword) {
                         setPasswordError("Konfirmasi password tidak cocok!");
@@ -471,14 +471,14 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                         setPasswordError("Password baru terlalu pendek!");
                         return;
                       }
-                      
+
                       setIsUpdatingPassword(true);
                       setPasswordError("");
                       const res = await updatePassword({
                         oldPassword: passwordForm.oldPassword,
                         newPassword: passwordForm.newPassword
                       });
-                      
+
                       if (res.success) {
                         setIsPasswordModalOpen(false);
                         setPasswordForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
@@ -503,28 +503,28 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
       {/* Floating Order Toast */}
       <AnimatePresence>
         {showToast && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
             className="fixed top-24 left-1/2 -translate-x-1/2 z-[200] w-full max-w-[400px] px-4"
           >
             <div className="bg-zinc-900 text-white p-6 rounded-[32px] shadow-2xl flex flex-col gap-4 border border-zinc-800 pointer-events-auto">
-               <div className="flex items-center gap-4">
-                 <div className="w-14 h-14 bg-[#6B4423] rounded-2xl flex items-center justify-center shadow-lg shadow-[#6B4423]/20 animate-bounce">
-                    <AlertCircle className="w-7 h-7 text-white" />
-                 </div>
-                 <div className="flex-1">
-                    <p className="text-xs font-black text-white/50 uppercase tracking-widest mb-0.5">Ada Pesanan Baru!</p>
-                    <p className="text-base font-black tracking-tight leading-tight">Segera cek rincian pesanan bebs!</p>
-                 </div>
-                 <button 
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-[#6B4423] rounded-2xl flex items-center justify-center shadow-lg shadow-[#6B4423]/20 animate-bounce">
+                  <AlertCircle className="w-7 h-7 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-black text-white/50 uppercase tracking-widest mb-0.5">Ada Pesanan Baru!</p>
+                  <p className="text-base font-black tracking-tight leading-tight">Segera cek rincian pesanan bebs!</p>
+                </div>
+                <button
                   onClick={() => setShowToast(false)}
                   className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-colors"
-                 >
-                   <Check className="w-5 h-5" />
-                 </button>
-               </div>
+                >
+                  <Check className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </motion.div>
         )}

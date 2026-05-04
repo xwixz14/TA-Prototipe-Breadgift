@@ -1,13 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, History, Package, TrendingUp, Search } from "lucide-react";
+import { Plus, History, Package, TrendingUp, Search, FileSpreadsheet, FileText } from "lucide-react";
 import ProductionTable from "./ProductionTable";
 import ProductionModal from "./ProductionModal";
 import Toast, { ToastType } from "@/component/ui/Toast";
 import { getProductionLogs, createProductionLog, getProducts, getIngredients } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import confetti from "canvas-confetti";
+import ExcelJS from "exceljs";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export default function ProductionManager() {
   const [logs, setLogs] = useState<any[]>([]);
@@ -59,6 +62,70 @@ export default function ProductionManager() {
   const totalProductionToday = logs
     .filter(log => new Date(log.production_date).toDateString() === new Date().toDateString())
     .reduce((sum, log) => sum + log.quantity, 0);
+
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Laporan Produksi Roti");
+
+    worksheet.columns = [
+      { header: "No", key: "no", width: 5 },
+      { header: "Nama Produk", key: "product_name", width: 25 },
+      { header: "Jumlah", key: "quantity", width: 10 },
+      { header: "Satuan", key: "unit", width: 10 },
+      { header: "Bahan yang Digunakan", key: "materials", width: 40 },
+      { header: "Tanggal Produksi", key: "production_date", width: 20 },
+      { header: "Waktu Catat", key: "created_at", width: 20 },
+      { header: "Catatan", key: "notes", width: 25 },
+    ];
+
+    logs.forEach((log, index) => {
+      worksheet.addRow({
+        no: index + 1,
+        product_name: log.product_name,
+        quantity: log.quantity,
+        unit: log.unit,
+        materials: log.materials_used || "-",
+        production_date: new Date(log.production_date).toLocaleDateString("id-ID"),
+        created_at: new Date(log.created_at).toLocaleString("id-ID"),
+        notes: log.notes || "-",
+      });
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `Laporan_Produksi_Roti_${new Date().toISOString().split('T')[0]}.xlsx`;
+    link.click();
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text("Laporan Produksi Roti", 14, 20);
+    doc.setFontSize(12);
+    doc.text(`Dicetak pada: ${new Date().toLocaleString("id-ID")}`, 14, 30);
+
+    const tableData = logs.map((log, index) => [
+      index + 1,
+      log.product_name,
+      `${log.quantity} ${log.unit}`,
+      log.materials_used || "-",
+      new Date(log.production_date).toLocaleDateString("id-ID"),
+      new Date(log.created_at).toLocaleString("id-ID"),
+      log.notes || "-"
+    ]);
+
+    autoTable(doc, {
+      startY: 40,
+      head: [["No", "Produk", "Jumlah", "Bahan Baku", "Tgl Produksi", "Waktu Catat", "Catatan"]],
+      body: tableData,
+      theme: "grid",
+      headStyles: { fillColor: [107, 68, 35] },
+    });
+
+    doc.save(`Laporan_Produksi_Roti_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
 
   return (
     <div className="flex-1 flex flex-col gap-8 w-full h-fit lg:h-full lg:overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 relative pr-4 custom-scrollbar pb-20">
@@ -129,6 +196,22 @@ export default function ProductionManager() {
             <History className="w-5 h-5 text-[#6B4423]" />
             Riwayat Produksi Terkini
           </h2>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={exportToExcel}
+              className="bg-emerald-50 text-emerald-600 px-4 py-2 rounded-xl font-black text-xs flex items-center gap-2 hover:bg-emerald-100 transition-all border border-emerald-100"
+            >
+              <FileSpreadsheet className="w-4 h-4" />
+              Excel
+            </button>
+            <button 
+              onClick={exportToPDF}
+              className="bg-rose-50 text-rose-600 px-4 py-2 rounded-xl font-black text-xs flex items-center gap-2 hover:bg-rose-100 transition-all border border-rose-100"
+            >
+              <FileText className="w-4 h-4" />
+              PDF
+            </button>
+          </div>
         </div>
         <ProductionTable logs={logs} />
       </div>

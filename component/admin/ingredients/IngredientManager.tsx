@@ -6,7 +6,7 @@ import IngredientTable from "./IngredientTable";
 import IngredientModal from "./IngredientModal";
 import Toast, { ToastType } from "@/component/ui/Toast";
 import MonthSelector from "../common/MonthSelector";
-import { getIngredients, addIngredient, updateIngredient, deleteIngredient, getIngredientUsageStats } from "@/lib/actions";
+import { getIngredients, addIngredient, updateIngredient, deleteIngredient, getIngredientUsageStats, getIngredientLogs } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import confetti from "canvas-confetti";
 import ExcelJS from "exceljs";
@@ -24,6 +24,7 @@ export default function IngredientManager() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [usageStats, setUsageStats] = useState<any[]>([]);
+  const [transactionLogs, setTransactionLogs] = useState<any[]>([]);
   const router = useRouter();
 
   const showToast = (message: string, type: ToastType = "success") => {
@@ -31,13 +32,15 @@ export default function IngredientManager() {
   };
 
   const fetchData = async () => {
-    const [basicData, statsData] = await Promise.all([
+    const [basicData, statsData, logsData] = await Promise.all([
       getIngredients(),
-      getIngredientUsageStats(selectedMonth, selectedYear)
+      getIngredientUsageStats(selectedMonth, selectedYear),
+      getIngredientLogs(selectedMonth, selectedYear)
     ]);
     setIngredients(basicData);
     setFilteredIngredients(basicData);
     setUsageStats(statsData);
+    setTransactionLogs(logsData);
   };
 
   useEffect(() => {
@@ -118,21 +121,47 @@ export default function IngredientManager() {
 
     worksheet.columns = [
       { header: "No", key: "no", width: 5 },
-      { header: "Nama Bahan", key: "name", width: 30 },
+      { header: "Waktu Keluar", key: "time", width: 25 },
+      { header: "Nama Bahan", key: "name", width: 25 },
       { header: "Satuan", key: "unit", width: 10 },
       { header: "Stok Saat Ini", key: "stock", width: 15 },
-      { header: "Digunakan (" + periodStr + ")", key: "used", width: 25 },
+      { header: "Jumlah Digunakan", key: "used", width: 20 },
       { header: "Status", key: "status", width: 15 },
     ];
 
     usageStats.forEach((item, index) => {
       worksheet.addRow({
         no: index + 1,
+        time: new Date(item.time).toLocaleString("id-ID"),
         name: item.name,
         unit: item.unit,
         stock: item.stock,
         used: item.used_quantity,
         status: item.stock <= item.min_stock ? "Hampir Habis" : "Aman",
+      });
+    });
+
+    // Add detailed transaction history worksheet
+    const historySheet = workbook.addWorksheet("Riwayat Keluar Masuk");
+    historySheet.columns = [
+      { header: "No", key: "no", width: 5 },
+      { header: "Tanggal", key: "date", width: 25 },
+      { header: "Nama Bahan", key: "name", width: 25 },
+      { header: "Tipe", key: "type", width: 10 },
+      { header: "Jumlah", key: "quantity", width: 15 },
+      { header: "Satuan", key: "unit", width: 10 },
+      { header: "Keterangan", key: "notes", width: 40 },
+    ];
+
+    transactionLogs.forEach((log, index) => {
+      historySheet.addRow({
+        no: index + 1,
+        date: new Date(log.date).toLocaleString("id-ID"),
+        name: log.ingredient_name,
+        type: log.type === 'IN' ? 'MASUK' : 'KELUAR',
+        quantity: log.quantity,
+        unit: log.unit,
+        notes: log.notes || "-",
       });
     });
 
@@ -157,6 +186,7 @@ export default function IngredientManager() {
 
     const tableData = usageStats.map((item, index) => [
       index + 1,
+      new Date(item.time).toLocaleString("id-ID"),
       item.name,
       item.unit,
       item.stock,
@@ -166,8 +196,33 @@ export default function IngredientManager() {
 
     autoTable(doc, {
       startY: 45,
-      head: [["No", "Nama Bahan", "Unit", "Stok", "Digunakan", "Status"]],
+      head: [["No", "Waktu Keluar", "Nama Bahan", "Unit", "Stok", "Digunakan", "Status"]],
       body: tableData,
+      theme: "grid",
+      headStyles: { fillColor: [107, 68, 35] },
+    });
+
+    // Add Detailed History Page
+    doc.addPage();
+    doc.setFontSize(18);
+    doc.text("Riwayat Keluar Masuk Bahan", 14, 20);
+    doc.setFontSize(12);
+    doc.text(`Periode: ${periodStr}`, 14, 30);
+
+    const historyData = transactionLogs.map((log, index) => [
+      index + 1,
+      new Date(log.date).toLocaleString("id-ID"),
+      log.ingredient_name,
+      log.type === 'IN' ? 'MASUK' : 'KELUAR',
+      log.quantity,
+      log.unit,
+      log.notes || "-"
+    ]);
+
+    autoTable(doc, {
+      startY: 40,
+      head: [["No", "Waktu", "Bahan", "Tipe", "Jumlah", "Unit", "Keterangan"]],
+      body: historyData,
       theme: "grid",
       headStyles: { fillColor: [107, 68, 35] },
     });

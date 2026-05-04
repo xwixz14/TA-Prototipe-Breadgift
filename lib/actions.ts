@@ -1044,8 +1044,11 @@ export async function getProfitLossStats(selectedMonth?: number, selectedYear?: 
 export async function getIngredients(): Promise<any[]> {
   try {
     const ingredients = await query(`
-      SELECT * FROM ingredients 
-      ORDER BY name ASC
+      SELECT 
+        i.*,
+        (SELECT MAX(date) FROM ingredient_logs WHERE ingredient_id = i.id AND type = 'OUT') as last_used_date
+      FROM ingredients i
+      ORDER BY i.name ASC
     `) as any[];
     return JSON.parse(JSON.stringify(ingredients));
   } catch (error) {
@@ -1059,6 +1062,7 @@ export async function addIngredient(data: {
   stock: number;
   unit: string;
   min_stock: number;
+  entry_date?: string;
 }) {
   try {
     // 1. Cek apakah bahan dengan nama yang sama sudah ada (Case Insensitive check)
@@ -1072,17 +1076,29 @@ export async function addIngredient(data: {
       const totalStock = currentStock + addedStock;
       
       await query(
-        "UPDATE ingredients SET stock = ?, unit = ?, min_stock = ? WHERE id = ?",
-        [totalStock, data.unit, data.min_stock, ingredientId]
+        "UPDATE ingredients SET stock = ?, unit = ?, min_stock = ?, entry_date = ? WHERE id = ?",
+        [totalStock, data.unit, data.min_stock, data.entry_date || new Date(), ingredientId]
+      );
+
+      // Log the 'IN' transaction
+      await query(
+        "INSERT INTO ingredient_logs (ingredient_id, type, quantity, notes, date) VALUES (?, 'IN', ?, ?, ?)",
+        [ingredientId, addedStock, "Tambah stok manual", data.entry_date || new Date()]
       );
       
       revalidatePath("/admin/ingredients");
       return { success: true, message: `Stok ${data.name} berhasil ditambahkan! Total sekarang: ${totalStock} ${data.unit}` };
     } else {
       // 3. Jika tidak ada, buat baru
+      const [newIngRes] = await query(
+        "INSERT INTO ingredients (name, stock, unit, min_stock, entry_date) VALUES (?, ?, ?, ?, ?)",
+        [data.name, data.stock, data.unit, data.min_stock, data.entry_date || new Date()]
+      ) as any;
+
+      // Log the initial 'IN' transaction
       await query(
-        "INSERT INTO ingredients (name, stock, unit, min_stock) VALUES (?, ?, ?, ?)",
-        [data.name, data.stock, data.unit, data.min_stock]
+        "INSERT INTO ingredient_logs (ingredient_id, type, quantity, notes, date) VALUES (?, 'IN', ?, ?, ?)",
+        [newIngRes.insertId, data.stock, "Stok awal", data.entry_date || new Date()]
       );
       
       revalidatePath("/admin/ingredients");
@@ -1099,11 +1115,12 @@ export async function updateIngredient(id: number, data: {
   stock: number;
   unit: string;
   min_stock: number;
+  entry_date?: string;
 }) {
   try {
     await query(
-      "UPDATE ingredients SET name = ?, stock = ?, unit = ?, min_stock = ? WHERE id = ?",
-      [data.name, data.stock, data.unit, data.min_stock, id]
+      "UPDATE ingredients SET name = ?, stock = ?, unit = ?, min_stock = ?, entry_date = ? WHERE id = ?",
+      [data.name, data.stock, data.unit, data.min_stock, data.entry_date || new Date(), id]
     );
     revalidatePath("/admin/ingredients");
     return { success: true };
@@ -1288,10 +1305,14 @@ export async function getProductionLogs() {
       SELECT 
         pl.*, 
         p.name as product_name,
-        p.unit
+        p.unit,
+        GROUP_CONCAT(CONCAT(i.name, ': ', pm.quantity_used, ' ', i.unit) SEPARATOR ', ') as materials_used
       FROM production_logs pl
       JOIN products p ON pl.product_id = p.id
-      ORDER BY pl.production_date DESC
+      LEFT JOIN production_materials pm ON pl.id = pm.production_log_id
+      LEFT JOIN ingredients i ON pm.ingredient_id = i.id
+      GROUP BY pl.id
+      ORDER BY pl.production_date DESC, pl.created_at DESC
     `) as any[];
     return JSON.parse(JSON.stringify(logs));
   } catch (error) {
@@ -1303,6 +1324,7 @@ export async function getProductionLogs() {
 export async function createProductionLog(data: {
   product_id: number;
   quantity: number;
+  production_date?: string;
   notes?: string;
   materials: { ingredient_id: number; quantity: number }[];
 }) {
@@ -1312,14 +1334,29 @@ export async function createProductionLog(data: {
 
     // 1. Insert production log
     const [logRes] = await connection.query(
-      "INSERT INTO production_logs (product_id, quantity, notes) VALUES (?, ?, ?)",
-      [data.product_id, data.quantity, data.notes || ""]
+      "INSERT INTO production_logs (product_id, quantity, production_date, notes) VALUES (?, ?, ?, ?)",
+      [data.product_id, data.quantity, data.production_date || new Date(), data.notes || ""]
     ) as any;
     const logId = logRes.insertId;
 
     // 2. Process each material manually selected
     for (const mat of data.materials) {
-      // Deduct stock from ingredients
+      // 2a. Check if stock is sufficient
+      const [ingRows] = await connection.query(
+        "SELECT name, stock, unit FROM ingredients WHERE id = ?",
+        [mat.ingredient_id]
+      ) as any;
+      
+      if (!ingRows || ingRows.length === 0) {
+        throw new Error(`Bahan baku dengan ID ${mat.ingredient_id} tidak ditemukan!`);
+      }
+
+      const ingredient = ingRows[0];
+      if (Number(ingredient.stock) < Number(mat.quantity)) {
+        throw new Error(`Stok tidak mencukupi untuk ${ingredient.name}! (Dibutuhkan: ${mat.quantity} ${ingredient.unit}, Tersedia: ${ingredient.stock} ${ingredient.unit})`);
+      }
+
+      // 2b. Deduct stock from ingredients
       await connection.query(
         "UPDATE ingredients SET stock = stock - ? WHERE id = ?",
         [mat.quantity, mat.ingredient_id]
@@ -1329,6 +1366,12 @@ export async function createProductionLog(data: {
       await connection.query(
         "INSERT INTO production_materials (production_log_id, ingredient_id, quantity_used) VALUES (?, ?, ?)",
         [logId, mat.ingredient_id, mat.quantity]
+      );
+
+      // Also log to the main ingredient_logs table
+      await connection.query(
+        "INSERT INTO ingredient_logs (ingredient_id, type, quantity, date, notes) VALUES (?, 'OUT', ?, ?, ?)",
+        [mat.ingredient_id, mat.quantity, data.production_date || new Date(), `Digunakan untuk produksi roti (Log ID: ${logId})`]
       );
     }
 
@@ -1368,13 +1411,13 @@ export async function getIngredientUsageStats(selectedMonth?: number, selectedYe
         i.unit, 
         i.stock,
         i.min_stock,
-        COALESCE(SUM(pm.quantity_used), 0) as used_quantity
+        pl.created_at as time,
+        pm.quantity_used as used_quantity
       FROM ingredients i
-      LEFT JOIN production_materials pm ON i.id = pm.ingredient_id
-      LEFT JOIN production_logs pl ON pm.production_log_id = pl.id 
-        AND ${isYearly ? 'YEAR(pl.production_date) = ?' : 'YEAR(pl.production_date) = ? AND MONTH(pl.production_date) = ?'}
-      GROUP BY i.id
-      ORDER BY i.name ASC
+      JOIN production_materials pm ON i.id = pm.ingredient_id
+      JOIN production_logs pl ON pm.production_log_id = pl.id 
+      WHERE ${isYearly ? 'YEAR(pl.production_date) = ?' : 'YEAR(pl.production_date) = ? AND MONTH(pl.production_date) = ?'}
+      ORDER BY pl.created_at DESC, i.name ASC
     `, queryParams) as any[];
 
     return JSON.parse(JSON.stringify(stats.map(s => ({
@@ -1429,6 +1472,29 @@ export async function updateProductRecipe(productId: number, items: { ingredient
     return { success: false, error: error.message || "Database error" };
   } finally {
     connection.release();
+  }
+}
+
+export async function getIngredientLogs(selectedMonth?: number, selectedYear?: number) {
+  try {
+    const isYearly = selectedMonth === 0;
+    const queryParams = isYearly ? [selectedYear] : [selectedYear, selectedMonth];
+    
+    const logs = await query(`
+      SELECT 
+        l.*, 
+        i.name as ingredient_name,
+        i.unit
+      FROM ingredient_logs l
+      JOIN ingredients i ON l.ingredient_id = i.id
+      WHERE ${isYearly ? 'YEAR(l.date) = ?' : 'YEAR(l.date) = ? AND MONTH(l.date) = ?'}
+      ORDER BY l.date DESC
+    `, queryParams) as any[];
+
+    return JSON.parse(JSON.stringify(logs));
+  } catch (error) {
+    console.error("Failed to fetch ingredient logs:", error);
+    return [];
   }
 }
 

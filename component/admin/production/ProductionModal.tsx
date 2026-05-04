@@ -30,6 +30,7 @@ export default function ProductionModal({ isOpen, onClose, onSubmit, products, i
   const [formData, setFormData] = useState({
     product_id: "",
     quantity: "",
+    production_date: new Date().toISOString().split('T')[0],
     notes: ""
   });
   
@@ -38,7 +39,12 @@ export default function ProductionModal({ isOpen, onClose, onSubmit, products, i
 
   useEffect(() => {
     if (!isOpen) {
-      setFormData({ product_id: "", quantity: "", notes: "" });
+      setFormData({ 
+        product_id: "", 
+        quantity: "", 
+        production_date: new Date().toISOString().split('T')[0],
+        notes: "" 
+      });
       setSelectedMaterials([]);
     }
   }, [isOpen]);
@@ -69,6 +75,7 @@ export default function ProductionModal({ isOpen, onClose, onSubmit, products, i
       await onSubmit({
         product_id: parseInt(formData.product_id),
         quantity: parseInt(formData.quantity),
+        production_date: formData.production_date,
         notes: formData.notes,
         materials: validMaterials.map(m => ({
           ingredient_id: parseInt(m.ingredient_id),
@@ -118,7 +125,7 @@ export default function ProductionModal({ isOpen, onClose, onSubmit, products, i
               <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
                 
                 {/* Product Info Section */}
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                    <div className="space-y-2">
                     <label className="text-xs font-black text-zinc-400 uppercase tracking-widest ml-1">Pilih Produk Roti</label>
                     <div className="relative group">
@@ -151,6 +158,20 @@ export default function ProductionModal({ isOpen, onClose, onSubmit, products, i
                           const limited = limitValue(raw, MAX_LIMIT_STOCK);
                           setFormData({ ...formData, quantity: limited.toString() });
                         }}
+                        className="w-full bg-zinc-50 border-2 border-zinc-100 py-4 pl-12 pr-4 rounded-2xl focus:outline-none focus:border-[#6B4423]/20 text-sm font-black text-zinc-900 transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-zinc-400 uppercase tracking-widest ml-1">Tanggal Produksi</label>
+                    <div className="relative group">
+                      <Plus className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within:text-[#6B4423] transition-colors" />
+                      <input
+                        type="date"
+                        required
+                        value={formData.production_date}
+                        onChange={(e) => setFormData({ ...formData, production_date: e.target.value })}
                         className="w-full bg-zinc-50 border-2 border-zinc-100 py-4 pl-12 pr-4 rounded-2xl focus:outline-none focus:border-[#6B4423]/20 text-sm font-black text-zinc-900 transition-all"
                       />
                     </div>

@@ -9,6 +9,8 @@ interface Ingredient {
   stock: number;
   unit: string;
   min_stock: number;
+  entry_date?: string;
+  last_used_date?: string;
 }
 
 interface IngredientTableProps {
@@ -26,6 +28,8 @@ export default function IngredientTable({ ingredients, selectedId, onSelect, onD
           <thead>
             <tr className="bg-zinc-50 border-b border-zinc-200 sticky top-0 z-10">
               <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight">Nama Bahan</th>
+              <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-center">Tanggal Masuk</th>
+              <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-center">Tanggal Keluar</th>
               <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-center">Stok Saat Ini</th>
               <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-center">Satuan</th>
               <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-center">Ambangan Min.</th>
@@ -60,6 +64,20 @@ export default function IngredientTable({ ingredients, selectedId, onSelect, onD
                         </span>
                       ) : null}
                     </div>
+                  </td>
+                  <td className="px-6 py-5 text-sm font-bold text-zinc-500 text-center whitespace-nowrap">
+                    {item.entry_date ? new Date(item.entry_date).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric"
+                    }) : "-"}
+                  </td>
+                  <td className="px-6 py-5 text-sm font-bold text-zinc-500 text-center whitespace-nowrap italic">
+                    {item.last_used_date ? new Date(item.last_used_date).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric"
+                    }) : "-"}
                   </td>
                   <td className={`px-6 py-5 text-sm font-black text-center ${isOut ? 'text-red-600' : isLow ? 'text-amber-600' : 'text-zinc-600'}`}>
                     {Number(item.stock).toLocaleString("id-ID")}

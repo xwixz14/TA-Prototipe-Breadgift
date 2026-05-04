@@ -43,3 +43,6 @@ next-env.d.ts
 # ignore dev scratch
 /scratch/
 /tmp/
+
+*.zip
+

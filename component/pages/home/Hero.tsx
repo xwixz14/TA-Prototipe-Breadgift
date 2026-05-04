@@ -62,13 +62,13 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <h1
-            className="text-3xl sm:text-5xl md:text-[85px] leading-[1.1] mb-6"
+            className="text-3xl sm:text-5xl md:text-[85px] font-black leading-[1.1] mb-6 tracking-tight"
             style={{
               color: "#7B4A2D",
               WebkitTextStroke: (isMounted && isMobile) ? "2px white" : "6px white",
               paintOrder: "stroke fill",
-              textShadow: "0 4px 10px rgba(0, 0, 0, 0.15)",
-              fontFamily: "var(--font-rammetto-one), cursive",
+              textShadow: "0 10px 20px rgba(0, 0, 0, 0.1)",
+              fontFamily: "var(--font-poppins), sans-serif",
             }}
           >
             Breadgift Bakery

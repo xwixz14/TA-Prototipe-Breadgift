@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import ProductTable from "@/component/admin/products/ProductTable";
 import ProductModal from "@/component/admin/products/ProductModal";
-import RecipeModal from "@/component/admin/products/RecipeModal";
 import Toast, { ToastType } from "@/component/ui/Toast";
 import { Search, Plus, Filter, Package, CircleDollarSign } from "lucide-react";
 import { getProducts, addProduct, updateProduct, deleteProduct, toggleProductStatus } from "@/lib/actions";
@@ -16,9 +15,7 @@ export default function ProductsPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Semua");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
-  const [selectedProductForRecipe, setSelectedProductForRecipe] = useState<any>(null);
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
   const router = useRouter();
 
@@ -237,19 +234,9 @@ export default function ProductsPage() {
           }}
           onDelete={handleDeleteProduct}
           onToggleStatus={handleToggleStatus}
-          onManageRecipe={(p) => {
-            setSelectedProductForRecipe(p);
-            setIsRecipeModalOpen(true);
-          }}
         />
       </div>
 
-      {/* Recipe Modal */}
-      <RecipeModal
-        isOpen={isRecipeModalOpen}
-        onClose={() => setIsRecipeModalOpen(false)}
-        product={selectedProductForRecipe}
-      />
 
       {/* Add/Edit Modal */}
       <ProductModal

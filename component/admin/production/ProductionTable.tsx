@@ -10,6 +10,7 @@ interface ProductionLog {
   quantity: number;
   unit: string;
   production_date: string;
+  created_at: string;
   notes: string;
 }
 
@@ -26,14 +27,15 @@ export default function ProductionTable({ logs }: ProductionTableProps) {
             <tr className="bg-zinc-50 border-b border-zinc-200 sticky top-0 z-10">
               <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight">Produk</th>
               <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-center">Jumlah Produksi</th>
-              <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-center">Tanggal & Waktu</th>
+              <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-center">Tanggal Produksi</th>
+              <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight text-center">Waktu Catat</th>
               <th className="px-6 py-5 text-sm font-bold text-zinc-900 tracking-tight">Catatan</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100">
             {logs.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-6 py-20 text-center text-zinc-400 font-bold italic">
+                <td colSpan={5} className="px-6 py-20 text-center text-zinc-400 font-bold italic">
                   Belum ada catatan produksi untuk periode ini.
                 </td>
               </tr>
@@ -51,17 +53,23 @@ export default function ProductionTable({ logs }: ProductionTableProps) {
                   <td className="px-6 py-5 text-sm font-black text-center text-[#6B4423]">
                     +{log.quantity.toLocaleString("id-ID")} <span className="text-[10px] text-zinc-400 uppercase ml-0.5">{log.unit}</span>
                   </td>
-                  <td className="px-6 py-5 text-sm font-bold text-zinc-500 text-center">
+                  <td className="px-6 py-5 text-sm font-bold text-zinc-600 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <Calendar className="w-3.5 h-3.5 text-zinc-400" />
-                      {new Date(log.production_date).toLocaleString("id-ID", {
+                      {new Date(log.production_date).toLocaleDateString("id-ID", {
                         day: "numeric",
                         month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit"
+                        year: "numeric"
                       })}
                     </div>
+                  </td>
+                  <td className="px-6 py-5 text-xs font-medium text-zinc-400 text-center">
+                    {new Date(log.created_at).toLocaleString("id-ID", {
+                      day: "numeric",
+                      month: "short",
+                      hour: "2-digit",
+                      minute: "2-digit"
+                    })}
                   </td>
                   <td className="px-6 py-5 text-sm font-bold text-zinc-400">
                     <div className="flex items-start gap-2">

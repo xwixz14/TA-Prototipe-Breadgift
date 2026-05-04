@@ -58,35 +58,35 @@ export default function MonthSelector({ selectedMonth, selectedYear, onDateChang
       </div>
 
       {/* Selects */}
-      <div className="flex flex-1 items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         {!isYearly && (
-          <div className="flex-1 relative group">
+          <div className="relative group min-w-[130px]">
             <select
               value={selectedMonth}
               onChange={(e) => onDateChange(parseInt(e.target.value), selectedYear)}
-              className="w-full bg-zinc-50 border-2 border-zinc-100 py-4 px-6 rounded-2xl focus:outline-none focus:border-[#6B4423]/20 text-sm font-black text-zinc-900 appearance-none transition-all cursor-pointer hover:bg-zinc-100"
+              className="w-full bg-zinc-50 border-2 border-zinc-100 py-4 pl-6 pr-14 rounded-2xl focus:outline-none focus:border-[#6B4423]/20 text-sm font-black text-zinc-900 appearance-none transition-all cursor-pointer hover:bg-zinc-100"
             >
               {MONTHS.map((month, index) => (
                 <option key={month} value={index + 1}>{month}</option>
               ))}
             </select>
-            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none">
               <ChevronRight className="w-4 h-4 text-zinc-400 rotate-90" />
             </div>
           </div>
         )}
 
-        <div className="flex-1 relative group">
+        <div className="relative group min-w-[140px]">
           <select
             value={selectedYear}
             onChange={(e) => onDateChange(selectedMonth, parseInt(e.target.value))}
-            className="w-full bg-zinc-50 border-2 border-zinc-100 py-4 px-6 rounded-2xl focus:outline-none focus:border-[#6B4423]/20 text-sm font-black text-zinc-900 appearance-none transition-all cursor-pointer hover:bg-zinc-100"
+            className="w-full bg-zinc-50 border-2 border-zinc-100 py-4 pl-6 pr-14 rounded-2xl focus:outline-none focus:border-[#6B4423]/20 text-sm font-black text-zinc-900 appearance-none transition-all cursor-pointer hover:bg-zinc-100"
           >
             {years.map((year) => (
               <option key={year} value={year}>{year}</option>
             ))}
           </select>
-          <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
+          <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none">
             <ChevronRight className="w-4 h-4 text-zinc-400 rotate-90" />
           </div>
         </div>

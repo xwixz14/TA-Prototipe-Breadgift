@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Geist_Mono, Outfit } from "next/font/google";
+import { Plus_Jakarta_Sans, Geist_Mono, Outfit, Poppins } from "next/font/google";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -16,6 +16,12 @@ const geistMono = Geist_Mono({
 const outfit = Outfit({
   variable: "--font-outfit",
   weight: ["400", "500", "600", "700", "800", "900"],
+  subsets: ["latin"],
+});
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  weight: ["400", "700", "900"],
   subsets: ["latin"],
 });
 
@@ -41,7 +47,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${plusJakartaSans.variable} ${geistMono.variable} ${outfit.variable} h-full antialiased`}
+      className={`${plusJakartaSans.variable} ${geistMono.variable} ${outfit.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="min-h-full font-sans antialiased">
         <CartProvider initialUser={user}>
