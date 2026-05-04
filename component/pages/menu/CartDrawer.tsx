@@ -89,7 +89,7 @@ export default function CartDrawer() {
 
   return (
     <AnimatePresence>
-      <div className={`fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-8 transition-all duration-300 ${isCartOpen ? "visible pointer-events-auto" : "invisible pointer-events-none"}`}>
+      <div className={`fixed inset-0 z-[110] flex items-center justify-center p-0 md:p-8 transition-all duration-300 ${isCartOpen ? "visible pointer-events-auto" : "invisible pointer-events-none"}`}>
         {/* Backdrop */}
         <div 
         className={`absolute inset-0 bg-zinc-900/60 backdrop-blur-md transition-opacity duration-500 ${isCartOpen ? "opacity-100" : "opacity-0"}`} 
@@ -97,29 +97,29 @@ export default function CartDrawer() {
       />
       
       {/* Modal Panel - Centered on Desktop, Full Screen on Mobile */}
-      <div className={`relative w-full h-full md:h-auto md:max-h-[90vh] md:max-w-4xl bg-white md:rounded-[48px] shadow-[0_32px_80px_rgba(0,0,0,0.15)] flex flex-col md:flex-row overflow-hidden transform transition-all duration-500 ${isCartOpen ? "scale-100 opacity-100 translate-y-0" : "scale-95 opacity-0 translate-y-12"}`}>
+      <div className={`relative w-full h-full md:h-auto md:max-h-[95vh] md:max-w-4xl bg-white md:rounded-[48px] shadow-[0_32px_80px_rgba(0,0,0,0.15)] flex flex-col md:flex-row overflow-hidden transform transition-all duration-500 ${isCartOpen ? "scale-100 opacity-100 translate-y-0" : "scale-100 opacity-0 translate-y-full md:translate-y-12"}`}>
         
-        {/* Main Scrollable Area for Mobile */}
-        <div className="flex-1 flex flex-col md:flex-row overflow-y-auto">
+        {/* Main Area: Combined scroll on mobile */}
+        <div className="flex-1 flex flex-col md:flex-row overflow-y-auto custom-scrollbar">
         
         {/* Left Side: Items & Header (2/3 width) */}
-        <div className="flex-1 flex flex-col min-w-0 md:border-r border-zinc-100 md:h-full overflow-hidden">
+        <div className="flex-1 flex flex-col min-w-0 md:border-r border-zinc-100 md:h-full">
           {/* Header */}
-          <div className="px-6 md:px-10 py-6 md:py-10 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
+          <div className="sticky top-0 z-20 px-6 md:px-10 py-5 md:py-10 border-b border-zinc-100 flex items-center justify-between bg-white/95 backdrop-blur-sm">
             <div className="flex items-center gap-4 md:gap-5">
               <div className="w-10 h-10 md:w-14 md:h-14 bg-[#6B4423] rounded-xl md:rounded-2xl flex items-center justify-center shadow-xl shadow-[#6B4423]/20">
                 <ShoppingBag className="w-5 h-5 md:w-7 md:h-7 text-white" />
               </div>
               <div>
-                <h2 className="text-lg md:text-2xl font-black text-zinc-900 tracking-tight">Pesanan Anda</h2>
-                <p className="text-[9px] md:text-[10px] font-black text-zinc-400 uppercase tracking-widest leading-none mt-1">{cartItems.length} Produk Terpilih</p>
+                <h2 className="text-lg md:text-2xl font-black text-zinc-900 tracking-tight">Pesanan</h2>
+                <p className="text-[9px] md:text-[10px] font-black text-zinc-400 uppercase tracking-widest leading-none mt-1">{cartItems.length} Item</p>
               </div>
             </div>
             <button 
               onClick={() => setIsCartOpen(false)}
-              className="p-3 hover:bg-zinc-100 rounded-2xl transition-all"
+              className="p-3 bg-red-50 text-red-500 rounded-2xl active:scale-90 transition-all"
             >
-              <X className="w-6 h-6 text-red-500 hover:text-red-700 transition-colors" />
+              <X className="w-6 h-6" />
             </button>
           </div>
 
