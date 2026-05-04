@@ -33,6 +33,12 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 import Navbar from "@/component/layout/Navbar";
 import { CartProvider } from "@/context/CartContext";
 import { getMe } from "@/lib/actions";

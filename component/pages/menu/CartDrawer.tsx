@@ -97,7 +97,10 @@ export default function CartDrawer() {
       />
       
       {/* Modal Panel - Centered on Desktop, Full Screen on Mobile */}
-      <div className={`relative w-full h-full md:h-auto md:max-w-4xl bg-white md:rounded-[48px] shadow-[0_32px_80px_rgba(0,0,0,0.15)] flex flex-col md:flex-row overflow-hidden transform transition-all duration-500 ${isCartOpen ? "scale-100 opacity-100 translate-y-0" : "scale-90 opacity-0 translate-y-12"}`}>
+      <div className={`relative w-full h-full md:h-auto md:max-h-[90vh] md:max-w-4xl bg-white md:rounded-[48px] shadow-[0_32px_80px_rgba(0,0,0,0.15)] flex flex-col md:flex-row overflow-hidden transform transition-all duration-500 ${isCartOpen ? "scale-100 opacity-100 translate-y-0" : "scale-95 opacity-0 translate-y-12"}`}>
+        
+        {/* Main Scrollable Area for Mobile */}
+        <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
         
         {/* Left Side: Items & Header (2/3 width) */}
         <div className="flex-1 flex flex-col min-w-0 md:border-r border-zinc-100 h-full overflow-hidden">
@@ -121,7 +124,7 @@ export default function CartDrawer() {
           </div>
 
           {/* Cart Items List */}
-          <div className="flex-1 overflow-y-auto px-10 py-8 space-y-6 max-h-[50vh] md:max-h-[60vh]">
+          <div className="flex-1 overflow-y-auto px-6 md:px-10 py-6 md:py-8 space-y-5">
             {cartItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-10">
                 <div className="w-20 h-20 bg-zinc-50 rounded-full flex items-center justify-center mb-6">
@@ -183,8 +186,10 @@ export default function CartDrawer() {
           </div>
         </div>
 
+        </div>
+
         {/* Right Side: Payment & Checkout (1/3 width) */}
-        <div className="w-full md:w-[400px] bg-zinc-50 flex flex-col">
+        <div className="w-full md:w-[400px] bg-zinc-50 flex flex-col border-t md:border-t-0 md:border-l border-zinc-100">
           {/* Header Right */}
           <div className="px-6 md:px-10 py-6 md:py-10 border-b border-zinc-200/50 flex items-center justify-between">
             <h2 className="text-lg md:text-xl font-black text-zinc-900 tracking-tight">Checkout</h2>
@@ -336,6 +341,7 @@ export default function CartDrawer() {
             </div>
             
           </div>
+        </div>
         </div>
       </div>
     </div>
