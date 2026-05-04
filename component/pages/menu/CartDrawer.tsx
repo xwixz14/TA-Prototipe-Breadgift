@@ -97,7 +97,7 @@ export default function CartDrawer() {
       />
       
       {/* Modal Panel - Centered on Desktop, Full Screen on Mobile */}
-      <div className={`relative w-full h-full md:h-auto md:max-h-[95vh] md:max-w-4xl bg-white md:rounded-[48px] shadow-[0_32px_80px_rgba(0,0,0,0.15)] flex flex-col md:flex-row overflow-hidden transform transition-all duration-500 ${isCartOpen ? "scale-100 opacity-100 translate-y-0" : "scale-100 opacity-0 translate-y-full md:translate-y-12"}`}>
+      <div className={`relative w-full h-full md:h-auto md:max-h-[95vh] md:max-w-4xl bg-white md:rounded-[48px] shadow-[0_32px_80px_rgba(0,0,0,0.15)] flex flex-col md:flex-row overflow-y-auto md:overflow-hidden transform transition-all duration-500 ${isCartOpen ? "scale-100 opacity-100 translate-y-0" : "scale-100 opacity-0 translate-y-full md:translate-y-12"}`}>
         
         {/* Main Area: Combined scroll on mobile */}
         <div className="flex-1 flex flex-col md:flex-row overflow-y-auto custom-scrollbar">
