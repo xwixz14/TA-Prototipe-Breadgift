@@ -6,6 +6,7 @@ import { db, query } from "./db";
 import fs from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import { put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { encrypt, decrypt } from "./session";
@@ -304,23 +305,14 @@ export async function uploadProofOfPayment(formData: FormData, transactionId: nu
       return { success: false, error: "Format file tidak didukung. Harap unggah format JPG, PNG, atau WEBP." };
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const fileName = `proofs/PROOF_${transactionId}_${uuidv4().slice(0, 8)}_${file.name}`;
+    
+    // Upload to Vercel Blob
+    const blob = await put(fileName, file, {
+      access: 'public',
+    });
 
-    const fileName = `PROOF_${transactionId}_${uuidv4().slice(0, 8)}_${file.name}`;
-    const uploadDir = path.join(process.cwd(), "public", "assets", "proofs");
-
-    // Create directory if it doesn't exist
-    try {
-      await fs.access(uploadDir);
-    } catch {
-      await fs.mkdir(uploadDir, { recursive: true });
-    }
-
-    const filePath = path.join(uploadDir, fileName);
-    await fs.writeFile(filePath, buffer);
-
-    const proofUrl = `/assets/proofs/${fileName}`;
+    const proofUrl = blob.url;
 
     // Update transaction in DB
     await query("UPDATE transactions SET proof_of_payment = ? WHERE id = ?", [proofUrl, transactionId]);
@@ -380,25 +372,16 @@ export async function uploadImage(formData: FormData) {
       return { success: false, error: "Format file tidak didukung. Harap unggah format JPG, PNG, atau WEBP." };
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const fileName = `products/${uuidv4()}_${file.name}`;
 
-    const fileName = `${uuidv4()}_${file.name}`;
-    const uploadDir = path.join(process.cwd(), "public", "assets", "products");
-
-    // Create directory if it doesn't exist
-    try {
-      await fs.access(uploadDir);
-    } catch {
-      await fs.mkdir(uploadDir, { recursive: true });
-    }
-
-    const filePath = path.join(uploadDir, fileName);
-    await fs.writeFile(filePath, buffer);
+    // Upload to Vercel Blob
+    const blob = await put(fileName, file, {
+      access: 'public',
+    });
 
     return { 
       success: true, 
-      imageUrl: `/assets/products/${fileName}` 
+      imageUrl: blob.url
     };
   } catch (error) {
     console.error("Image upload error:", error);
