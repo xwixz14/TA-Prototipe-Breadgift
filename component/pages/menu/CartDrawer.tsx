@@ -100,10 +100,10 @@ export default function CartDrawer() {
       <div className={`relative w-full h-full md:h-auto md:max-h-[90vh] md:max-w-4xl bg-white md:rounded-[48px] shadow-[0_32px_80px_rgba(0,0,0,0.15)] flex flex-col md:flex-row overflow-hidden transform transition-all duration-500 ${isCartOpen ? "scale-100 opacity-100 translate-y-0" : "scale-95 opacity-0 translate-y-12"}`}>
         
         {/* Main Scrollable Area for Mobile */}
-        <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
+        <div className="flex-1 flex flex-col md:flex-row overflow-y-auto">
         
         {/* Left Side: Items & Header (2/3 width) */}
-        <div className="flex-1 flex flex-col min-w-0 md:border-r border-zinc-100 h-full overflow-hidden">
+        <div className="flex-1 flex flex-col min-w-0 md:border-r border-zinc-100 md:h-full overflow-hidden">
           {/* Header */}
           <div className="px-6 md:px-10 py-6 md:py-10 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
             <div className="flex items-center gap-4 md:gap-5">
@@ -124,7 +124,7 @@ export default function CartDrawer() {
           </div>
 
           {/* Cart Items List */}
-          <div className="flex-1 overflow-y-auto px-6 md:px-10 py-6 md:py-8 space-y-5">
+          <div className="flex-1 px-6 md:px-10 py-6 md:py-8 space-y-5">
             {cartItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-10">
                 <div className="w-20 h-20 bg-zinc-50 rounded-full flex items-center justify-center mb-6">
@@ -298,7 +298,7 @@ export default function CartDrawer() {
             </div>
 
             {/* Price Summary */}
-            <div className="bg-white p-4 md:p-6 rounded-3xl border border-zinc-200 space-y-3">
+            <div className="bg-white p-5 md:p-6 rounded-3xl border border-zinc-200 space-y-3">
               <div className="flex justify-between text-[10px] font-black text-zinc-400 uppercase tracking-widest">
                 <span>Subtotal</span>
                 <span>Rp. {totalPrice.toLocaleString("id-ID")}</span>
