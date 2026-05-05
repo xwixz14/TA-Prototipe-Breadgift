@@ -55,7 +55,7 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
             <BookOpen size={14} aria-hidden="true" />
             Edukasi & Tips Roti
           </div>
-          <h1 className="text-6xl md:text-[7rem] font-black text-stone-900 tracking-tighter leading-[0.85]" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
+          <h1 className="text-5xl md:text-[7rem] font-black text-stone-900 tracking-tighter leading-[0.85]" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
             Informasi <br />
             <span className="text-primary italic">Seputar Roti.</span>
           </h1>
