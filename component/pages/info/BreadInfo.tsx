@@ -179,13 +179,13 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
       {journalArticles.length > 0 && (
         <section className="space-y-16">
           <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-zinc-100 pb-12">
-            <div className="space-y-4 text-right md:text-left w-full">
+            <div className="space-y-4 text-left w-full">
               <p className="text-primary font-black uppercase tracking-[0.4em] text-xs">Journal & Updates</p>
-              <h2 className="text-5xl md:text-[5rem] font-black text-stone-900 tracking-tighter leading-none text-right md:text-left" style={{ fontFamily: 'var(--font-rametto)' }}>
+              <h2 className="text-5xl md:text-[5rem] font-black text-stone-900 tracking-tighter leading-none text-left" style={{ fontFamily: 'var(--font-rametto)' }}>
                 BreadGift <br /><span className="text-stone-300 italic">Journal.</span>
               </h2>
             </div>
-            <p className="text-stone-500 font-bold text-lg max-w-sm uppercase tracking-widest leading-relaxed text-right md:text-left w-full md:w-auto">
+            <p className="text-stone-500 font-bold text-lg max-w-sm uppercase tracking-widest leading-relaxed text-left w-full md:w-auto">
               Berita terbaru, tips khusus, dan informasi harian dari dapur BreadGift.
             </p>
           </div>
