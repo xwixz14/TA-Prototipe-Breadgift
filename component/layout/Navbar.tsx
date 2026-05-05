@@ -136,7 +136,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Overlay */}
       <div className={`fixed inset-0 z-[90] bg-white transition-all duration-500 ease-in-out md:hidden ${isMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}>
-        <div className="flex flex-col h-full pt-32 px-10 pb-12">
+        <div className="flex flex-col h-full pt-20 px-10 pb-12">
           <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.4em] mb-10">Navigasi Menu</p>
           <div className="flex flex-col gap-6 flex-1">
             {navLinks.map((link) => (
@@ -180,8 +180,8 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4">
-                <Link href="/login" className="py-5 bg-zinc-50 text-zinc-900 rounded-[24px] text-center text-lg font-black hover:bg-zinc-100 transition-colors">Login</Link>
-                <Link href="/register" className="py-5 bg-[#6B4423] text-white rounded-[24px] text-center text-lg font-black shadow-xl shadow-[#6B4423]/20 hover:bg-[#54351B] transition-all">Daftar</Link>
+                <Link href="/login" className="py-5 bg-zinc-50 text-zinc-900 rounded-[24px] text-center text-lg font-black hover:bg-zinc-100 transition-colors uppercase tracking-widest">Login</Link>
+                <Link href="/register" className="py-5 bg-[#6B4423] text-white rounded-[24px] text-center text-lg font-black shadow-xl shadow-[#6B4423]/20 hover:bg-[#54351B] transition-all uppercase tracking-widest">Daftar</Link>
               </div>
             )}
           </div>
