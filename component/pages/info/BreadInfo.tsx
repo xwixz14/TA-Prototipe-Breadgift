@@ -183,7 +183,7 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-zinc-100 pb-12">
             <div className="space-y-4 text-left w-full">
               <p className="text-primary font-black uppercase tracking-[0.4em] text-xs">Journal & Updates</p>
-              <h2 className="text-5xl md:text-[5rem] font-black text-stone-900 tracking-tight leading-none" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
+              <h2 className="text-4xl md:text-[5rem] font-black text-stone- stone-900 tracking-tight leading-none" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
                 BreadGift <br /><span className="text-stone-300 italic">Journal.</span>
               </h2>
             </div>
@@ -224,7 +224,7 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
                       {article.views || 0} Terlihat
                     </div>
                   </div>
-                  <h3 className="text-3xl font-black text-stone-900 tracking-tight group-hover:text-primary transition-colors leading-tight">
+                  <h3 className="text-2xl md:text-3xl font-black text-stone-900 tracking-tight group-hover:text-primary transition-colors leading-tight">
                     {article.title}
                   </h3>
                   <p className="text-stone-500 text-sm font-bold leading-relaxed line-clamp-3">
