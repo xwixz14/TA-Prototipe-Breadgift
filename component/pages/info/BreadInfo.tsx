@@ -128,15 +128,15 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
 
       {/* 5. Featured Catalog Section */}
       {catalogArticle && (
-        <section className="space-y-12">
-           <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-zinc-100 pb-12">
-            <div className="space-y-4">
-              <p className="text-amber-600 font-black uppercase tracking-[0.4em] text-xs">Informasi & Koleksi</p>
-              <h2 className="text-5xl md:text-[5rem] font-black text-stone-900 tracking-tight leading-none" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
+        <section className="space-y-10 md:space-y-12">
+           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-zinc-100 pb-10 md:pb-12 text-left">
+            <div className="space-y-3">
+              <p className="text-amber-600 font-black uppercase tracking-[0.4em] text-[10px]">Informasi & Koleksi</p>
+              <h2 className="text-4xl md:text-[5rem] font-black text-stone-900 tracking-tight leading-none" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
                 Catalog <br /><span className="text-stone-300 italic">Breadgift.</span>
               </h2>
             </div>
-            <p className="text-stone-500 font-bold text-lg max-w-sm uppercase tracking-widest leading-relaxed">
+            <p className="text-stone-500 font-bold text-sm md:text-lg max-w-sm tracking-wide leading-relaxed">
               Eksplorasi koleksi roti terbaik kami melalui katalog visual yang mendalam.
             </p>
           </div>
@@ -145,7 +145,7 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
             initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="group relative h-[500px] md:h-[600px] rounded-[4rem] overflow-hidden shadow-2xl border border-zinc-100 cursor-pointer"
+            className="group relative h-[450px] md:h-[600px] rounded-[3rem] md:rounded-[4rem] overflow-hidden shadow-2xl border border-zinc-100 cursor-pointer"
           >
             <Image 
               src={catalogArticle.image_url || "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1200"}
@@ -153,24 +153,24 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
               fill
               className="object-cover transition-transform duration-1000 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/20 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/10 to-transparent"></div>
             
-            <div className="absolute bottom-16 left-16 right-16 space-y-6">
-               <div className="inline-flex items-center gap-3 px-6 py-2 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full text-[10px] font-black uppercase tracking-[0.4em]">
-                  <Sparkles size={14} className="text-amber-400" />
+            <div className="absolute bottom-10 left-8 right-8 md:bottom-16 md:left-16 md:right-16 space-y-4 md:space-y-6">
+               <div className="inline-flex items-center gap-3 px-5 py-2 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full text-[9px] font-black uppercase tracking-[0.4em]">
+                  <Sparkles size={12} className="text-amber-400" />
                   Edisi Koleksi Utama
                </div>
-               <h3 className="text-4xl md:text-6xl font-black text-white tracking-tight max-w-2xl" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
+               <h3 className="text-3xl md:text-6xl font-black text-white tracking-tight max-w-2xl leading-tight" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
                  {catalogArticle.title}
                </h3>
-               <p className="text-white/60 text-lg font-bold max-w-xl line-clamp-2 uppercase tracking-widest">
+               <p className="text-white/60 text-sm md:text-lg font-bold max-w-xl line-clamp-2 tracking-wide leading-relaxed">
                  {catalogArticle.content}
                </p>
                <Link 
                  href={`/info/${catalogArticle.id}`}
-                 className="inline-flex items-center gap-4 bg-white text-stone-900 px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.3em] hover:bg-primary hover:text-white transition-all active:scale-95"
+                 className="inline-flex items-center gap-4 bg-white text-stone-900 px-8 py-4 md:px-10 md:py-5 rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-[0.3em] hover:bg-primary hover:text-white transition-all active:scale-95 shadow-xl"
                >
-                 Buka Katalog <ChevronRight size={16} />
+                 Buka Katalog <ChevronRight size={14} />
                </Link>
             </div>
           </motion.div>
