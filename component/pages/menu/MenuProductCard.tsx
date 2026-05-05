@@ -92,7 +92,7 @@ export default function MenuProductCard({ product, isLoggedIn }: MenuProductCard
       <div className="p-6 flex flex-col flex-1 gap-5">
         <div className="space-y-1">
           <div className="flex justify-between items-center gap-2">
-            <h3 className="text-xl font-black text-stone-800 tracking-tighter leading-none group-hover:text-primary transition-colors line-clamp-1">
+            <h3 className="text-xl font-bold text-stone-800 tracking-tight leading-none group-hover:text-primary transition-colors line-clamp-1" style={{ fontFamily: 'var(--font-outfit)' }}>
               {product.name}
             </h3>
           </div>
@@ -103,28 +103,29 @@ export default function MenuProductCard({ product, isLoggedIn }: MenuProductCard
 
         <div className="flex items-center justify-between mt-auto">
           <div className="flex flex-col">
-            <span className="text-2xl font-black text-stone-900 tracking-tighter flex items-start gap-1 leading-none">
-              <span className="text-[10px] mt-1 font-bold text-primary">Rp</span>
+            <span className="text-2xl font-bold text-stone-900 tracking-tighter flex items-start gap-1 leading-none" style={{ fontFamily: 'var(--font-outfit)' }}>
+              <span className="text-[10px] mt-1 font-black text-primary">Rp</span>
               {product.price.toLocaleString("id-ID")}
             </span>
-            <div className="mt-2.5 flex items-center gap-2 px-3 py-1.5 bg-stone-100 rounded-xl w-fit border border-stone-200/50">
+            <div className="mt-2.5 flex items-center gap-2 px-3 py-1.5 bg-stone-50 rounded-xl w-fit border border-stone-100">
               <div className={`w-1.5 h-1.5 rounded-full ${product.stock > 0 ? "bg-green-500 animate-pulse" : "bg-red-500"}`}></div>
-              <span className="text-[10px] font-black text-stone-600 uppercase tracking-widest leading-none">
-                Sisa Stok: <span className="text-stone-900">{product.stock}</span>
+              <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest leading-none">
+                Stok: <span className="text-stone-800">{product.stock}</span>
               </span>
             </div>
           </div>
           
           <motion.button 
+            whileTap={{ scale: 0.9 }}
             onClick={handleOrderClick}
             disabled={isOutOfStock}
-            className={`w-14 h-14 rounded-[1.5rem] flex items-center justify-center transition-all shadow-xl active:shadow-inner ${
+            className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all shadow-xl border-2 ${
               isOutOfStock 
-                ? "bg-stone-100 text-stone-300 pointer-events-none shadow-none" 
-                : "bg-primary text-secondary-content"
+                ? "bg-stone-100 text-stone-300 border-stone-200 pointer-events-none shadow-none" 
+                : "bg-primary text-secondary-content border-white/20 shadow-primary/20 hover:shadow-primary/40"
             }`}
           >
-            <ShoppingCart size={24} strokeWidth={2.5} />
+            <ShoppingCart size={22} strokeWidth={2.5} />
           </motion.button>
         </div>
       </div>
