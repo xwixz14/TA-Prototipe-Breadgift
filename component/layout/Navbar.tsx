@@ -138,17 +138,21 @@ export default function Navbar() {
       <div className={`fixed inset-0 z-[90] bg-white transition-all duration-500 ease-in-out md:hidden ${isMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}>
         <div className="flex flex-col h-full pt-32 px-10 pb-12">
           <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.4em] mb-10">Navigasi Menu</p>
-          <div className="flex flex-col gap-8 flex-1">
+          <div className="flex flex-col gap-6 flex-1">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`text-4xl font-black tracking-tighter transition-all duration-300 flex items-center gap-4 ${pathname === link.href ? "text-primary translate-x-2" : "text-stone-300 hover:text-stone-500"
+                className={`text-3xl font-bold tracking-tight transition-all duration-300 flex items-center gap-4 ${pathname === link.href ? "text-primary translate-x-2" : "text-stone-600 hover:text-primary"
                   }`}
-                style={{ fontFamily: "var(--font-outfit), sans-serif" }}
+                style={{ 
+                  fontFamily: "var(--font-outfit), sans-serif",
+                  WebkitTextStroke: "0px",
+                  textShadow: "none"
+                }}
               >
                 {pathname === link.href && (
-                  <span className="w-2 h-2 bg-primary rounded-full" />
+                  <span className="w-1.5 h-1.5 bg-primary rounded-full" />
                 )}
                 {link.name}
               </Link>
