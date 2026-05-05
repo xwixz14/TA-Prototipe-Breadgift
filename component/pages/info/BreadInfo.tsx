@@ -42,7 +42,7 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
   const journalArticles = dynamicArticles.filter(a => a.category !== "Katalog");
 
   return (
-    <div className="max-w-[1400px] mx-auto px-6 py-12 md:py-24 relative space-y-32">
+    <div className="max-w-[1400px] mx-auto px-6 py-12 md:py-24 relative space-y-20 md:space-y-32">
       {/* 1. Hero Section */}
       <div className="flex flex-col md:flex-row items-center gap-20">
         <motion.div 
@@ -260,15 +260,15 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
                      "Bahan isian (filling) lokal pilihan tanpa pemanis buatan."
                    ].map((tip, i) => (
                      <div key={i} className="flex gap-4 items-start group">
-                       <div className="mt-1 w-5 h-5 md:w-6 md:h-6 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary transition-colors group-hover:bg-primary group-hover:text-white flex-shrink-0">
-                         <CheckCircle2 size={12} className="md:w-3.5 md:h-3.5" />
+                       <div className="mt-1 w-6 h-6 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary transition-colors group-hover:bg-primary group-hover:text-white flex-shrink-0">
+                         <CheckCircle2 size={14} />
                        </div>
                        <p className="text-stone-400 font-bold text-sm md:text-lg leading-snug">{tip}</p>
                      </div>
                    ))}
                 </div>
              </div>
-            <div className="grid grid-cols-2 gap-3 md:gap-6">
+             <div className="grid grid-cols-2 gap-3 md:gap-6 mt-10 md:mt-0">
                 <div className="bg-white/5 backdrop-blur-xl p-5 md:p-8 rounded-2xl md:rounded-3xl space-y-2 md:space-y-4 border border-white/10">
                   <Clock className="text-primary w-6 h-6 md:w-8 md:h-8" />
                   <p className="text-white font-black text-sm md:text-xl leading-none uppercase md:normal-case">24 Jam</p>
