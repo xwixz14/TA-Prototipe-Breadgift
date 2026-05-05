@@ -163,25 +163,38 @@ export default function Navbar() {
             {user ? (
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary font-black">
+                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary font-black shadow-inner">
                     {user.name.charAt(0)}
                   </div>
                   <div>
                     <p className="text-[10px] font-black text-[#6B4423] uppercase tracking-widest leading-none mb-1">{user.role === 'admin' ? 'Administrator' : 'Pelanggan Setia'}</p>
-                    <p className="text-xl font-black text-zinc-900">{user.name}</p>
+                    <p className="text-xl font-black text-zinc-900" style={{ fontFamily: 'var(--font-outfit)' }}>{user.name}</p>
                   </div>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full py-5 bg-red-50 text-red-600 rounded-[24px] text-lg font-black transition-all active:scale-95 hover:bg-red-100"
+                  className="w-full py-5 bg-red-50 text-red-600 rounded-2xl text-base font-black transition-all active:scale-95 hover:bg-red-100 border-2 border-red-100 uppercase tracking-widest"
+                  style={{ fontFamily: 'var(--font-outfit)' }}
                 >
                   Logout Sekarang
                 </button>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4">
-                <Link href="/login" className="py-5 bg-zinc-50 text-zinc-900 rounded-[24px] text-center text-lg font-black hover:bg-zinc-100 transition-colors uppercase tracking-widest">Login</Link>
-                <Link href="/register" className="py-5 bg-[#6B4423] text-white rounded-[24px] text-center text-lg font-black shadow-xl shadow-[#6B4423]/20 hover:bg-[#54351B] transition-all uppercase tracking-widest">Daftar</Link>
+                <Link 
+                  href="/login" 
+                  className="py-4.5 bg-white text-primary border-2 border-primary/10 rounded-2xl text-center text-[15px] font-black hover:bg-primary/5 transition-all uppercase tracking-[0.2em]"
+                  style={{ fontFamily: 'var(--font-outfit)' }}
+                >
+                  Login
+                </Link>
+                <Link 
+                  href="/register" 
+                  className="py-4.5 bg-primary text-white border-2 border-white/20 rounded-2xl text-center text-[15px] font-black shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all uppercase tracking-[0.2em]"
+                  style={{ fontFamily: 'var(--font-outfit)' }}
+                >
+                  Daftar
+                </Link>
               </div>
             )}
           </div>
