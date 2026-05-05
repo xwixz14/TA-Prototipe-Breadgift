@@ -4,18 +4,18 @@ import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
-  weight: ["300", "400", "500", "600", "700", "800"],
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+  weight: ["400", "500", "600", "700", "800"],
   subsets: ["latin"],
 });
 
 const outfit = Outfit({
   variable: "--font-outfit",
   weight: ["400", "500", "600", "700", "800", "900"],
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 

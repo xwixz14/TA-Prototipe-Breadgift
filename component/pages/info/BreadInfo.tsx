@@ -53,11 +53,11 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
             <BookOpen size={14} aria-hidden="true" />
             Edukasi & Tips Roti
           </div>
-          <h1 className="text-6xl md:text-[7rem] font-black text-stone-900 tracking-tighter leading-[0.85]" style={{ fontFamily: 'var(--font-rametto)' }}>
+          <h1 className="text-6xl md:text-[7rem] font-black text-stone-900 tracking-tighter leading-[0.85]" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
             Informasi <br />
             <span className="text-primary italic">Seputar Roti.</span>
           </h1>
-          <p className="text-stone-500 text-lg md:text-xl font-bold max-w-xl uppercase tracking-widest leading-relaxed">
+          <p className="text-stone-500 text-base md:text-xl font-medium max-w-xl tracking-tight leading-relaxed">
             Panduan lengkap memahami kualitas roti artisan dan cara menikmati kelezatan maksimal setiap hari.
           </p>
         </motion.div>
@@ -97,7 +97,7 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
       <section className="space-y-16">
         <div className="text-center space-y-4">
           <p className="text-primary font-black uppercase tracking-[0.4em] text-xs">Visual Inspection</p>
-          <h2 className="text-5xl md:text-6xl font-black text-stone-900 tracking-tighter" style={{ fontFamily: 'var(--font-rametto)' }}>
+          <h2 className="text-5xl md:text-6xl font-black text-stone-900 tracking-tight" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
             Cek Kesegaran <span className="text-stone-300 italic">Tanpa Tanggal.</span>
           </h2>
         </div>
@@ -130,7 +130,7 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
            <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-zinc-100 pb-12">
             <div className="space-y-4">
               <p className="text-amber-600 font-black uppercase tracking-[0.4em] text-xs">Informasi & Koleksi</p>
-              <h2 className="text-5xl md:text-[5rem] font-black text-stone-900 tracking-tighter leading-none" style={{ fontFamily: 'var(--font-rametto)' }}>
+              <h2 className="text-5xl md:text-[5rem] font-black text-stone-900 tracking-tight leading-none" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
                 Catalog <br /><span className="text-stone-300 italic">Breadgift.</span>
               </h2>
             </div>
@@ -158,7 +158,7 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
                   <Sparkles size={14} className="text-amber-400" />
                   Edisi Koleksi Utama
                </div>
-               <h3 className="text-4xl md:text-6xl font-black text-white tracking-tighter max-w-2xl" style={{ fontFamily: 'var(--font-rametto)' }}>
+               <h3 className="text-4xl md:text-6xl font-black text-white tracking-tight max-w-2xl" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
                  {catalogArticle.title}
                </h3>
                <p className="text-white/60 text-lg font-bold max-w-xl line-clamp-2 uppercase tracking-widest">
@@ -181,7 +181,7 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-zinc-100 pb-12">
             <div className="space-y-4 text-left w-full">
               <p className="text-primary font-black uppercase tracking-[0.4em] text-xs">Journal & Updates</p>
-              <h2 className="text-5xl md:text-[5rem] font-black text-stone-900 tracking-tighter leading-none text-left" style={{ fontFamily: 'var(--font-rametto)' }}>
+              <h2 className="text-5xl md:text-[5rem] font-black text-stone-900 tracking-tight leading-none" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
                 BreadGift <br /><span className="text-stone-300 italic">Journal.</span>
               </h2>
             </div>
@@ -243,7 +243,6 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
 
       {/* 3. The BreadGift Process */}
       <div className="bg-stone-950 rounded-[4rem] p-12 md:p-24 overflow-hidden relative">
-        {/* ... (keep existing process section) ... */}
          <div className="absolute top-0 right-0 p-20 opacity-10">
             <Wheat size={300} className="text-white" />
          </div>
@@ -294,7 +293,7 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
 
       {/* 4. Final Bread Tips Table - Transformed to Cards on Mobile */}
       <section className="bg-stone-50 rounded-[3rem] md:rounded-[4rem] p-8 md:p-20 space-y-12">
-        <h3 className="text-3xl md:text-4xl font-black text-stone-900 text-center" style={{ fontFamily: 'var(--font-rametto)' }}>Panduan Penyimpanan</h3>
+        <h3 className="text-4xl font-black text-stone-900 text-center tracking-tight" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>Panduan Penyimpanan</h3>
         
         {/* Desktop View Table */}
         <div className="hidden md:block overflow-x-auto no-scrollbar">
