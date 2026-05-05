@@ -178,7 +178,7 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
       {/* 6. Dynamic Articles Section (Journal) */}
       {journalArticles.length > 0 && (
         <section className="space-y-16">
-          <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-zinc-100 pb-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-zinc-100 pb-12">
             <div className="space-y-4 text-left w-full">
               <p className="text-primary font-black uppercase tracking-[0.4em] text-xs">Journal & Updates</p>
               <h2 className="text-5xl md:text-[5rem] font-black text-stone-900 tracking-tighter leading-none text-left" style={{ fontFamily: 'var(--font-rametto)' }}>
