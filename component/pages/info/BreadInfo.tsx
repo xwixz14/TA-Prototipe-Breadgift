@@ -25,13 +25,15 @@ import Link from "next/link";
 const InfoCard = ({ icon: Icon, title, description, color }: any) => (
   <motion.div 
     whileHover={{ y: -10 }}
-    className="bg-white p-10 rounded-[3.5rem] border border-zinc-100 shadow-xl shadow-zinc-200/20 space-y-6 group transition-all duration-500 hover:border-primary/20"
+    className="bg-white p-6 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] border border-zinc-100 shadow-xl shadow-zinc-200/20 space-y-4 md:space-y-6 group transition-all duration-500 hover:border-primary/20"
   >
-    <div className={`w-16 h-16 ${color} rounded-2xl flex items-center justify-center transition-transform group-hover:rotate-12`} aria-hidden="true">
-      <Icon size={32} />
+    <div className="flex items-center gap-5 md:block md:space-y-6">
+      <div className={`w-12 h-12 md:w-16 md:h-16 ${color} rounded-xl md:rounded-2xl flex-shrink-0 flex items-center justify-center transition-transform group-hover:rotate-12`} aria-hidden="true">
+        <Icon className="w-6 h-6 md:w-8 md:h-8" />
+      </div>
+      <h3 className="text-xl md:text-2xl font-black text-stone-900 tracking-tight leading-tight">{title}</h3>
     </div>
-    <h3 className="text-2xl font-black text-stone-900 tracking-tight">{title}</h3>
-    <p className="text-stone-500 text-sm font-bold leading-relaxed">{description}</p>
+    <p className="text-stone-500 text-xs md:text-sm font-bold leading-relaxed">{description}</p>
   </motion.div>
 );
 
@@ -97,7 +99,7 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
       <section className="space-y-16">
         <div className="text-center space-y-4">
           <p className="text-primary font-black uppercase tracking-[0.4em] text-xs">Visual Inspection</p>
-          <h2 className="text-5xl md:text-6xl font-black text-stone-900 tracking-tight" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
+          <h2 className="text-4xl md:text-6xl font-black text-stone-900 tracking-tight" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
             Cek Kesegaran <span className="text-stone-300 italic">Tanpa Tanggal.</span>
           </h2>
         </div>
