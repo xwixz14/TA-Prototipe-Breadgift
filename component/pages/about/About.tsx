@@ -311,10 +311,6 @@ export default function About() {
                   className="object-cover rounded-[5rem] shadow-[0_50px_100px_-20px_rgba(123,74,45,0.1)]"
                 />
               </motion.div>
-              {/* Floating Decorative Elements */}
-              <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-2xl z-20 animate-bounce-slow">
-                 <Sparkles className="text-primary w-12 h-12" />
-              </div>
             </div>
           </motion.div>
         </motion.div>
