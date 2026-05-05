@@ -267,35 +267,37 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
                   ))}
                </div>
             </div>
-            <div className="grid grid-cols-2 gap-6">
-                <div className="bg-white/5 backdrop-blur-xl p-8 rounded-3xl space-y-4 border border-white/10">
-                  <Clock className="text-primary" size={32} />
-                  <p className="text-white font-black text-xl leading-none">24 Jam</p>
-                  <p className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Waktu Proses</p>
+            <div className="grid grid-cols-2 gap-3 md:gap-6">
+                <div className="bg-white/5 backdrop-blur-xl p-5 md:p-8 rounded-2xl md:rounded-3xl space-y-2 md:space-y-4 border border-white/10">
+                  <Clock className="text-primary w-6 h-6 md:w-8 md:h-8" />
+                  <p className="text-white font-black text-sm md:text-xl leading-none uppercase md:normal-case">24 Jam</p>
+                  <p className="text-stone-500 text-[8px] md:text-[10px] font-bold uppercase tracking-widest leading-none">Waktu Proses</p>
                 </div>
-                <div className="bg-white/5 backdrop-blur-xl p-8 rounded-3xl space-y-4 border border-white/10">
-                  <Leaf className="text-primary" size={32} />
-                  <p className="text-white font-black text-xl leading-none">100% Alam</p>
-                  <p className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Bahan Pilihan</p>
+                <div className="bg-white/5 backdrop-blur-xl p-5 md:p-8 rounded-2xl md:rounded-3xl space-y-2 md:space-y-4 border border-white/10">
+                  <Leaf className="text-primary w-6 h-6 md:w-8 md:h-8" />
+                  <p className="text-white font-black text-sm md:text-xl leading-none uppercase md:normal-case">100% Alam</p>
+                  <p className="text-stone-500 text-[8px] md:text-[10px] font-bold uppercase tracking-widest leading-none">Bahan Pilihan</p>
                 </div>
-                <div className="bg-white/5 backdrop-blur-xl p-8 rounded-3xl space-y-4 border border-white/10">
-                  <Zap className="text-primary" size={32} />
-                  <p className="text-white font-black text-xl leading-none">Fresh Heat</p>
-                  <p className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Oven To Hand</p>
+                <div className="bg-white/5 backdrop-blur-xl p-5 md:p-8 rounded-2xl md:rounded-3xl space-y-2 md:space-y-4 border border-white/10">
+                  <Zap className="text-primary w-6 h-6 md:w-8 md:h-8" />
+                  <p className="text-white font-black text-sm md:text-xl leading-none uppercase md:normal-case">Fresh Heat</p>
+                  <p className="text-stone-500 text-[8px] md:text-[10px] font-bold uppercase tracking-widest leading-none">Oven To Hand</p>
                 </div>
-                <div className="bg-white/5 backdrop-blur-xl p-8 rounded-3xl space-y-4 border border-white/10">
-                  <Heart className="text-primary" size={32} />
-                  <p className="text-white font-black text-xl leading-none">Artisan</p>
-                  <p className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Made with Love</p>
+                <div className="bg-white/5 backdrop-blur-xl p-5 md:p-8 rounded-2xl md:rounded-3xl space-y-2 md:space-y-4 border border-white/10">
+                  <Heart className="text-primary w-6 h-6 md:w-8 md:h-8" />
+                  <p className="text-white font-black text-sm md:text-xl leading-none uppercase md:normal-case">Artisan</p>
+                  <p className="text-stone-500 text-[8px] md:text-[10px] font-bold uppercase tracking-widest leading-none">Made with Love</p>
                 </div>
             </div>
          </div>
       </div>
 
-      {/* 4. Final Bread Tips Table */}
-      <section className="bg-stone-50 rounded-[4rem] p-12 md:p-20 space-y-12">
-        <h3 className="text-4xl font-black text-stone-900 text-center" style={{ fontFamily: 'var(--font-rametto)' }}>Panduan Penyimpanan</h3>
-        <div className="overflow-x-auto no-scrollbar">
+      {/* 4. Final Bread Tips Table - Transformed to Cards on Mobile */}
+      <section className="bg-stone-50 rounded-[3rem] md:rounded-[4rem] p-8 md:p-20 space-y-12">
+        <h3 className="text-3xl md:text-4xl font-black text-stone-900 text-center" style={{ fontFamily: 'var(--font-rametto)' }}>Panduan Penyimpanan</h3>
+        
+        {/* Desktop View Table */}
+        <div className="hidden md:block overflow-x-auto no-scrollbar">
           <table className="w-full text-left border-separate border-spacing-y-4">
             <thead>
               <tr className="text-stone-400 font-black uppercase text-[10px] tracking-[0.2em]">
@@ -315,11 +317,41 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
                   <td className="px-8 py-8 rounded-l-[2rem] font-black text-stone-900 group-hover:text-primary">{row.type}</td>
                   <td className="px-8 py-8 font-bold text-stone-500">{row.ruang}</td>
                   <td className="px-8 py-8 font-bold text-stone-500">{row.cooler}</td>
-                  <td className="px-8 py-8 rounded-r-[2rem] font-bold text-primary italic italic">{row.reheat}</td>
+                  <td className="px-8 py-8 rounded-r-[2rem] font-bold text-primary italic">{row.reheat}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile View Cards */}
+        <div className="md:hidden space-y-6">
+          {[
+            { type: "Roti Manis", ruang: "2-3 Hari", cooler: "5 Hari", reheat: "Oven 180°C (3 Menit)" },
+            { type: "Roti Tawar", ruang: "3-4 Hari", cooler: "7 Hari", reheat: "Toaster / Pan" },
+            { type: "Donut", ruang: "1 Hari", cooler: "Tidak Disarankan", reheat: "Microwave (10 Detik)" }
+          ].map((row, i) => (
+            <div key={i} className="bg-white p-6 rounded-3xl shadow-sm border border-zinc-100 space-y-4">
+              <div className="flex justify-between items-center border-b border-zinc-50 pb-3">
+                <span className="font-black text-stone-900 text-lg uppercase tracking-tight">{row.type}</span>
+                <span className="text-primary text-[9px] font-black uppercase tracking-widest bg-primary/5 px-3 py-1 rounded-full">Artisan Guide</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-stone-400 text-[8px] font-black uppercase tracking-widest mb-1">Suhu Ruang</p>
+                  <p className="text-stone-700 font-bold text-xs">{row.ruang}</p>
+                </div>
+                <div>
+                  <p className="text-stone-400 text-[8px] font-black uppercase tracking-widest mb-1">Refrigerated</p>
+                  <p className="text-stone-700 font-bold text-xs">{row.cooler}</p>
+                </div>
+              </div>
+              <div className="bg-stone-50 p-4 rounded-2xl">
+                <p className="text-stone-400 text-[8px] font-black uppercase tracking-widest mb-1">Tips Menghangatkan</p>
+                <p className="text-primary font-black text-xs italic">{row.reheat}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
