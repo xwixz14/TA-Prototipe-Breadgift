@@ -93,23 +93,23 @@ export default function About() {
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="bg-white/80 backdrop-blur-xl p-12 md:p-20 rounded-[4rem] border border-white shadow-[0_32px_120px_-15px_rgba(123,74,45,0.1)] relative group overflow-hidden"
+            className="bg-white/80 backdrop-blur-xl p-8 md:p-20 rounded-[2.5rem] md:rounded-[4rem] border border-white shadow-[0_32px_120px_-15px_rgba(123,74,45,0.1)] relative group overflow-hidden"
           >
             <div className="absolute -inset-20 bg-primary/5 blur-3xl rounded-full scale-0 group-hover:scale-100 transition-transform duration-1000"></div>
             
-            <div className="relative z-10 space-y-8">
+            <div className="relative z-10 space-y-6 md:space-y-8">
               <motion.div 
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-white border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.5em] shadow-sm"
+                className="inline-flex items-center gap-3 px-4 md:px-6 py-2 md:py-2.5 rounded-full bg-white border border-primary/20 text-primary text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] shadow-sm"
               >
-                <Sparkles size={14} className="animate-pulse" />
+                <Sparkles size={12} className="animate-pulse" />
                 Est. Twenty Twenty One
               </motion.div>
 
-              <div className="space-y-4">
-                <h1 className="flex flex-wrap justify-center text-6xl md:text-[10rem] font-black text-primary tracking-tighter leading-none" style={{ fontFamily: 'var(--font-brand)' }}>
+              <div className="space-y-2 md:space-y-4">
+                <h1 className="flex flex-wrap justify-center text-4xl sm:text-5xl md:text-[10rem] font-black text-primary tracking-tighter leading-none" style={{ fontFamily: 'var(--font-brand)' }}>
                   {titleWords.map((char, i) => (
                     <motion.span
                       key={i}
@@ -122,7 +122,7 @@ export default function About() {
                     </motion.span>
                   ))}
                 </h1>
-                <h1 className="flex flex-wrap justify-center text-6xl md:text-[10rem] font-black text-[#c6a664] italic tracking-tighter leading-none" style={{ fontFamily: 'var(--font-brand)' }}>
+                <h1 className="flex flex-wrap justify-center text-4xl sm:text-5xl md:text-[10rem] font-black text-[#c6a664] italic tracking-tighter leading-none" style={{ fontFamily: 'var(--font-brand)' }}>
                    {bakeryWords.map((char, i) => (
                     <motion.span
                       key={i}
@@ -137,11 +137,11 @@ export default function About() {
                 </h1>
               </div>
 
-              <motion.p 
+               <motion.p 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.8, duration: 1 }}
-                className="text-primary text-lg md:text-xl font-bold max-w-2xl mx-auto uppercase tracking-[0.3em] leading-relaxed opacity-60"
+                className="text-primary text-sm md:text-xl font-bold max-w-2xl mx-auto uppercase tracking-[0.2em] md:tracking-[0.3em] leading-relaxed opacity-60"
               >
                 Menghadirkan Kehangatan dalam <br />
                 Setiap Gigitan
@@ -161,8 +161,8 @@ export default function About() {
       </section>
 
       {/* 2. Our Journey - Bright Timeline */}
-      <section className="py-32 px-6 md:px-24 bg-white relative">
-        <div className="max-w-6xl mx-auto space-y-24">
+      <section className="py-20 md:py-32 px-6 md:px-24 bg-white relative">
+        <div className="max-w-6xl mx-auto space-y-16 md:space-y-24">
           <div className="text-center space-y-6">
              <motion.span 
               initial={{ opacity: 0 }}
@@ -236,7 +236,7 @@ export default function About() {
       </section>
 
       {/* 3. Philosophy Section - Masterpiece Styling */}
-      <section className="relative py-40 animated-mesh overflow-hidden bg-white">
+      <section className="relative py-24 md:py-40 animated-mesh overflow-hidden bg-white">
         <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px]"></div>
         <motion.div 
           variants={containerVariants}
@@ -248,13 +248,13 @@ export default function About() {
           <motion.div variants={itemVariants} className="flex-1 space-y-10">
             <div className="relative">
               <Quote className="text-primary/10 w-40 h-40 absolute -top-10 -left-10" />
-              <h2 className="text-6xl md:text-8xl font-brand text-primary tracking-tighter leading-[0.9] relative z-10">
+              <h2 className="text-4xl md:text-8xl font-brand text-primary tracking-tighter leading-[1.1] md:leading-[0.9] relative z-10">
                 Roti Bukan <br />
                 <span className="text-[#c6a664] italic">Sekadar</span> <br />
                 Makanan.
               </h2>
             </div>
-            <div className="space-y-8 text-xl text-stone-500 font-bold leading-relaxed text-justify opacity-80">
+            <div className="space-y-6 md:space-y-8 text-base md:text-xl text-stone-500 font-bold leading-relaxed text-left md:text-justify opacity-80">
               <p>
                 Didirikan pada tahun 2021, BreadGift Bakery hadir dengan komitmen menghadirkan roti berkualitas 
                 yang dibuat dari bahan pilihan dan diproses dengan penuh ketelitian. Setiap produk dirancang 
