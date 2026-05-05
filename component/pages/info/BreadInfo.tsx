@@ -250,24 +250,24 @@ export default function BreadInfo({ dynamicArticles = [] }: { dynamicArticles?: 
          </div>
 
          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
-            <div className="space-y-8">
-               <h2 className="text-4xl md:text-6xl font-black text-white leading-tight">Rahasia di Balik <br /><span className="text-primary italic">Crunchy Crust.</span></h2>
-               <div className="space-y-6">
-                  {[
-                    "Proses proofing alami selama 24 jam untuk tekstur aerasi sempurna.",
-                    "Penggunaan mentega premium tanpa pengawet buatan.",
-                    "Suhu oven yang dikalibrasi untuk karamelisasi crust yang pas.",
-                    "Bahan isian (filling) lokal pilihan tanpa pemanis buatan."
-                  ].map((tip, i) => (
-                    <div key={i} className="flex gap-4 items-start group">
-                      <div className="mt-1 w-6 h-6 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary transition-colors group-hover:bg-primary group-hover:text-white">
-                        <CheckCircle2 size={14} />
-                      </div>
-                      <p className="text-stone-400 font-bold text-lg leading-snug">{tip}</p>
-                    </div>
-                  ))}
-               </div>
-            </div>
+             <div className="space-y-6 md:space-y-8">
+                <h2 className="text-3xl md:text-6xl font-black text-white leading-tight">Rahasia di Balik <br /><span className="text-primary italic">Crunchy Crust.</span></h2>
+                <div className="space-y-4 md:space-y-6">
+                   {[
+                     "Proses proofing alami selama 24 jam untuk tekstur aerasi sempurna.",
+                     "Penggunaan mentega premium tanpa pengawet buatan.",
+                     "Suhu oven yang dikalibrasi untuk karamelisasi crust yang pas.",
+                     "Bahan isian (filling) lokal pilihan tanpa pemanis buatan."
+                   ].map((tip, i) => (
+                     <div key={i} className="flex gap-4 items-start group">
+                       <div className="mt-1 w-5 h-5 md:w-6 md:h-6 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary transition-colors group-hover:bg-primary group-hover:text-white flex-shrink-0">
+                         <CheckCircle2 size={12} className="md:w-3.5 md:h-3.5" />
+                       </div>
+                       <p className="text-stone-400 font-bold text-sm md:text-lg leading-snug">{tip}</p>
+                     </div>
+                   ))}
+                </div>
+             </div>
             <div className="grid grid-cols-2 gap-3 md:gap-6">
                 <div className="bg-white/5 backdrop-blur-xl p-5 md:p-8 rounded-2xl md:rounded-3xl space-y-2 md:space-y-4 border border-white/10">
                   <Clock className="text-primary w-6 h-6 md:w-8 md:h-8" />
