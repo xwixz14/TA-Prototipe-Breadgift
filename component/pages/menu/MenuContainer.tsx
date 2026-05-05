@@ -55,13 +55,14 @@ export default function MenuContainer({ products, categories, user }: MenuContai
         <div className="glass-premium p-4 md:p-6 rounded-[2.5rem] border-white/20 shadow-2xl flex flex-col md:flex-row gap-4 items-center">
           {/* Search Input */}
           <div className="w-full md:flex-1 relative group">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-primary transition-colors" />
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 group-focus-within:text-primary transition-colors" />
             <input
               type="text"
               placeholder="Cari roti favorite kamu..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-14 pr-6 py-4 bg-white/50 border border-stone-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary focus:bg-white transition-all font-bold text-stone-800 placeholder:text-stone-300 shadow-inner"
+              className="w-full pl-14 pr-6 py-4.5 bg-white border border-stone-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-bold text-stone-800 placeholder:text-stone-300 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)]"
+              style={{ fontFamily: 'var(--font-outfit)' }}
             />
           </div>
 
@@ -93,9 +94,10 @@ export default function MenuContainer({ products, categories, user }: MenuContai
           {/* Mobile Filter Toggle */}
           <button 
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className="md:hidden w-full flex items-center justify-center gap-3 py-4 bg-primary/10 rounded-2xl border border-primary/20 text-primary font-black uppercase tracking-widest text-xs"
+            className="md:hidden w-full flex items-center justify-center gap-3 py-4.5 bg-primary text-white rounded-2xl border-2 border-white/20 font-black uppercase tracking-[0.2em] text-[13px] shadow-xl shadow-primary/20 active:scale-95 transition-all"
+            style={{ fontFamily: 'var(--font-outfit)' }}
           >
-            <Filter size={18} />
+            <Filter size={18} strokeWidth={2.5} />
             Filter Kategori
           </button>
         </div>

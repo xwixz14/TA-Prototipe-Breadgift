@@ -25,12 +25,12 @@ export default async function MenuPage() {
             Freshly Baked Today
           </div>
           
-          <div className="space-y-2">
-            <h1 className="text-5xl md:text-8xl font-black text-stone-900 tracking-tighter leading-none">
+          <div className="space-y-4">
+            <h1 className="text-6xl md:text-[8rem] font-black text-stone-900 tracking-tighter leading-[0.9]" style={{ fontFamily: 'var(--font-outfit)' }}>
               The <span className="text-primary italic">Menu</span> <br />
               Masterpiece
             </h1>
-            <p className="text-stone-500 font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs">
+            <p className="text-primary/60 font-black uppercase tracking-[0.3em] text-[9px] md:text-xs">
               Jelajahi kelezatan roti artisan dari dapur BreadGift
             </p>
           </div>
