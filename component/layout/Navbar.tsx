@@ -137,15 +137,19 @@ export default function Navbar() {
       {/* Mobile Menu Overlay */}
       <div className={`fixed inset-0 z-[90] bg-white transition-all duration-500 ease-in-out md:hidden ${isMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}>
         <div className="flex flex-col h-full pt-32 px-10 pb-12">
-          <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em] mb-6">Navigasi Menu</p>
-          <div className="flex flex-col gap-6 flex-1">
+          <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.4em] mb-10">Navigasi Menu</p>
+          <div className="flex flex-col gap-8 flex-1">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`text-2xl font-black tracking-tight transition-all ${pathname === link.href ? "text-primary translate-x-3" : "text-stone-300 hover:text-primary"
+                className={`text-4xl font-black tracking-tighter transition-all duration-300 flex items-center gap-4 ${pathname === link.href ? "text-primary translate-x-2" : "text-stone-300 hover:text-stone-500"
                   }`}
+                style={{ fontFamily: "var(--font-outfit), sans-serif" }}
               >
+                {pathname === link.href && (
+                  <span className="w-2 h-2 bg-primary rounded-full" />
+                )}
                 {link.name}
               </Link>
             ))}
@@ -154,21 +158,26 @@ export default function Navbar() {
           <div className="mt-auto pt-10 border-t border-zinc-100">
             {user ? (
               <div className="space-y-6">
-                <div>
-                  <p className="text-[10px] font-black text-[#6B4423] uppercase tracking-widest mb-1">Status: {user.role === 'admin' ? 'Admin' : 'Pelanggan'}</p>
-                  <p className="text-2xl font-black text-zinc-900">{user.name}</p>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary font-black">
+                    {user.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-[#6B4423] uppercase tracking-widest leading-none mb-1">{user.role === 'admin' ? 'Administrator' : 'Pelanggan Setia'}</p>
+                    <p className="text-xl font-black text-zinc-900">{user.name}</p>
+                  </div>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full py-5 bg-red-50 text-red-600 rounded-[24px] text-lg font-black transition-all active:scale-95"
+                  className="w-full py-5 bg-red-50 text-red-600 rounded-[24px] text-lg font-black transition-all active:scale-95 hover:bg-red-100"
                 >
                   Logout Sekarang
                 </button>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4">
-                <Link href="/login" className="py-5 bg-zinc-50 text-zinc-900 rounded-[24px] text-center text-lg font-black">Login</Link>
-                <Link href="/register" className="py-5 bg-[#6B4423] text-white rounded-[24px] text-center text-lg font-black shadow-xl shadow-[#6B4423]/20">Daftar</Link>
+                <Link href="/login" className="py-5 bg-zinc-50 text-zinc-900 rounded-[24px] text-center text-lg font-black hover:bg-zinc-100 transition-colors">Login</Link>
+                <Link href="/register" className="py-5 bg-[#6B4423] text-white rounded-[24px] text-center text-lg font-black shadow-xl shadow-[#6B4423]/20 hover:bg-[#54351B] transition-all">Daftar</Link>
               </div>
             )}
           </div>
