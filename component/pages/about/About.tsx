@@ -109,7 +109,7 @@ export default function About() {
               </motion.div>
 
               <div className="space-y-2 md:space-y-4">
-                <h1 className="flex flex-wrap justify-center text-4xl sm:text-5xl md:text-[10rem] font-black text-primary tracking-tighter leading-none" style={{ fontFamily: 'var(--font-brand)' }}>
+                <h1 className="flex flex-wrap justify-center text-4xl sm:text-5xl md:text-[10rem] font-black text-primary tracking-tighter leading-none" style={{ fontFamily: 'var(--font-outfit)' }}>
                   {titleWords.map((char, i) => (
                     <motion.span
                       key={i}
@@ -122,7 +122,7 @@ export default function About() {
                     </motion.span>
                   ))}
                 </h1>
-                <h1 className="flex flex-wrap justify-center text-4xl sm:text-5xl md:text-[10rem] font-black text-[#c6a664] italic tracking-tighter leading-none" style={{ fontFamily: 'var(--font-brand)' }}>
+                <h1 className="flex flex-wrap justify-center text-4xl sm:text-5xl md:text-[10rem] font-black text-[#c6a664] italic tracking-tighter leading-none" style={{ fontFamily: 'var(--font-outfit)' }}>
                    {bakeryWords.map((char, i) => (
                     <motion.span
                       key={i}
@@ -171,7 +171,7 @@ export default function About() {
              >
                Evolution
              </motion.span>
-            <h2 className="text-5xl md:text-7xl font-brand text-primary tracking-tight">Our Journey</h2>
+            <h2 className="text-5xl md:text-7xl font-black text-primary tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>Our Journey</h2>
             <div className="h-2 w-32 bg-[#f5e6d3] mx-auto rounded-full"></div>
           </div>
 
@@ -194,7 +194,7 @@ export default function About() {
                       initial={{ opacity: 0, x: 20 }}
                       className="bg-white border border-stone-100 shadow-xl p-6 rounded-[2rem]"
                     >
-                      <h3 className="font-brand text-lg text-primary tracking-wider">{item.title}</h3>
+                      <h3 className="text-xl text-primary tracking-wider font-black" style={{ fontFamily: 'var(--font-outfit)' }}>The Beginning</h3>
                       <p className="text-xs text-stone-400 font-bold leading-relaxed mt-2">{item.desc}</p>
                     </motion.div>
                   </div>
@@ -215,7 +215,7 @@ export default function About() {
                   whileHover={{ y: -10 }}
                   className="timeline-end timeline-box bg-white border border-stone-100 shadow-xl p-8 rounded-[2.5rem] max-w-xs"
                 >
-                  <h3 className="font-brand text-xl text-primary tracking-wider">The Beginning</h3>
+                  <h3 className="text-xl text-primary tracking-wider font-black" style={{ fontFamily: 'var(--font-outfit)' }}>The Beginning</h3>
                   <p className="text-sm text-stone-400 font-bold leading-relaxed mt-4">
                     BreadGift Bakery hadir dengan komitmen menghadirkan roti berkualitas dari bahan pilihan.
                   </p>
@@ -228,7 +228,7 @@ export default function About() {
                   whileHover={{ y: -10 }}
                   className="timeline-start timeline-box bg-white border border-stone-100 shadow-xl p-8 rounded-[2.5rem] max-w-xs"
                 >
-                  <h3 className="font-brand text-xl text-primary tracking-wider">Identity Growth</h3>
+                  <h3 className="text-xl text-primary tracking-wider font-black" style={{ fontFamily: 'var(--font-outfit)' }}>Identity Growth</h3>
                   <p className="text-sm text-stone-400 font-bold leading-relaxed mt-4">
                     Menjadi pilihan utama pelanggan di Bandar Lampung yang mengutamakan kualitas rasa.
                   </p>
@@ -253,7 +253,7 @@ export default function About() {
                   whileHover={{ y: -10 }}
                   className="timeline-end timeline-box bg-white border border-stone-100 shadow-xl p-8 rounded-[2.5rem] max-w-xs"
                 >
-                  <h3 className="font-brand text-xl text-primary tracking-wider">The Masterpiece</h3>
+                  <h3 className="text-xl text-primary tracking-wider font-black" style={{ fontFamily: 'var(--font-outfit)' }}>The Masterpiece</h3>
                   <p className="text-sm text-stone-400 font-bold leading-relaxed mt-4">
                     Terus berinovasi dalam menyajikan roti artisan yang lembut dan penuh kebahagiaan setiap harinya.
                   </p>
@@ -277,7 +277,7 @@ export default function About() {
           <motion.div variants={itemVariants} className="flex-1 space-y-10">
             <div className="relative">
               <Quote className="text-primary/10 w-40 h-40 absolute -top-10 -left-10" />
-              <h2 className="text-4xl md:text-8xl font-brand text-primary tracking-tighter leading-[1.1] md:leading-[0.9] relative z-10">
+              <h2 className="text-4xl md:text-8xl font-black text-primary tracking-tighter leading-[1.1] md:leading-[0.9] relative z-10" style={{ fontFamily: 'var(--font-outfit)' }}>
                 Roti Bukan <br />
                 <span className="text-[#c6a664] italic">Sekadar</span> <br />
                 Makanan.
