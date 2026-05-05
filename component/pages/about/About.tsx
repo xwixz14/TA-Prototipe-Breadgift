@@ -175,63 +175,92 @@ export default function About() {
             <div className="h-2 w-32 bg-[#f5e6d3] mx-auto rounded-full"></div>
           </div>
 
-          <ul className="timeline timeline-vertical lg:timeline-horizontal">
-            <li>
-              <div className="timeline-start font-black text-primary text-2xl">2021</div>
-              <div className="timeline-middle">
-                <div className="w-10 h-10 bg-[#f5e6d3] rounded-full flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-primary" />
+          <div className="relative border-l-2 border-[#f5e6d3] ml-4 md:ml-0 md:border-none">
+            {/* Mobile View (Single Column) */}
+            <div className="space-y-12 md:hidden">
+              {[
+                { year: "2021", title: "The Beginning", desc: "BreadGift Bakery hadir dengan komitmen menghadirkan roti berkualitas dari bahan pilihan.", icon: Calendar },
+                { year: "2023", title: "Identity Growth", desc: "Menjadi pilihan utama pelanggan di Bandar Lampung yang mengutamakan kualitas rasa.", icon: Heart },
+                { year: "TODAY", title: "The Masterpiece", desc: "Terus berinovasi dalam menyajikan roti artisan yang lembut dan penuh kebahagiaan setiap harinya.", icon: Sparkles }
+              ].map((item, i) => (
+                <div key={i} className="relative pl-10">
+                  <div className="absolute -left-[1.35rem] top-0 w-10 h-10 bg-[#f5e6d3] rounded-full flex items-center justify-center border-4 border-white z-10">
+                    <item.icon className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="space-y-2">
+                    <span className="font-black text-primary text-xl">{item.year}</span>
+                    <motion.div 
+                      whileInView={{ opacity: 1, x: 0 }}
+                      initial={{ opacity: 0, x: 20 }}
+                      className="bg-white border border-stone-100 shadow-xl p-6 rounded-[2rem]"
+                    >
+                      <h3 className="font-brand text-lg text-primary tracking-wider">{item.title}</h3>
+                      <p className="text-xs text-stone-400 font-bold leading-relaxed mt-2">{item.desc}</p>
+                    </motion.div>
+                  </div>
                 </div>
-              </div>
-              <motion.div 
-                whileHover={{ y: -10 }}
-                className="timeline-end timeline-box bg-white border border-stone-100 shadow-xl p-8 rounded-[2.5rem] max-w-xs"
-              >
-                <h3 className="font-brand text-xl text-primary tracking-wider">The Beginning</h3>
-                <p className="text-sm text-stone-400 font-bold leading-relaxed mt-4">
-                  BreadGift Bakery hadir dengan komitmen menghadirkan roti berkualitas dari bahan pilihan.
-                </p>
-              </motion.div>
-              <hr className="bg-[#f5e6d3]" />
-            </li>
-            <li>
-              <hr className="bg-[#f5e6d3]" />
-              <motion.div 
-                whileHover={{ y: -10 }}
-                className="timeline-start timeline-box bg-white border border-stone-100 shadow-xl p-8 rounded-[2.5rem] max-w-xs"
-              >
-                <h3 className="font-brand text-xl text-primary tracking-wider">Identity Growth</h3>
-                <p className="text-sm text-stone-400 font-bold leading-relaxed mt-4">
-                  Menjadi pilihan utama pelanggan di Bandar Lampung yang mengutamakan kualitas rasa.
-                </p>
-              </motion.div>
-              <div className="timeline-middle">
-                <div className="w-10 h-10 bg-[#f5e6d3] rounded-full flex items-center justify-center">
-                  <Heart className="w-5 h-5 text-primary" />
+              ))}
+            </div>
+
+            {/* Desktop View (Original Timeline) */}
+            <ul className="hidden md:flex timeline timeline-vertical lg:timeline-horizontal">
+              <li>
+                <div className="timeline-start font-black text-primary text-2xl">2021</div>
+                <div className="timeline-middle">
+                  <div className="w-10 h-10 bg-[#f5e6d3] rounded-full flex items-center justify-center">
+                    <Calendar className="w-5 h-5 text-primary" />
+                  </div>
                 </div>
-              </div>
-              <div className="timeline-end font-black text-primary text-2xl">2023</div>
-              <hr className="bg-[#f5e6d3]" />
-            </li>
-            <li>
-              <hr className="bg-[#f5e6d3]" />
-              <div className="timeline-start font-black text-primary text-2xl">TODAY</div>
-              <div className="timeline-middle">
-                <div className="w-10 h-10 bg-[#f5e6d3] rounded-full flex items-center justify-center border-2 border-primary animate-pulse">
-                   <Sparkles className="w-5 h-5 text-primary" />
+                <motion.div 
+                  whileHover={{ y: -10 }}
+                  className="timeline-end timeline-box bg-white border border-stone-100 shadow-xl p-8 rounded-[2.5rem] max-w-xs"
+                >
+                  <h3 className="font-brand text-xl text-primary tracking-wider">The Beginning</h3>
+                  <p className="text-sm text-stone-400 font-bold leading-relaxed mt-4">
+                    BreadGift Bakery hadir dengan komitmen menghadirkan roti berkualitas dari bahan pilihan.
+                  </p>
+                </motion.div>
+                <hr className="bg-[#f5e6d3]" />
+              </li>
+              <li>
+                <hr className="bg-[#f5e6d3]" />
+                <motion.div 
+                  whileHover={{ y: -10 }}
+                  className="timeline-start timeline-box bg-white border border-stone-100 shadow-xl p-8 rounded-[2.5rem] max-w-xs"
+                >
+                  <h3 className="font-brand text-xl text-primary tracking-wider">Identity Growth</h3>
+                  <p className="text-sm text-stone-400 font-bold leading-relaxed mt-4">
+                    Menjadi pilihan utama pelanggan di Bandar Lampung yang mengutamakan kualitas rasa.
+                  </p>
+                </motion.div>
+                <div className="timeline-middle">
+                  <div className="w-10 h-10 bg-[#f5e6d3] rounded-full flex items-center justify-center">
+                    <Heart className="w-5 h-5 text-primary" />
+                  </div>
                 </div>
-              </div>
-              <motion.div 
-                whileHover={{ y: -10 }}
-                className="timeline-end timeline-box bg-white border border-stone-100 shadow-xl p-8 rounded-[2.5rem] max-w-xs"
-              >
-                <h3 className="font-brand text-xl text-primary tracking-wider">The Masterpiece</h3>
-                <p className="text-sm text-stone-400 font-bold leading-relaxed mt-4">
-                  Terus berinovasi dalam menyajikan roti artisan yang lembut dan penuh kebahagiaan setiap harinya.
-                </p>
-              </motion.div>
-            </li>
-          </ul>
+                <div className="timeline-end font-black text-primary text-2xl">2023</div>
+                <hr className="bg-[#f5e6d3]" />
+              </li>
+              <li>
+                <hr className="bg-[#f5e6d3]" />
+                <div className="timeline-start font-black text-primary text-2xl">TODAY</div>
+                <div className="timeline-middle">
+                  <div className="w-10 h-10 bg-[#f5e6d3] rounded-full flex items-center justify-center border-2 border-primary animate-pulse">
+                     <Sparkles className="w-5 h-5 text-primary" />
+                  </div>
+                </div>
+                <motion.div 
+                  whileHover={{ y: -10 }}
+                  className="timeline-end timeline-box bg-white border border-stone-100 shadow-xl p-8 rounded-[2.5rem] max-w-xs"
+                >
+                  <h3 className="font-brand text-xl text-primary tracking-wider">The Masterpiece</h3>
+                  <p className="text-sm text-stone-400 font-bold leading-relaxed mt-4">
+                    Terus berinovasi dalam menyajikan roti artisan yang lembut dan penuh kebahagiaan setiap harinya.
+                  </p>
+                </motion.div>
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
 
