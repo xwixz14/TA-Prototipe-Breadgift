@@ -54,21 +54,21 @@ export default function Hero() {
       </div>
 
       {/* Main Content Area - Responsive spacing and font sizes */}
-      <div className="relative z-10 w-full px-6 md:px-12 mt-20 md:mt-32 text-left">
-        {/* Headline: "Breadgift Bakery" with Rammetto One */}
+      <div className="relative z-10 w-full px-8 md:px-24 mt-20 md:mt-32 text-left">
+        {/* Headline: "Breadgift Bakery" with Outfit */}
         <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <h1
-            className="text-3xl sm:text-5xl md:text-[85px] font-black leading-[1.1] mb-6 tracking-tight"
+            className="text-4xl sm:text-5xl md:text-[100px] font-black leading-[1] mb-6 tracking-tighter"
             style={{
               color: "#7B4A2D",
-              WebkitTextStroke: (isMounted && isMobile) ? "2px white" : "6px white",
+              WebkitTextStroke: (isMounted && isMobile) ? "1.5px white" : "4px white",
               paintOrder: "stroke fill",
-              textShadow: "0 10px 20px rgba(0, 0, 0, 0.1)",
-              fontFamily: "var(--font-poppins), sans-serif",
+              textShadow: "0 15px 30px rgba(107, 68, 35, 0.25)",
+              fontFamily: "var(--font-outfit), sans-serif",
             }}
           >
             Breadgift Bakery
@@ -80,21 +80,21 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.5 }}
-          className="text-sm sm:text-lg md:text-[26px] font-bold text-white max-w-sm md:max-w-xl leading-snug mb-10 drop-shadow-md"
-          style={{ letterSpacing: "-0.01em" }}
+          className="text-base md:text-[28px] font-medium text-white max-w-sm md:max-w-2xl leading-snug mb-12 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]"
+          style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif", letterSpacing: "-0.01em" }}
         >
           Aroma roti hangat yang baru keluar dari oven selalu menunggu Anda di BreadGift Bakery.
         </motion.p>
 
         {/* Action Button: More compact on mobile */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.8 }}
         >
           <button
             onClick={handleOrderNow}
-            className="group relative bg-[#6B4423] text-white px-6 md:px-12 py-3 md:py-5 rounded-2xl text-[16px] md:text-[24px] font-black transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl shadow-black/30 border-2 border-white/60 hover:bg-[#4A3728] uppercase tracking-wider overflow-hidden"
+            className="group relative bg-[#6B4423] text-white px-8 md:px-14 py-4 md:py-6 rounded-2xl text-[16px] md:text-[24px] font-black transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-[0_20px_40px_-10px_rgba(107,68,35,0.4)] border-2 border-white/40 hover:bg-[#4A3728] uppercase tracking-widest overflow-hidden"
           >
             <span className="relative z-10">Belanja Sekarang</span>
             {/* Shimmer Effect */}
