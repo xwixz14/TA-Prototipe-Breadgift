@@ -73,14 +73,14 @@ function LoginForm() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="w-full max-w-md space-y-8 md:space-y-12 relative z-10 px-4 md:px-0"
+      className="w-full max-w-sm space-y-6 md:space-y-8 relative z-10 px-6 md:px-0"
     >
-      <motion.div variants={itemVariants} className="text-center space-y-4">
+      <motion.div variants={itemVariants} className="text-center space-y-3">
         <motion.div
             whileHover={{ scale: 1.05 }}
-            className="flex justify-center mb-4 md:mb-8"
+            className="flex justify-center mb-2 md:mb-6"
         >
-            <div className="relative w-20 h-20 md:w-28 md:h-28 overflow-hidden drop-shadow-2xl">
+            <div className="relative w-16 h-16 md:w-24 md:h-24 overflow-hidden drop-shadow-xl">
                 <Image
                 src="/assets/Logo.png"
                 alt="BreadGift Logo"
@@ -91,17 +91,16 @@ function LoginForm() {
             </div>
         </motion.div>
         
-        <h1 className="text-5xl md:text-7xl font-black text-stone-900 tracking-tighter" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
-          Welcome <br className="md:hidden" />
-          <span className="text-primary italic">Back.</span>
+        <h1 className="text-4xl md:text-6xl font-black text-stone-900 tracking-tighter leading-none" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
+          Welcome <span className="text-primary italic">Back.</span>
         </h1>
-        <p className="text-stone-400 font-bold text-xs md:text-sm uppercase tracking-widest leading-relaxed">
+        <p className="text-stone-400 font-bold text-[10px] md:text-xs uppercase tracking-widest leading-relaxed">
           Masuk untuk menikmati <br className="hidden md:block" /> aroma roti segar kami.
         </p>
       </motion.div>
 
-      <motion.div variants={itemVariants} className="bg-white/70 backdrop-blur-2xl p-8 md:p-12 rounded-[3rem] md:rounded-[4rem] space-y-8 relative overflow-hidden border border-white shadow-2xl shadow-stone-200/40">
-        <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+      <motion.div variants={itemVariants} className="bg-white/80 backdrop-blur-2xl p-6 md:p-10 rounded-[2.5rem] md:rounded-[4rem] space-y-6 relative overflow-hidden border border-white shadow-2xl shadow-stone-200/30">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
         
         <AnimatePresence mode="wait">
           {error && (
@@ -109,61 +108,61 @@ function LoginForm() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest p-4 rounded-2xl flex items-center border border-red-100"
+              className="bg-red-50 text-red-600 text-[9px] font-black uppercase tracking-widest p-3 rounded-xl flex items-center border border-red-100"
             >
               <span className="flex-1 text-center">{error}</span>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="form-control">
-            <label className="label py-1">
-              <span className="label-text font-black text-stone-400 uppercase tracking-[0.3em] text-[9px]">Username</span>
+            <label className="label py-0.5">
+              <span className="label-text font-black text-stone-400 uppercase tracking-[0.2em] text-[8px]">Username</span>
             </label>
-            <div className="relative group transition-all duration-300">
-              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-stone-300 group-focus-within:text-primary transition-colors">
-                <User size={18} />
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-300 group-focus-within:text-primary transition-colors">
+                <User size={16} />
               </div>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Ex: breadlover"
-                className="input w-full pl-12 bg-stone-50 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl h-14 md:h-16 font-bold text-stone-900 transition-all placeholder:text-stone-300 placeholder:font-medium focus:shadow-[0_10px_30px_-5px_rgba(123,74,45,0.1)]"
+                className="input w-full pl-11 bg-stone-50 border-transparent focus:border-primary/10 focus:bg-white rounded-xl h-12 md:h-14 font-bold text-stone-900 transition-all placeholder:text-stone-300 placeholder:font-medium focus:shadow-[0_8px_25px_-5px_rgba(123,74,45,0.08)] text-sm"
                 style={{ fontFamily: 'var(--font-outfit), sans-serif' }}
               />
             </div>
           </div>
 
           <div className="form-control">
-            <label className="label py-1">
-              <span className="label-text font-black text-stone-400 uppercase tracking-[0.3em] text-[9px]">Password</span>
+            <label className="label py-0.5">
+              <span className="label-text font-black text-stone-400 uppercase tracking-[0.2em] text-[8px]">Password</span>
             </label>
-            <div className="relative group transition-all duration-300">
-              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-stone-300 group-focus-within:text-primary transition-colors">
-                <Lock size={18} />
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-300 group-focus-within:text-primary transition-colors">
+                <Lock size={16} />
               </div>
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="input w-full pl-12 pr-14 bg-stone-50 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl h-14 md:h-16 font-bold text-stone-900 transition-all placeholder:text-stone-300 focus:shadow-[0_10px_30px_-5px_rgba(123,74,45,0.1)]"
+                className="input w-full pl-11 pr-12 bg-stone-50 border-transparent focus:border-primary/10 focus:bg-white rounded-xl h-12 md:h-14 font-bold text-stone-900 transition-all placeholder:text-stone-300 focus:shadow-[0_8px_25px_-5px_rgba(123,74,45,0.08)] text-sm"
                 style={{ fontFamily: 'var(--font-outfit), sans-serif' }}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-5 flex items-center text-stone-300 hover:text-primary transition-colors"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-stone-300 hover:text-primary transition-colors"
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
-            <div className="flex justify-end mt-3">
+            <div className="flex justify-end mt-2">
               <Link 
                 href="/forgot-password" 
-                className="text-[9px] font-black text-stone-400 hover:text-primary transition-colors uppercase tracking-[0.2em]"
+                className="text-[8px] font-black text-stone-400 hover:text-primary transition-colors uppercase tracking-[0.15em]"
               >
                 Lupa Password?
               </Link>
@@ -171,26 +170,26 @@ function LoginForm() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 pt-4">
+        <div className="flex flex-col gap-3 pt-2">
           <button
             onClick={handleLogin}
             disabled={isSubmitting}
-            className="btn btn-primary w-full h-14 md:h-16 rounded-2xl text-xs md:text-sm font-black shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary border-none text-white hover:bg-stone-900 uppercase tracking-[0.3em]"
+            className="btn btn-primary w-full h-12 md:h-14 rounded-xl text-[10px] md:text-xs font-black shadow-xl shadow-primary/25 hover:scale-[1.01] active:scale-[0.99] transition-all bg-primary border-none text-white hover:bg-stone-900 uppercase tracking-[0.25em]"
           >
             {isSubmitting ? (
-              <span className="loading loading-spinner"></span>
+              <span className="loading loading-spinner loading-xs"></span>
             ) : (
               <>
-                <LogIn size={18} className="mr-3" />
+                <LogIn size={16} className="mr-2" />
                 Login
               </>
             )}
           </button>
         </div>
 
-        <p className="text-center text-[10px] font-medium text-stone-400 pt-6 whitespace-nowrap">
+        <p className="text-center text-[10px] font-medium text-stone-400 pt-4 whitespace-nowrap">
           Belum punya akun?{" "}
-          <Link href="/register" className="text-primary hover:text-stone-900 transition-colors font-bold border-b border-primary/20 hover:border-primary pb-0.5">
+          <Link href="/register" className="text-primary hover:text-stone-900 transition-colors font-bold border-b border-primary/10 hover:border-primary pb-0.5">
             Daftar Sekarang
           </Link>
         </p>
@@ -199,9 +198,9 @@ function LoginForm() {
       <motion.button
         variants={itemVariants}
         onClick={() => router.push("/")}
-        className="flex items-center justify-center w-full text-stone-400 hover:text-stone-900 font-black text-[10px] uppercase tracking-[0.3em] transition-all group pt-4"
+        className="flex items-center justify-center w-full text-stone-400 hover:text-stone-900 font-black text-[9px] uppercase tracking-[0.25em] transition-all group pt-2"
       >
-        <ArrowLeft size={14} className="mr-3 group-hover:-translate-x-1 transition-transform" />
+        <ArrowLeft size={12} className="mr-2 group-hover:-translate-x-1 transition-transform" />
         Kembali ke Beranda
       </motion.button>
     </motion.div>
