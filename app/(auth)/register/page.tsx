@@ -194,7 +194,7 @@ export default function RegisterPage() {
                     </button>
                 </div>
 
-                <p className="text-center text-[11px] font-medium text-stone-400 pt-6">
+                <p className="text-center text-[10px] font-medium text-stone-400 pt-6 whitespace-nowrap">
                     Sudah punya akun?{" "}
                     <Link href="/login" className="text-primary hover:text-stone-900 transition-colors font-bold border-b border-primary/20 hover:border-primary pb-0.5">
                         Masuk di sini
