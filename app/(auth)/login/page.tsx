@@ -188,9 +188,9 @@ function LoginForm() {
           </button>
         </div>
 
-        <p className="text-center text-[9px] font-black text-stone-400 uppercase tracking-[0.2em] pt-4">
+        <p className="text-center text-[11px] font-medium text-stone-400 pt-6">
           Belum punya akun?{" "}
-          <Link href="/register" className="text-primary hover:text-stone-900 transition-colors border-b-2 border-primary/20 hover:border-primary pb-1">
+          <Link href="/register" className="text-primary hover:text-stone-900 transition-colors font-bold border-b border-primary/20 hover:border-primary pb-0.5">
             Daftar Sekarang
           </Link>
         </p>
