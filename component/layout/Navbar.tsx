@@ -152,7 +152,7 @@ export default function Navbar() {
                 }}
               >
                 {pathname === link.href && (
-                  <span className="w-1 h-1 bg-primary rounded-full" />
+                  <span className="w-1.5 h-1.5 bg-primary rounded-full" />
                 )}
                 {link.name}
               </Link>
@@ -167,8 +167,8 @@ export default function Navbar() {
                     {user.name.charAt(0)}
                   </div>
                   <div>
-                    <p className="text-[9px] font-black text-[#6B4423] uppercase tracking-widest leading-none mb-1">{user.role === 'admin' ? 'Administrator' : 'Pelanggan Setia'}</p>
-                    <p className="text-base font-black text-zinc-900" style={{ fontFamily: 'var(--font-outfit)' }}>{user.name}</p>
+                    <p className="text-[10px] font-black text-[#6B4423] uppercase tracking-[0.2em] leading-none mb-1">{user.role === 'admin' ? 'Administrator' : 'Pelanggan Setia'}</p>
+                    <p className="text-lg font-black text-zinc-900" style={{ fontFamily: 'var(--font-outfit)' }}>{user.name}</p>
                   </div>
                 </div>
                 <button
