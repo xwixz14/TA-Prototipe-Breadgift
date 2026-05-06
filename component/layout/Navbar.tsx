@@ -136,14 +136,14 @@ export default function Navbar() {
 
       {/* Mobile Menu Overlay */}
       <div className={`fixed inset-0 z-[90] bg-white transition-all duration-500 ease-in-out md:hidden ${isMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}>
-        <div className="flex flex-col h-full pt-20 px-10 pb-12">
-          <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.4em] mb-10">Navigasi Menu</p>
-          <div className="flex flex-col gap-6 flex-1">
+        <div className="flex flex-col h-full pt-20 px-8 pb-10">
+          <p className="text-[9px] font-black text-stone-400 uppercase tracking-[0.4em] mb-8">Navigasi Menu</p>
+          <div className="flex flex-col gap-5 flex-1">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`text-3xl font-bold tracking-tight transition-all duration-300 flex items-center gap-4 ${pathname === link.href ? "text-primary translate-x-2" : "text-stone-600 hover:text-primary"
+                className={`text-xl font-medium tracking-tight transition-all duration-300 flex items-center gap-3 ${pathname === link.href ? "text-primary translate-x-1" : "text-stone-500 hover:text-primary"
                   }`}
                 style={{ 
                   fontFamily: "var(--font-outfit), sans-serif",
@@ -152,45 +152,45 @@ export default function Navbar() {
                 }}
               >
                 {pathname === link.href && (
-                  <span className="w-1.5 h-1.5 bg-primary rounded-full" />
+                  <span className="w-1 h-1 bg-primary rounded-full" />
                 )}
                 {link.name}
               </Link>
             ))}
           </div>
 
-          <div className="mt-auto pt-10 border-t border-zinc-100">
+          <div className="mt-auto pt-8 border-t border-zinc-100">
             {user ? (
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary font-black shadow-inner">
+              <div className="space-y-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary/5 rounded-xl flex items-center justify-center text-primary font-black text-xs">
                     {user.name.charAt(0)}
                   </div>
                   <div>
-                    <p className="text-[10px] font-black text-[#6B4423] uppercase tracking-widest leading-none mb-1">{user.role === 'admin' ? 'Administrator' : 'Pelanggan Setia'}</p>
-                    <p className="text-xl font-black text-zinc-900" style={{ fontFamily: 'var(--font-outfit)' }}>{user.name}</p>
+                    <p className="text-[9px] font-black text-[#6B4423] uppercase tracking-widest leading-none mb-1">{user.role === 'admin' ? 'Administrator' : 'Pelanggan Setia'}</p>
+                    <p className="text-base font-black text-zinc-900" style={{ fontFamily: 'var(--font-outfit)' }}>{user.name}</p>
                   </div>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full py-5 bg-red-50 text-red-600 rounded-2xl text-base font-black transition-all active:scale-95 hover:bg-red-100 border-2 border-red-100 uppercase tracking-widest"
+                  className="w-full py-3.5 bg-red-50 text-red-600 rounded-xl text-[11px] font-black transition-all active:scale-95 hover:bg-red-100 border border-red-100 uppercase tracking-[0.2em]"
                   style={{ fontFamily: 'var(--font-outfit)' }}
                 >
                   Logout Sekarang
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <Link 
                   href="/login" 
-                  className="py-4.5 bg-white text-primary border-2 border-primary/10 rounded-2xl text-center text-[15px] font-black hover:bg-primary/5 transition-all uppercase tracking-[0.2em]"
+                  className="py-3.5 bg-white text-primary border border-primary/10 rounded-xl text-center text-xs font-black hover:bg-primary/5 transition-all uppercase tracking-[0.2em]"
                   style={{ fontFamily: 'var(--font-outfit)' }}
                 >
                   Login
                 </Link>
                 <Link 
                   href="/register" 
-                  className="py-4.5 bg-primary text-white border-2 border-white/20 rounded-2xl text-center text-[15px] font-black shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all uppercase tracking-[0.2em]"
+                  className="py-3.5 bg-primary text-white border border-white/20 rounded-xl text-center text-xs font-black shadow-lg shadow-primary/10 hover:bg-primary/90 transition-all uppercase tracking-[0.2em]"
                   style={{ fontFamily: 'var(--font-outfit)' }}
                 >
                   Daftar
