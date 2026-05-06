@@ -261,29 +261,29 @@ export default function SuccessComponent({ transaction }: { transaction: Transac
               </div>
 
               {/* WhatsApp Confirmation Button */}
-              <div className="max-w-[440px] mx-auto mb-10">
+              <div className="max-w-[400px] mx-auto mb-8">
                 <a 
                   href={`https://wa.me/6282279728849?text=${encodeURIComponent(
                     `Halo BreadGift! 🥖\n\nSaya ingin mengonfirmasi pembayaran untuk pesanan saya:\n\n*ID Pesanan:* #ORD-${transaction.id.toString().padStart(5, '0')}\n*Total:* Rp ${transaction.total_amount.toLocaleString("id-ID")}\n*Metode Kirim:* ${transaction.delivery_method || 'Ambil di Toko'}${transaction.delivery_method === 'Maxim Delivery' ? `\n*Nama Penerima:* ${transaction.recipient_name}\n*Alamat:* ${transaction.delivery_address}` : ''}\n\nBerikut saya lampirkan bukti transfernya. Mohon segera diproses ya bebs! Terima kasih.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-3 bg-[#25D366] text-white py-5 rounded-2xl font-black shadow-xl shadow-[#25D366]/20 hover:scale-[1.02] active:scale-95 transition-all text-sm md:text-base uppercase tracking-widest"
+                  className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white py-4 rounded-xl font-black shadow-lg shadow-[#25D366]/10 hover:scale-[1.01] active:scale-95 transition-all text-xs md:text-sm uppercase tracking-widest"
                 >
-                  <MessageSquare className="w-6 h-6" />
-                  Konfirmasi via WhatsApp
+                  <MessageSquare size={18} />
+                  Konfirmasi WhatsApp
                 </a>
-                <p className="text-center text-zinc-400 text-[10px] font-bold mt-4 uppercase tracking-[0.2em]">
-                  Disarankan konfirmasi via WA agar pesanan lebih cepat diproses
+                <p className="text-center text-zinc-400 text-[9px] font-bold mt-3 uppercase tracking-wider">
+                  Konfirmasi via WA agar lebih cepat diproses
                 </p>
               </div>
 
               <div className="flex justify-center">
                 <Link 
                   href="/menu" 
-                  className="flex items-center justify-center gap-3 bg-[#6B4423] text-white px-12 py-5 rounded-2xl font-black shadow-xl shadow-[#6B4423]/20 hover:scale-[1.02] transition-all group"
+                  className="flex items-center justify-center gap-2 bg-[#6B4423] text-white px-10 py-4 rounded-xl font-black shadow-lg shadow-[#6B4423]/10 hover:scale-[1.01] transition-all group text-xs md:text-sm uppercase tracking-widest"
                 >
-                  <ShoppingBag className="w-5 h-5" />
+                  <ShoppingBag size={18} />
                   Kembali ke Menu
                 </Link>
               </div>
@@ -444,9 +444,9 @@ export default function SuccessComponent({ transaction }: { transaction: Transac
             <div className="mt-8 md:mt-12 flex justify-center">
               <Link 
                 href="/menu" 
-                className="flex items-center justify-center gap-4 bg-[#6B4423] text-white px-12 py-5 rounded-2xl font-black shadow-xl shadow-[#6B4423]/20 hover:scale-[1.02] active:scale-[0.98] transition-all group text-sm md:text-base"
+                className="flex items-center justify-center gap-2 bg-[#6B4423] text-white px-10 py-4 rounded-xl font-black shadow-lg shadow-[#6B4423]/10 hover:scale-[1.01] active:scale-[0.98] transition-all group text-xs md:text-sm uppercase tracking-widest"
               >
-                <ShoppingBag className="w-5 h-5" />
+                <ShoppingBag size={18} />
                 Belanja Lagi
               </Link>
             </div>
