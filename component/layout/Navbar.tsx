@@ -143,7 +143,7 @@ export default function Navbar() {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`text-xl font-medium tracking-tight transition-all duration-300 flex items-center gap-3 ${pathname === link.href ? "text-primary translate-x-1" : "text-stone-500 hover:text-primary"
+                className={`text-xl font-black tracking-tight transition-all duration-300 flex items-center gap-3 ${pathname === link.href ? "text-primary translate-x-1" : "text-stone-500 hover:text-primary"
                   }`}
                 style={{ 
                   fontFamily: "var(--font-outfit), sans-serif",
