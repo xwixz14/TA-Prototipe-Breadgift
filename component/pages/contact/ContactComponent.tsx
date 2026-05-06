@@ -109,7 +109,7 @@ export default function ContactComponent() {
                   className="bg-white border border-zinc-100 p-6 rounded-[24px] shadow-sm hover:shadow-xl transition-all duration-300 group"
                 >
                   <div className={`p-3 rounded-xl w-fit mb-4 transition-colors ${info.color}`}>
-                    {React.cloneElement(info.icon as React.ReactElement, { size: 20 })}
+                    {info.icon}
                   </div>
                   <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">{info.label}</p>
                   {info.href ? (
@@ -134,7 +134,7 @@ export default function ContactComponent() {
                     href={social.href}
                     className={`w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center transition-all duration-300 border border-white/10 hover:bg-white hover:text-[#6B4423] ${social.color}`}
                   >
-                    {React.cloneElement(social.icon as React.ReactElement, { size: 18 })}
+                    {social.icon}
                   </a>
                 ))}
               </div>
