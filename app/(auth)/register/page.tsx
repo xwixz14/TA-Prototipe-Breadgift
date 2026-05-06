@@ -71,19 +71,19 @@ export default function RegisterPage() {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="w-full max-w-2xl space-y-8 z-10"
+            className="w-full max-w-2xl space-y-6 z-10 px-4 lg:px-0"
          >
-            <motion.div variants={itemVariants} className="text-center lg:text-left space-y-2">
-                <h1 className="text-4xl lg:text-5xl font-brand text-primary tracking-tight">
-                    Join BreadGift
+            <motion.div variants={itemVariants} className="text-center lg:text-left space-y-3">
+                <h1 className="text-3xl md:text-5xl font-black text-stone-900 tracking-tighter" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
+                    Join <span className="text-primary italic">BreadGift.</span>
                 </h1>
-                <p className="text-stone-400 font-medium text-lg">Mulai petualangan rasa dengan bahan-bahan premium pilihan.</p>
+                <p className="text-stone-400 font-bold text-[10px] md:text-xs uppercase tracking-widest leading-relaxed">Mulai petualangan rasa dengan bahan premium.</p>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="glass-premium p-8 lg:p-12 rounded-[3.5rem] space-y-6 relative">
+            <motion.div variants={itemVariants} className="bg-white/80 backdrop-blur-2xl p-6 md:p-10 rounded-[2.5rem] md:rounded-[4rem] space-y-6 relative overflow-hidden border border-white shadow-2xl shadow-stone-200/30">
                  {/* Floating Decorative Heart */}
-                 <div className="absolute -top-4 -right-4 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg text-primary rotate-12">
-                    <Heart size={20} fill="currentColor" />
+                 <div className="absolute -top-4 -right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg text-primary rotate-12">
+                    <Heart size={18} fill="currentColor" />
                  </div>
 
                 <AnimatePresence mode="wait">
@@ -92,109 +92,113 @@ export default function RegisterPage() {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="bg-red-50 text-red-600 text-sm font-bold p-4 rounded-2xl flex items-center border border-red-100 shadow-sm"
+                        className="bg-red-50 text-red-600 text-[9px] font-black uppercase tracking-widest p-3 rounded-xl flex items-center border border-red-100"
                         >
                         <span className="flex-1 text-center">{error}</span>
                         </motion.div>
                     )}
                 </AnimatePresence>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                     <div className="form-control">
-                        <label className="label py-1">
-                        <span className="label-text font-black text-stone-400 uppercase tracking-widest text-[10px]">Nama Lengkap</span>
+                        <label className="label py-0.5">
+                        <span className="label-text font-black text-stone-400 uppercase tracking-[0.2em] text-[8px]">Nama Lengkap</span>
                         </label>
                         <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-300 group-focus-within:text-primary transition-colors">
-                            <User size={18} />
+                            <User size={16} />
                         </div>
                         <input
                             type="text"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             placeholder="John Doe"
-                            className="input w-full pl-11 bg-white/40 border-stone-200/60 focus:border-primary/50 focus:bg-white rounded-2xl h-14 font-bold transition-all placeholder:text-stone-300"
+                            className="input w-full pl-11 bg-stone-50 border-transparent focus:border-primary/10 focus:bg-white rounded-xl h-12 md:h-14 font-bold text-stone-900 transition-all placeholder:text-stone-300 text-sm"
+                            style={{ fontFamily: 'var(--font-outfit), sans-serif' }}
                         />
                         </div>
                     </div>
 
                     <div className="form-control">
-                        <label className="label py-1">
-                        <span className="label-text font-black text-stone-400 uppercase tracking-widest text-[10px]">Username</span>
+                        <label className="label py-0.5">
+                        <span className="label-text font-black text-stone-400 uppercase tracking-[0.2em] text-[8px]">Username</span>
                         </label>
                         <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-300 group-focus-within:text-primary transition-colors">
-                            <UserPlus size={18} />
+                            <UserPlus size={16} />
                         </div>
                         <input
                             type="text"
                             value={formData.username}
                             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                             placeholder="breadlover"
-                            className="input w-full pl-11 bg-white/40 border-stone-200/60 focus:border-primary/50 focus:bg-white rounded-2xl h-14 font-bold transition-all placeholder:text-stone-300"
+                            className="input w-full pl-11 bg-stone-50 border-transparent focus:border-primary/10 focus:bg-white rounded-xl h-12 md:h-14 font-bold text-stone-900 transition-all placeholder:text-stone-300 text-sm"
+                            style={{ fontFamily: 'var(--font-outfit), sans-serif' }}
                         />
                         </div>
                     </div>
 
                     <div className="form-control md:col-span-2">
-                        <label className="label py-1">
-                        <span className="label-text font-black text-stone-400 uppercase tracking-widest text-[10px]">Email</span>
+                        <label className="label py-0.5">
+                        <span className="label-text font-black text-stone-400 uppercase tracking-[0.2em] text-[8px]">Email</span>
                         </label>
                         <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-300 group-focus-within:text-primary transition-colors">
-                            <Mail size={18} />
+                            <Mail size={16} />
                         </div>
                         <input
                             type="email"
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             placeholder="john@example.com"
-                            className="input w-full pl-11 bg-white/40 border-stone-200/60 focus:border-primary/50 focus:bg-white rounded-2xl h-14 font-bold transition-all placeholder:text-stone-300"
+                            className="input w-full pl-11 bg-stone-50 border-transparent focus:border-primary/10 focus:bg-white rounded-xl h-12 md:h-14 font-bold text-stone-900 transition-all placeholder:text-stone-300 text-sm"
+                            style={{ fontFamily: 'var(--font-outfit), sans-serif' }}
                         />
                         </div>
                     </div>
 
                     <div className="form-control md:col-span-2">
-                        <label className="label py-1">
-                        <span className="label-text font-black text-stone-400 uppercase tracking-widest text-[10px]">Password</span>
+                        <label className="label py-0.5">
+                        <span className="label-text font-black text-stone-400 uppercase tracking-[0.2em] text-[8px]">Password</span>
                         </label>
                         <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-300 group-focus-within:text-primary transition-colors">
-                            <Lock size={18} />
+                            <Lock size={16} />
                         </div>
                         <input
                             type={showPassword ? "text" : "password"}
                             value={formData.password}
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                             placeholder="••••••••"
-                            className="input w-full pl-11 pr-12 bg-white/40 border-stone-200/60 focus:border-primary/50 focus:bg-white rounded-2xl h-14 font-bold transition-all placeholder:text-stone-300"
+                            className="input w-full pl-11 pr-12 bg-stone-50 border-transparent focus:border-primary/10 focus:bg-white rounded-xl h-12 md:h-14 font-bold text-stone-900 transition-all placeholder:text-stone-300 text-sm"
+                            style={{ fontFamily: 'var(--font-outfit), sans-serif' }}
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 pr-4 flex items-center text-stone-300 hover:text-primary transition-colors"
                         >
-                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                         </button>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-4 pt-4">
+                <div className="flex flex-col gap-3 pt-2">
                     <button
                         onClick={handleRegister}
                         disabled={isSubmitting}
-                        className="btn btn-primary w-full h-14 rounded-2xl text-lg font-black shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary border-none text-white hover:bg-primary/90"
+                        className="btn btn-primary w-full h-12 md:h-14 rounded-xl text-[10px] md:text-xs font-black shadow-xl shadow-primary/25 hover:scale-[1.01] active:scale-[0.99] transition-all bg-primary border-none text-white hover:bg-stone-900 uppercase tracking-[0.25em]"
                     >
                         {isSubmitting ? (
-                        <span className="loading loading-spinner"></span>
+                        <span className="loading loading-spinner loading-xs"></span>
                         ) : (
                         "Gabung Sekarang"
                         )}
                     </button>
                 </div>
 
-                <p className="text-center text-[10px] font-medium text-stone-400 pt-6 whitespace-nowrap">
+                <p className="text-center text-[10px] font-medium text-stone-400 pt-4 whitespace-nowrap">
                     Sudah punya akun?{" "}
                     <Link href="/login" className="text-primary hover:text-stone-900 transition-colors font-bold border-b border-primary/20 hover:border-primary pb-0.5">
                         Masuk di sini
@@ -205,9 +209,9 @@ export default function RegisterPage() {
             <motion.button
                 variants={itemVariants}
                 onClick={() => router.push("/")}
-                className="flex items-center justify-center w-full text-stone-400 hover:text-stone-600 font-bold text-sm transition-colors group"
+                className="flex items-center justify-center w-full text-stone-400 hover:text-stone-900 font-black text-[9px] uppercase tracking-[0.25em] transition-all group pt-2"
             >
-                <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+                <ArrowLeft size={12} className="mr-2 group-hover:-translate-x-1 transition-transform" />
                 Kembali ke Beranda
             </motion.button>
          </motion.div>
