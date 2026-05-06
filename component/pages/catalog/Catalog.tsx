@@ -228,7 +228,7 @@ export default function Catalog({ products, categories }: { products: Product[],
                           </p>
                         </div>
                         <div className="w-10 h-10 md:w-12 md:h-12 bg-primary rounded-xl md:rounded-2xl flex items-center justify-center text-secondary-content shadow-xl shadow-primary/40">
-                          <ShoppingBag size={18} md:size={20} strokeWidth={2.5} />
+                          <ShoppingBag size={20} strokeWidth={2.5} />
                         </div>
                      </div>
 

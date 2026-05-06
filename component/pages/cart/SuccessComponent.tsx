@@ -278,21 +278,14 @@ export default function SuccessComponent({ transaction }: { transaction: Transac
                 </p>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-4 justify-center">
+              <div className="flex justify-center">
                 <Link 
                   href="/menu" 
-                  className="flex items-center justify-center gap-3 bg-[#6B4423] text-white px-10 py-5 rounded-2xl font-black shadow-xl shadow-[#6B4423]/20 hover:scale-[1.02] transition-all group"
+                  className="flex items-center justify-center gap-3 bg-[#6B4423] text-white px-12 py-5 rounded-2xl font-black shadow-xl shadow-[#6B4423]/20 hover:scale-[1.02] transition-all group"
                 >
                   <ShoppingBag className="w-5 h-5" />
                   Kembali ke Menu
                 </Link>
-                <button 
-                  onClick={handlePrint}
-                  className="flex items-center justify-center gap-3 bg-white text-zinc-900 border-2 border-zinc-100 px-10 py-5 rounded-2xl font-black hover:bg-zinc-50 transition-all"
-                >
-                  <Download className="w-5 h-5" />
-                  Cetak Invoice
-                </button>
               </div>
             </div>
           </motion.div>
@@ -448,18 +441,10 @@ export default function SuccessComponent({ transaction }: { transaction: Transac
             </div>
 
             {/* Action Buttons */}
-            <div className="mt-8 md:mt-12 flex flex-col md:flex-row gap-4 justify-center">
-              <button 
-                onClick={handlePrint}
-                className="flex items-center justify-center gap-3 bg-[#6B4423] text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-black shadow-xl shadow-[#6B4423]/20 hover:scale-[1.02] active:scale-[0.98] transition-all group text-sm md:text-base"
-              >
-                <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
-                Unduh Tanda Terima
-              </button>
-              
+            <div className="mt-8 md:mt-12 flex justify-center">
               <Link 
                 href="/menu" 
-                className="flex items-center justify-center gap-3 bg-white text-zinc-900 border-2 border-zinc-100 px-8 md:px-10 py-4 md:py-5 rounded-2xl font-black hover:bg-zinc-50 transition-all text-sm md:text-base"
+                className="flex items-center justify-center gap-4 bg-[#6B4423] text-white px-12 py-5 rounded-2xl font-black shadow-xl shadow-[#6B4423]/20 hover:scale-[1.02] active:scale-[0.98] transition-all group text-sm md:text-base"
               >
                 <ShoppingBag className="w-5 h-5" />
                 Belanja Lagi
