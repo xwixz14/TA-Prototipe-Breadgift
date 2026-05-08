@@ -128,7 +128,7 @@ export default function TransactionList({ initialTransactions }: TransactionList
 
       {/* Transaction Table */}
       <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
-        <div className="overflow-x_auto">
+        <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-zinc-50 border-b border-zinc-100 font-black">
@@ -236,7 +236,7 @@ export default function TransactionList({ initialTransactions }: TransactionList
                   {/* Expanded Detail View */}
                   {expandedId === t.id && (
                     <tr className="bg-zinc-50/30">
-                      <td colSpan={7} className="px-10 py-6 border-y border-zinc-100">
+                      <td colSpan={8} className="px-10 py-6 border-y border-zinc-100">
                         <div className="flex flex-col gap-4">
                           <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Detail Produk</h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
