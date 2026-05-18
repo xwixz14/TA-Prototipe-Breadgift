@@ -8,6 +8,7 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  category?: string;
 }
 
 interface CartSummaryProps {
@@ -32,7 +33,13 @@ export default function CartSummary({
   onCheckout
 }: CartSummaryProps) {
   const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const total = subtotal; // Can add tax/discount here if needed
+  
+  const promoItems = items.filter(item => item.category === 'Roti Isi' || item.category === 'Donat');
+  const promoQuantity = promoItems.reduce((sum, item) => sum + item.quantity, 0);
+  const setsOfThree = Math.floor(promoQuantity / 3);
+  const discountAmount = setsOfThree * 2000;
+  
+  const total = subtotal - discountAmount;
 
   return (
     <div className="w-full lg:w-[450px] bg-white border border-zinc-100 rounded-[32px] p-8 flex flex-col h-fit lg:h-full shadow-2xl shadow-zinc-100/50 min-h-0">
@@ -122,6 +129,12 @@ export default function CartSummary({
           <span className="text-sm font-bold text-zinc-400">Sub total</span>
           <span className="text-sm font-black text-zinc-600">Rp {subtotal.toLocaleString("id-ID")}</span>
         </div>
+        {discountAmount > 0 && (
+          <div className="flex justify-between items-center px-2 text-amber-500">
+            <span className="text-sm font-bold">Promo Beli 3 Roti Isi/Donat</span>
+            <span className="text-sm font-black">-Rp {discountAmount.toLocaleString("id-ID")}</span>
+          </div>
+        )}
         <div className="flex justify-between items-center px-4 py-6 bg-[#FCF1E8]/30 rounded-2xl border border-[#FCF1E8]">
           <div className="flex flex-col gap-0.5">
              <span className="text-xs font-bold text-[#6B4423] uppercase tracking-widest opacity-60">Total pembayaran</span>

@@ -10,7 +10,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function CartDrawer() {
-  const { isCartOpen, setIsCartOpen, cartItems, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
+  const { isCartOpen, setIsCartOpen, cartItems, removeFromCart, updateQuantity, totalPrice, subTotal, discountAmount, clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -301,8 +301,14 @@ export default function CartDrawer() {
             <div className="bg-white p-5 md:p-6 rounded-3xl border border-zinc-200 space-y-3">
               <div className="flex justify-between text-[10px] font-black text-zinc-400 uppercase tracking-widest">
                 <span>Subtotal</span>
-                <span>Rp. {totalPrice.toLocaleString("id-ID")}</span>
+                <span>Rp. {subTotal.toLocaleString("id-ID")}</span>
               </div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-[10px] font-black text-amber-500 uppercase tracking-widest">
+                  <span>Promo Beli 3 Roti Isi/Donat</span>
+                  <span>- Rp. {discountAmount.toLocaleString("id-ID")}</span>
+                </div>
+              )}
               <div className="flex justify-between text-[10px] font-black text-zinc-400 uppercase tracking-widest">
                 <span>Biaya Admin</span>
                 <span className="text-green-500">GRATIS</span>

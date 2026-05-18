@@ -11,6 +11,7 @@ export interface CartItem {
   image_url: string;
   quantity: number;
   stock: number;
+  category?: string;
 }
 
 interface CartContextType {
@@ -22,6 +23,8 @@ interface CartContextType {
   refreshCart: () => Promise<void>;
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
+  subTotal: number;
+  discountAmount: number;
   totalPrice: number;
   totalItems: number;
   user: any;
@@ -201,6 +204,7 @@ export function CartProvider({
           image_url: product.image_url,
           quantity: 1,
           stock: product.stock,
+          category: product.category,
         },
       ];
     });
@@ -235,7 +239,15 @@ export function CartProvider({
     localStorage.removeItem("breadgift_cart");
   };
 
-  const totalPrice = cartItems.reduce((total: number, item: CartItem) => total + item.price * item.quantity, 0);
+  const subTotal = cartItems.reduce((total: number, item: CartItem) => total + item.price * item.quantity, 0);
+  
+  const promoItems = cartItems.filter(item => item.category === 'Roti Isi' || item.category === 'Donat');
+  const promoQuantity = promoItems.reduce((sum, item) => sum + item.quantity, 0);
+  const setsOfThree = Math.floor(promoQuantity / 3);
+  const discountAmount = setsOfThree * 2000;
+  
+  const totalPrice = subTotal - discountAmount;
+  
   const totalItems = cartItems.reduce((total: number, item: CartItem) => total + item.quantity, 0);
 
   return (
@@ -249,6 +261,8 @@ export function CartProvider({
         refreshCart,
         isCartOpen,
         setIsCartOpen,
+        subTotal,
+        discountAmount,
         totalPrice,
         totalItems,
         user,
@@ -283,6 +297,8 @@ export function useCart() {
       refreshCart: async () => { },
       isCartOpen: false,
       setIsCartOpen: () => { },
+      subTotal: 0,
+      discountAmount: 0,
       totalPrice: 0,
       totalItems: 0,
       user: null,

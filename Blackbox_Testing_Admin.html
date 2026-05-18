@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Blackbox Testing Modul Admin</title>
+    <style>
+        /* Styling dioptimalkan untuk ukuran kertas A4 (lebar max ~18cm) */
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 11px; /* Ukuran font lebih kecil untuk A4 */
+            line-height: 1.3;
+            margin: 20px;
+            color: #000;
+        }
+        h1 {
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed; /* Memaksa lebar kolom sesuai persentase */
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 4px 6px; /* Padding dipangkas agar tabel lebih rapat */
+            text-align: left;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: center;
+            font-weight: bold;
+        }
+        .valid {
+            text-align: center;
+            font-weight: bold;
+            color: #000;
+        }
+        .module-cell {
+            font-weight: bold;
+            vertical-align: middle;
+            text-align: center;
+        }
+        ul, ol {
+            margin: 0;
+            padding-left: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Skenario dan Hasil Pengujian Blackbox: Modul Admin</h1>
+    <p>Pengujian berfokus pada fungsionalitas aplikasi dan respons sistem terhadap input pengguna pada sisi Admin (Kasir hingga Kelola Info).</p>
+
+    <table>
+        <tr>
+            <th width="4%">No</th>
+            <th width="15%">Modul</th>
+            <th width="22%">Skenario Pengujian</th>
+            <th width="27%">Langkah Pengujian</th>
+            <th width="22%">Hasil yang Diharapkan</th>
+            <th width="10%">Hasil Pengujian</th>
+        </tr>
+        
+        <!-- Kasir -->
+        <tr>
+            <td align="center">1</td>
+            <td class="module-cell">Kasir (POS)</td>
+            <td>Pesanan Langsung (Take Away)</td>
+            <td>
+                <ol>
+                    <li>Input produk & kuantitas di Kasir</li>
+                    <li>Proses Checkout & Bayar</li>
+                </ol>
+            </td>
+            <td>Pesanan tersimpan (status Confirm). Stok produk & bahan otomatis berkurang.</td>
+            <td>Sesuai harapan.</td>
+        </tr>
+
+        <!-- Riwayat Transaksi -->
+        <tr>
+            <td align="center">2</td>
+            <td class="module-cell" rowspan="2">Riwayat Transaksi</td>
+            <td>Konfirmasi Pesanan Online</td>
+            <td>
+                <ol>
+                    <li>Pilih pesanan status 'Pending'</li>
+                    <li>Ubah status ke 'Confirm'</li>
+                </ol>
+            </td>
+            <td>Status berubah, omzet bertambah, dan email konfirmasi terkirim.</td>
+            <td>Sesuai harapan.</td>
+        </tr>
+        <tr>
+            <td align="center">3</td>
+            <td>Melihat Bukti Pembayaran</td>
+            <td>Klik ikon detail transaksi online.</td>
+            <td>Sistem menampilkan foto bukti transfer secara penuh.</td>
+            <td>Sesuai harapan.</td>
+        </tr>
+
+        <!-- Produk -->
+        <tr>
+            <td align="center">4</td>
+            <td class="module-cell" rowspan="2">Katalog Produk</td>
+            <td>Penambahan Produk Baru</td>
+            <td>
+                <ol>
+                    <li>Klik 'Tambah Produk'</li>
+                    <li>Isi form data & unggah foto</li>
+                </ol>
+            </td>
+            <td>Data produk baru tersimpan dan tampil di katalog admin & user.</td>
+            <td>Sesuai harapan.</td>
+        </tr>
+        <tr>
+            <td align="center">5</td>
+            <td>Nonaktifkan Produk</td>
+            <td>Klik <i>toggle</i> status produk.</td>
+            <td>Status produk menjadi 'Nonaktif' dan hilang dari halaman user.</td>
+            <td>Sesuai harapan.</td>
+        </tr>
+
+        <!-- Produksi -->
+        <tr>
+            <td align="center">6</td>
+            <td class="module-cell">Produksi & Bahan Baku</td>
+            <td>Pencatatan Produksi Harian</td>
+            <td>
+                <ol>
+                    <li>Input roti yang diproduksi</li>
+                    <li>Simpan data</li>
+                </ol>
+            </td>
+            <td>Stok roti bertambah, stok bahan (terigu, dll) otomatis berkurang sesuai resep.</td>
+            <td>Sesuai harapan.</td>
+        </tr>
+
+        <!-- Keuangan -->
+        <tr>
+            <td align="center">7</td>
+            <td class="module-cell" rowspan="2">Gaji & Pengeluaran</td>
+            <td>Cetak Slip Gaji Karyawan</td>
+            <td>Klik tombol 'Struk' di tabel Gaji.</td>
+            <td>Sistem otomatis mengunduh file PDF Slip Gaji (lengkap dengan logo).</td>
+            <td>Sesuai harapan.</td>
+        </tr>
+        <tr>
+            <td align="center">8</td>
+            <td>Tambah Pengeluaran</td>
+            <td>Input rincian biaya operasional.</td>
+            <td>Data beban tersimpan & memotong nilai Laba Bersih bulanan.</td>
+            <td>Sesuai harapan.</td>
+        </tr>
+
+        <!-- Laporan -->
+        <tr>
+            <td align="center">9</td>
+            <td class="module-cell">Laporan</td>
+            <td>Ekspor Data (PDF/Excel)</td>
+            <td>Pilih filter bulan & klik 'Download'.</td>
+            <td>Sistem mengunduh laporan rekapitulasi sesuai filter.</td>
+            <td>Sesuai harapan.</td>
+        </tr>
+
+        <!-- Info -->
+        <tr>
+            <td align="center">10</td>
+            <td class="module-cell" rowspan="2">Kelola Info</td>
+            <td>Tambah Artikel</td>
+            <td>Input Judul, Konten, & Foto.</td>
+            <td>Artikel diterbitkan & tampil di halaman Info Publik.</td>
+            <td>Sesuai harapan.</td>
+        </tr>
+        <tr>
+            <td align="center">11</td>
+            <td>Hapus Artikel</td>
+            <td>Klik 'Hapus' pada artikel.</td>
+            <td>Artikel terhapus permanen dari sistem & halaman publik.</td>
+            <td>Sesuai harapan.</td>
+        </tr>
+    </table>
+
+</body>
+</html>

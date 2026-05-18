@@ -55,7 +55,7 @@ export default function DashboardContainer({
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prev, { id: product.id, name: product.name, price: product.price, quantity: 1 }];
+      return [...prev, { id: product.id, name: product.name, price: product.price, quantity: 1, category: product.category }];
     });
 
     setToastMessage("Produk berhasil ditambahkan");
@@ -123,7 +123,10 @@ export default function DashboardContainer({
 
   const onConfirmPayment = async (amountPaid: number) => {
     setIsProcessing(true);
-    const transactionTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const cartSubtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const promoItems = cart.filter(item => item.category === 'Roti Isi' || item.category === 'Donat');
+    const discount = Math.floor(promoItems.reduce((sum, item) => sum + item.quantity, 0) / 3) * 2000;
+    const transactionTotal = cartSubtotal - discount;
 
     const result = await createTransaction({
       total_amount: transactionTotal,
@@ -160,7 +163,10 @@ export default function DashboardContainer({
     setIsProcessing(false);
   };
 
-  const totalAmount = cart.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+  const cartSubtotalUi = cart.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+  const promoItemsUi = cart.filter((item: any) => item.category === 'Roti Isi' || item.category === 'Donat');
+  const discountUi = Math.floor(promoItemsUi.reduce((sum: number, item: any) => sum + item.quantity, 0) / 3) * 2000;
+  const totalAmount = cartSubtotalUi - discountUi;
 
   return (
     <div className="flex flex-col lg:flex-row w-full h-full lg:overflow-hidden gap-6 lg:gap-8">
