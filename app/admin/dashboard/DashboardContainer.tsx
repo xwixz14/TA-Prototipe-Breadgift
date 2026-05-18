@@ -125,7 +125,8 @@ export default function DashboardContainer({
     setIsProcessing(true);
     const cartSubtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const promoItems = cart.filter(item => item.category === 'Roti Isi' || item.category === 'Donat');
-    const discount = Math.floor(promoItems.reduce((sum, item) => sum + item.quantity, 0) / 3) * 2000;
+    const promoQty = promoItems.reduce((sum, item) => sum + item.quantity, 0);
+    const discount = (promoQty > 0 && promoQty % 3 === 0) ? (promoQty / 3) * 2000 : 0;
     const transactionTotal = cartSubtotal - discount;
 
     const result = await createTransaction({
@@ -165,7 +166,8 @@ export default function DashboardContainer({
 
   const cartSubtotalUi = cart.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
   const promoItemsUi = cart.filter((item: any) => item.category === 'Roti Isi' || item.category === 'Donat');
-  const discountUi = Math.floor(promoItemsUi.reduce((sum: number, item: any) => sum + item.quantity, 0) / 3) * 2000;
+  const promoQtyUi = promoItemsUi.reduce((sum: number, item: any) => sum + item.quantity, 0);
+  const discountUi = (promoQtyUi > 0 && promoQtyUi % 3 === 0) ? (promoQtyUi / 3) * 2000 : 0;
   const totalAmount = cartSubtotalUi - discountUi;
 
   return (

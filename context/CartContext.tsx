@@ -243,8 +243,9 @@ export function CartProvider({
   
   const promoItems = cartItems.filter(item => item.category === 'Roti Isi' || item.category === 'Donat');
   const promoQuantity = promoItems.reduce((sum, item) => sum + item.quantity, 0);
-  const setsOfThree = Math.floor(promoQuantity / 3);
-  const discountAmount = setsOfThree * 2000;
+  const discountAmount = (promoQuantity > 0 && promoQuantity % 3 === 0)
+    ? (promoQuantity / 3) * 2000
+    : 0;
   
   const totalPrice = subTotal - discountAmount;
   
