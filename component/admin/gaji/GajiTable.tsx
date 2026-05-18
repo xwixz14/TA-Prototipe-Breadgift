@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
-import { Trash2, Calendar } from "lucide-react";
+import React, { useState } from "react";
+import { Trash2, Calendar, ReceiptText, Loader2 } from "lucide-react";
 import { deleteSalary } from "@/lib/actions";
+import jsPDF from "jspdf";
 
 interface Salary {
   id: number;
@@ -17,6 +18,8 @@ interface GajiTableProps {
 }
 
 export default function GajiTable({ salaries, onDeleteRequest }: GajiTableProps) {
+  const [isPrinting, setIsPrinting] = useState<number | null>(null);
+
   const formatIDR = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -37,6 +40,101 @@ export default function GajiTable({ salaries, onDeleteRequest }: GajiTableProps)
     return new Date(dateString).toLocaleDateString("id-ID", options);
   };
 
+  const getBase64Image = async (url: string): Promise<string> => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
+
+  const handlePrintSlip = async (s: Salary) => {
+    setIsPrinting(s.id);
+    try {
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: [100, 150] // Receipt size format
+      });
+
+      // Fetch Logo
+      const logoBase64 = await getBase64Image("/assets/Logo.png");
+      
+      // Header
+      doc.addImage(logoBase64, 'PNG', 40, 10, 20, 20); 
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.setTextColor(107, 68, 35); // #6B4423
+      doc.text("BREADGIFT", 50, 36, { align: "center" });
+
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.setFont("helvetica", "normal");
+      doc.text("Gg. Mushola Tawakal No.69, Sukarame", 50, 42, { align: "center" });
+      doc.text("Bandar Lampung, Lampung 35122", 50, 46, { align: "center" });
+
+      // Divider
+      doc.setDrawColor(220, 220, 220);
+      doc.setLineWidth(0.5);
+      doc.line(10, 52, 90, 52);
+
+      // Title
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.text("SLIP GAJI KARYAWAN", 50, 62, { align: "center" });
+
+      // Details
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(50, 50, 50);
+      
+      doc.text("Tanggal", 10, 75);
+      doc.text(`: ${formatDate(s.payment_date)}`, 30, 75);
+      
+      doc.text("Nama", 10, 83);
+      doc.setFont("helvetica", "bold");
+      doc.text(`: ${s.employee_name}`, 30, 83);
+      
+      // Amount Box
+      doc.setFillColor(252, 241, 232); // #FCF1E8
+      doc.roundedRect(10, 92, 80, 18, 3, 3, 'F');
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(107, 68, 35);
+      doc.text("Total Diterima", 15, 100);
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.text(formatIDR(s.amount), 85, 104, { align: "right" });
+
+      // Footer
+      doc.setDrawColor(220, 220, 220);
+      doc.setLineWidth(0.5);
+      doc.line(10, 120, 90, 120);
+
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "italic");
+      doc.setTextColor(150, 150, 150);
+      doc.text("Terima kasih atas dedikasi dan kerja keras Anda", 50, 128, { align: "center" });
+      doc.text("untuk BreadGift Bakery.", 50, 132, { align: "center" });
+
+      // Download
+      const filename = `Slip_Gaji_${s.employee_name.replace(/\s+/g, '_')}_${new Date(s.payment_date).toISOString().split('T')[0]}.pdf`;
+      doc.save(filename);
+
+    } catch (error) {
+      console.error("Gagal mencetak slip gaji:", error);
+      alert("Gagal memuat dokumen slip gaji. Pastikan koneksi internet stabil.");
+    } finally {
+      setIsPrinting(null);
+    }
+  };
+
   return (
     <div className="bg-white rounded-[40px] border border-zinc-100 shadow-sm overflow-hidden mb-10">
       <div className="overflow-x-auto">
@@ -52,7 +150,7 @@ export default function GajiTable({ salaries, onDeleteRequest }: GajiTableProps)
               <th className="px-10 py-8 text-[11px] font-black text-zinc-400 tracking-widest uppercase text-right">
                 NOMINAL
               </th>
-              <th className="px-10 py-8 text-[11px] font-black text-zinc-400 tracking-widest uppercase text-center w-32">
+              <th className="px-10 py-8 text-[11px] font-black text-zinc-400 tracking-widest uppercase text-center w-40">
                 AKSI
               </th>
             </tr>
@@ -84,9 +182,22 @@ export default function GajiTable({ salaries, onDeleteRequest }: GajiTableProps)
                     </span>
                   </td>
                   <td className="px-10 py-7">
-                    <div className="flex justify-center">
+                    <div className="flex justify-center items-center gap-2">
+                      <button
+                        onClick={() => handlePrintSlip(s)}
+                        disabled={isPrinting === s.id}
+                        title="Cetak Slip Gaji"
+                        className="p-2.5 text-zinc-400 hover:text-[#6B4423] hover:bg-[#FCF1E8] rounded-xl transition-all disabled:opacity-50"
+                      >
+                        {isPrinting === s.id ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <ReceiptText className="w-5 h-5" />
+                        )}
+                      </button>
                       <button
                         onClick={() => onDeleteRequest(s.id)}
+                        title="Hapus Data"
                         className="p-2.5 text-zinc-200 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                       >
                         <Trash2 className="w-5 h-5" />

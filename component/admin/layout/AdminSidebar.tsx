@@ -106,8 +106,8 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                   href={item.href}
                   onClick={onClose}
                   className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 font-bold ${isActive
-                      ? "bg-[#FCF1E8] text-[#6B4423]"
-                      : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+                    ? "bg-[#FCF1E8] text-[#6B4423]"
+                    : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
                     }`}
                 >
                   <item.icon className="w-5 h-5" />

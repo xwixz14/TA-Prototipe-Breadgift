@@ -14,6 +14,9 @@ const poolOptions = {
   waitForConnections: true,
   connectionLimit: 50,
   queueLimit: 0,
+  ssl: process.env.MYSQL_HOST?.includes("aivencloud.com") 
+    ? { rejectUnauthorized: false } 
+    : undefined,
 };
 
 // Validasi wajib
